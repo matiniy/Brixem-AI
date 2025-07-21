@@ -144,9 +144,6 @@ export default function HomeownerDashboard() {
     dates: ""
   });
   const [sowReady, setSowReady] = React.useState(false);
-  const [wbsReady, setWbsReady] = React.useState(false);
-  const [scheduleReady, setScheduleReady] = React.useState(false);
-  const [costReady, setCostReady] = React.useState(false);
   const [openChat, setOpenChat] = React.useState(false);
 
   // Add controlled input for guided setup
@@ -231,54 +228,6 @@ export default function HomeownerDashboard() {
         setIsTransitioning(false);
       }, 1000);
     }, 2000);
-  };
-
-  // Handle document generation steps
-  const handleDocumentStep = (step: string) => {
-    if (step === "sow") {
-      // Add WBS document
-      setDocuments(prev => [...prev, {
-        id: "wbs-1",
-        name: "Work Breakdown Structure",
-        type: "wbs",
-        status: "generating",
-        createdAt: new Date().toISOString()
-      }]);
-      
-      setTimeout(() => {
-        setDocuments(prev => prev.map(doc => 
-          doc.id === "wbs-1" 
-            ? { ...doc, status: "ready" as const }
-            : doc
-        ));
-      }, 2000);
-      
-      setWbsReady(true);
-    } else if (step === "wbs") {
-      // Add Schedule document
-      setDocuments(prev => [...prev, {
-        id: "schedule-1",
-        name: "Schedule of Works",
-        type: "schedule",
-        status: "generating",
-        createdAt: new Date().toISOString()
-      }]);
-      
-      setTimeout(() => {
-        setDocuments(prev => prev.map(doc => 
-          doc.id === "schedule-1" 
-            ? { ...doc, status: "ready" as const }
-            : doc
-        ));
-      }, 2000);
-      
-      setScheduleReady(true);
-    } else if (step === "schedule") {
-      // Generate Kanban tasks from Schedule of Works
-      generateKanbanTasks();
-      setCostReady(true);
-      setOpenChat(true);
-    }
   };
 
   // Generate Kanban tasks from Schedule of Works
