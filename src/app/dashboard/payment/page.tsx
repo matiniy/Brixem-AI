@@ -49,11 +49,27 @@ export default function PaymentPage() {
   };
 
   const handleProjectCreate = (project: unknown) => {
-    if (typeof project === "object" && project !== null && "name" in project && "type" in project && "status" in project && "budget" in project && "description" in project && "location" in project && "timeline" in project) {
+    if (
+      typeof project === "object" && project !== null &&
+      "name" in project && typeof project.name === "string" &&
+      "type" in project && typeof project.type === "string" &&
+      "status" in project && typeof project.status === "string" &&
+      "budget" in project && typeof project.budget === "string" &&
+      "description" in project && typeof project.description === "string" &&
+      "location" in project && typeof project.location === "string" &&
+      "timeline" in project && typeof project.timeline === "string"
+    ) {
       const newProject = {
-        ...project,
         id: Date.now().toString(),
-        progress: 0
+        name: project.name,
+        type: project.type,
+        status: project.status,
+        budget: project.budget,
+        description: project.description,
+        location: project.location,
+        timeline: project.timeline,
+        progress: 0,
+        createdAt: new Date().toISOString()
       };
       setProjects(prev => [...prev, newProject]);
     }
