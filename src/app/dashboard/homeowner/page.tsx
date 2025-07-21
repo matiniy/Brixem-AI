@@ -100,6 +100,213 @@ export default function HomeownerDashboard() {
   ]);
   const [activeProject, setActiveProject] = useState(projects[0]?.id || "");
 
+  // Add a mapping of project IDs to tasks (simulate per-project tasks)
+  const projectTasks: Record<string, Task[]> = {
+    "1": [
+      {
+        id: "task-1",
+        title: "Site Survey & Measurements",
+        description: "Conduct detailed site survey and take all necessary measurements",
+        status: "todo",
+        priority: "high",
+        progress: 0,
+        assignedUsers: ["John", "Sarah"],
+        comments: 5,
+        likes: 12,
+        estimatedHours: 4,
+        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 7 days from now
+      },
+      {
+        id: "task-2",
+        title: "Obtain Building Permits",
+        description: "Submit permit applications and coordinate with local authorities",
+        status: "todo",
+        priority: "high",
+        progress: 0,
+        assignedUsers: ["Mike"],
+        comments: 8,
+        likes: 3,
+        estimatedHours: 16,
+        dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 14 days from now
+      },
+      {
+        id: "task-3",
+        title: "Demolition & Site Preparation",
+        description: "Remove existing fixtures and prepare site for new construction",
+        status: "todo",
+        priority: "medium",
+        progress: 0,
+        assignedUsers: ["David", "Alex"],
+        comments: 15,
+        likes: 7,
+        estimatedHours: 24,
+        dueDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 21 days from now
+      },
+      {
+        id: "task-4",
+        title: "Electrical & Plumbing Rough-in",
+        description: "Install electrical wiring and plumbing infrastructure",
+        status: "todo",
+        priority: "high",
+        progress: 0,
+        assignedUsers: ["Tom", "Lisa"],
+        comments: 22,
+        likes: 18,
+        estimatedHours: 32,
+        dueDate: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 28 days from now
+      },
+      {
+        id: "task-5",
+        title: "Cabinetry Installation",
+        description: "Install kitchen cabinets and hardware",
+        status: "todo",
+        priority: "medium",
+        progress: 0,
+        assignedUsers: ["Sarah", "John"],
+        comments: 11,
+        likes: 9,
+        estimatedHours: 20,
+        dueDate: new Date(Date.now() + 35 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 35 days from now
+      },
+      {
+        id: "task-6",
+        title: "Countertop Installation",
+        description: "Install and seal countertops",
+        status: "todo",
+        priority: "medium",
+        progress: 0,
+        assignedUsers: ["Mike"],
+        comments: 6,
+        likes: 4,
+        estimatedHours: 12,
+        dueDate: new Date(Date.now() + 42 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 42 days from now
+      },
+      {
+        id: "task-7",
+        title: "Appliance Installation",
+        description: "Install and test all kitchen appliances",
+        status: "todo",
+        priority: "medium",
+        progress: 0,
+        assignedUsers: ["David"],
+        comments: 9,
+        likes: 6,
+        estimatedHours: 8,
+        dueDate: new Date(Date.now() + 49 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 49 days from now
+      },
+      {
+        id: "task-8",
+        title: "Final Inspection & Punch List",
+        description: "Conduct final walkthrough and address any remaining items",
+        status: "todo",
+        priority: "high",
+        progress: 0,
+        assignedUsers: ["John", "Sarah", "Mike"],
+        comments: 3,
+        likes: 2,
+        estimatedHours: 4,
+        dueDate: new Date(Date.now() + 56 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 56 days from now
+      }
+    ],
+    "2": [
+      {
+        id: "task-1",
+        title: "Measure Room Dimensions",
+        description: "Accurately measure the length and width of the living room",
+        status: "todo",
+        priority: "high",
+        progress: 0,
+        assignedUsers: ["Sarah"],
+        comments: 2,
+        likes: 5,
+        estimatedHours: 2,
+        dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 5 days from now
+      },
+      {
+        id: "task-2",
+        title: "Choose Furniture Layout",
+        description: "Plan the arrangement of new furniture and seating",
+        status: "todo",
+        priority: "medium",
+        progress: 0,
+        assignedUsers: ["John"],
+        comments: 1,
+        likes: 3,
+        estimatedHours: 4,
+        dueDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 10 days from now
+      },
+      {
+        id: "task-3",
+        title: "Select Wall Treatments",
+        description: "Choose paint colors, wallpaper, or other wall treatments for the living room",
+        status: "todo",
+        priority: "low",
+        progress: 0,
+        assignedUsers: ["Mike"],
+        comments: 0,
+        likes: 0,
+        estimatedHours: 1,
+        dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 15 days from now
+      }
+    ],
+    "3": [
+      {
+        id: "task-1",
+        title: "Choose Fixtures",
+        description: "Select new bathroom fixtures, faucets, and lighting",
+        status: "todo",
+        priority: "high",
+        progress: 0,
+        assignedUsers: ["Lisa"],
+        comments: 4,
+        likes: 10,
+        estimatedHours: 8,
+        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 7 days from now
+      },
+      {
+        id: "task-2",
+        title: "Install Tile",
+        description: "Install new bathroom tile and grout",
+        status: "todo",
+        priority: "medium",
+        progress: 0,
+        assignedUsers: ["Tom"],
+        comments: 3,
+        likes: 7,
+        estimatedHours: 12,
+        dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 14 days from now
+      }
+    ],
+    "4": [
+      {
+        id: "task-1",
+        title: "Choose Desk Type",
+        description: "Decide on the type of desk (standing, sitting, corner, etc.)",
+        status: "todo",
+        priority: "high",
+        progress: 0,
+        assignedUsers: ["David"],
+        comments: 1,
+        likes: 4,
+        estimatedHours: 3,
+        dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 5 days from now
+      },
+      {
+        id: "task-2",
+        title: "Select Storage Solutions",
+        description: "Plan and choose storage solutions for the office",
+        status: "todo",
+        priority: "medium",
+        progress: 0,
+        assignedUsers: ["Sarah"],
+        comments: 2,
+        likes: 6,
+        estimatedHours: 6,
+        dueDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // 10 days from now
+      }
+    ]
+  };
+
   // Check for user data from onboarding flow
   React.useEffect(() => {
     const userData = localStorage.getItem("brixem_user_data");
@@ -447,7 +654,10 @@ export default function HomeownerDashboard() {
       <Sidebar
         projects={projects}
         activeProject={activeProject}
-        onProjectSelect={setActiveProject}
+        onProjectSelect={(projectId) => {
+          setActiveProject(projectId);
+          setTasks(projectTasks[projectId] || []);
+        }}
         onProjectCreate={() => {}}
         onProjectDelete={() => {}}
         isMobileOpen={isMobileSidebarOpen}
