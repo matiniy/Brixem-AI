@@ -69,7 +69,7 @@ export default function HomeownerDashboard() {
     setMessages((prev) => [...prev, { role: "user", text: message }]);
     
     // If in guided flow, handle setup answers
-    if (!openChat) {
+    if (!sowReady) {
       if (!sowReady) {
         handleSetupAnswer(message);
         return;
@@ -144,7 +144,6 @@ export default function HomeownerDashboard() {
     dates: ""
   });
   const [sowReady, setSowReady] = React.useState(false);
-  const [openChat, setOpenChat] = React.useState(false);
 
   // Add controlled input for guided setup
   const [setupInput, setSetupInput] = React.useState("");
@@ -482,7 +481,7 @@ export default function HomeownerDashboard() {
                       </div>
                     ))}
                     {/* Guided flow prompt */}
-                    {!openChat && !sowReady && (
+                    {!sowReady && (
                       <div className="text-base sm:text-lg font-semibold text-black mb-2 w-full text-left">
                         {setupPrompts[setupStep].prompt}
                       </div>
@@ -495,7 +494,7 @@ export default function HomeownerDashboard() {
                     className="flex items-center gap-2 sm:gap-3 w-full"
                     onSubmit={e => {
                       e.preventDefault();
-                      if (!openChat && !sowReady) {
+                      if (!sowReady) {
                         if (setupInput.trim()) handleSetupAnswer(setupInput.trim());
                       } else if (setupInput.trim()) {
                         handleSend(setupInput.trim());
