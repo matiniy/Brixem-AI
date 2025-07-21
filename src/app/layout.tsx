@@ -21,10 +21,7 @@ export default function RootLayout({
 
   useEffect(() => {
     setIsClient(true);
-    if (typeof window !== 'undefined') {
-      const role = localStorage.getItem("brixem_role");
-      if (!role) setShowOnboarding(true);
-    }
+    // Do not auto-show onboarding overlay on page load
   }, []);
 
   function handleSelectRole(role: string) {
