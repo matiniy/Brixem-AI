@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useRef } from "react";
 
 export default function ContractorDashboard() {
-  const [isVisible, setIsVisible] = useState(false);
   const [activeProjects, setActiveProjects] = useState(0);
   const [revenue, setRevenue] = useState(0);
   const [teamUtilization, setTeamUtilization] = useState(0);
@@ -19,7 +18,6 @@ export default function ContractorDashboard() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && !isAnimating) {
-            setIsVisible(true);
             startAnimation();
           }
         });

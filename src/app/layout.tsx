@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   // Use Next.js usePathname to determine the current route
-  const pathname = usePathname();
+  // Remove: const pathname = usePathname();
 
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isClient, setIsClient] = useState(false);

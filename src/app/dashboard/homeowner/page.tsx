@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import ListView from "@/components/ListView";
 import CalendarView from "@/components/CalendarView";
 
@@ -427,11 +426,10 @@ export default function HomeownerDashboard() {
   };
 
   // Render guided chat or open chat
-  let chatContent;
   if (!openChat) {
     if (!sowReady) {
       // Show conversation so far, then current prompt and input
-      chatContent = (
+      return (
         <div className="flex flex-col items-center gap-4 w-full">
           <div className="w-full max-w-xl mx-auto flex flex-col gap-2">
             {messages.map((msg, i) => (
@@ -452,21 +450,21 @@ export default function HomeownerDashboard() {
         </div>
       );
     } else if (!wbsReady) {
-      chatContent = (
+      return (
         <div className="flex flex-col items-center gap-4">
           <div className="text-lg font-semibold text-gray-800 mb-2">Your Scope of Works is ready! Check the documents panel to download it.</div>
           <button className="px-4 py-2 rounded-lg bg-brixem-primary text-white font-semibold" onClick={() => handleDocumentStep("sow")}>Continue to WBS</button>
         </div>
       );
     } else if (!scheduleReady) {
-      chatContent = (
+      return (
         <div className="flex flex-col items-center gap-4">
           <div className="text-lg font-semibold text-gray-800 mb-2">Your Work Breakdown Structure is ready! Check the documents panel to download it.</div>
           <button className="px-4 py-2 rounded-lg bg-brixem-primary text-white font-semibold" onClick={() => handleDocumentStep("wbs")}>Continue to Schedule</button>
         </div>
       );
     } else if (!costReady) {
-      chatContent = (
+      return (
         <div className="flex flex-col items-center gap-4">
           <div className="text-lg font-semibold text-gray-800 mb-2">Your Schedule of Works is ready! Check the documents panel to download it.</div>
           <button className="px-4 py-2 rounded-lg bg-brixem-primary text-white font-semibold" onClick={() => handleDocumentStep("schedule")}>Start AI Chat</button>

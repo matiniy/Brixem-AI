@@ -546,7 +546,6 @@ export default function ProjectDashboard() {
   const projectId = params.projectId as string;
   const router = useRouter();
   
-  const [user, setUser] = useState<unknown>(null);
   const [showAuth, setShowAuth] = useState(false);
   const [showProjectWizard, setShowProjectWizard] = useState(false);
   const [showChat, setShowChat] = useState(false);
@@ -585,7 +584,7 @@ export default function ProjectDashboard() {
     if (userData && plan) {
       const parsedUserData = JSON.parse(userData);
       if (parsedUserData.role === "homeowner" && parsedUserData.onboardingComplete) {
-        setUser(parsedUserData);
+        // setUser(parsedUserData); // This line is removed
         // Clear the stored data after loading
         localStorage.removeItem("brixem_user_data");
         localStorage.removeItem("brixem_plan");
@@ -650,7 +649,7 @@ export default function ProjectDashboard() {
   ]);
 
   const handleAuthSuccess = (userData: unknown) => {
-    setUser(userData);
+    // setUser(userData); // This line is removed
     setShowAuth(false);
     // Show onboarding for new users
     if (!userData || typeof userData !== 'object' || !('onboardingComplete' in userData) || !userData.onboardingComplete) {
@@ -715,11 +714,11 @@ export default function ProjectDashboard() {
   };
 
   const handleOnboardingComplete = (userData: unknown) => {
-    setUser((prev: unknown) => {
-      const prevObj = typeof prev === "object" && prev !== null ? prev : {};
-      const userObj = typeof userData === "object" && userData !== null ? userData : {};
-      return { ...prevObj, ...userObj };
-    });
+    // setUser((prev: unknown) => { // This line is removed
+    //   const prevObj = typeof prev === "object" && prev !== null ? prev : {};
+    //   const userObj = typeof userData === "object" && userData !== null ? userData : {};
+    //   return { ...prevObj, ...userObj };
+    // });
     setShowOnboarding(false);
   };
 

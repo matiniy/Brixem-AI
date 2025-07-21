@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useRef } from "react";
 
 export default function ConsultantAnalytics() {
-  const [isVisible, setIsVisible] = useState(false);
   const [riskScore, setRiskScore] = useState(0);
   const [roiProjection, setRoiProjection] = useState(0);
   const [timelineVariance, setTimelineVariance] = useState(0);
@@ -19,7 +18,6 @@ export default function ConsultantAnalytics() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && !isAnimating) {
-            setIsVisible(true);
             startAnimation();
           }
         });

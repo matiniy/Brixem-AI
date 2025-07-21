@@ -173,10 +173,10 @@ export default function OnboardingFlow({ open, onClose, onComplete }: Onboarding
           </h3>
           <p className="text-gray-600 mb-6">
             Based on your experience and goals, we'll customize your dashboard and recommendations. 
-            You're ready to start planning your renovation projects!
+            You&apos;re ready to start planning your renovation projects!
           </p>
           <div className="bg-gradient-to-r from-[#23c6e6]/10 to-[#4b1fa7]/10 rounded-lg p-4 border border-[#23c6e6]/20">
-            <h4 className="font-semibold text-gray-900 mb-2">What's next?</h4>
+            <h4 className="font-semibold text-gray-900 mb-2">What&apos;s next?</h4>
             <ul className="text-sm text-gray-600 space-y-1 text-left">
               <li>• Create your first project</li>
               <li>• Get AI-powered recommendations</li>

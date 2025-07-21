@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useRef } from "react";
 
 export default function HomeownerDashboard() {
-  const [isVisible, setIsVisible] = useState(false);
   const [budgetUsed, setBudgetUsed] = useState(0);
   const [currentWeek, setCurrentWeek] = useState(0);
   const [budgetAnimationComplete, setBudgetAnimationComplete] = useState(false);
@@ -15,7 +14,6 @@ export default function HomeownerDashboard() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && !isAnimating) {
-            setIsVisible(true);
             startAnimation();
           }
         });
