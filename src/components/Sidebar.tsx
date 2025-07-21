@@ -14,7 +14,7 @@ export type Project = {
   location?: string;
   timeline?: string;
   createdAt?: string;
-  contractors?: any[];
+  contractors?: unknown[]; // Changed from any[] to unknown[]
 };
 
 interface SidebarProps {
@@ -402,7 +402,7 @@ export default function Sidebar({
             </div>
             
             <p className="text-gray-600 mb-6">
-              Are you sure you want to delete "{projectToDelete.name}"? This action cannot be undone.
+              Are you sure you want to delete &quot;{projectToDelete.name}&quot;? This action cannot be undone.
             </p>
             
             <div className="flex gap-3">

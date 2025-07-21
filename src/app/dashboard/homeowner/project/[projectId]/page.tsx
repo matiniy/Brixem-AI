@@ -746,7 +746,7 @@ export default function ProjectDashboard() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Project Not Found</h1>
-          <p className="text-gray-600 mb-6">The project you're looking for doesn't exist.</p>
+          <p className="text-gray-600 mb-6">The project you&apos;re looking for doesn&apos;t exist.</p>
           <button
             onClick={() => router.push("/dashboard/homeowner")}
             className="px-4 py-2 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-lg hover:opacity-90 transition"

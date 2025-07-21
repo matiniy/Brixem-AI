@@ -49,7 +49,7 @@ export default function ContractorOnboarding() {
   const handleNext = () => setStep((s) => Math.min(s + 1, steps.length - 1));
   const handleBack = () => setStep((s) => Math.max(s - 1, 0));
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = (field: string, value: unknown) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -59,7 +59,7 @@ export default function ContractorOnboarding() {
     }
   };
 
-  const handleAuthSuccess = (userData: unknown) => {
+  const handleAuthSuccess = () => {
     // TODO: Save contractor onboarding data and redirect to feasibility preview
     alert("Onboarding complete! Redirecting to feasibility preview...");
     // router.push("/contractor/feasibility-preview");

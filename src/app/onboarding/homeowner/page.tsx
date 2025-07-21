@@ -108,7 +108,7 @@ export default function HomeownerOnboarding() {
             Welcome to Brixem, {userData.name}!
           </h3>
           <p className="text-gray-600 mb-6">
-            You're ready to start planning your renovation projects!
+            You&apos;re ready to start planning your renovation projects!
           </p>
         </div>
       )

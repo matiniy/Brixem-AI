@@ -71,10 +71,6 @@ export default function ListView({ tasks, onTaskUpdate, onAddTask }: ListViewPro
     }
   };
 
-  const getTasksByStatus = (status: string) => {
-    return tasks.filter(task => task.status === status);
-  };
-
   return (
     <div className="p-2 sm:p-4 lg:p-6 w-full max-w-full overflow-hidden">
       {/* Header */}
@@ -126,7 +122,7 @@ export default function ListView({ tasks, onTaskUpdate, onAddTask }: ListViewPro
                   <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
                   <select
                     value={newTask.priority}
-                    onChange={(e) => setNewTask(prev => ({ ...prev, priority: e.target.value as any }))}
+                    onChange={(e) => setNewTask(prev => ({ ...prev, priority: e.target.value as unknown as "low" | "medium" | "high" }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30"
                   >
                     <option value="low">Low</option>
@@ -138,7 +134,7 @@ export default function ListView({ tasks, onTaskUpdate, onAddTask }: ListViewPro
                   <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                   <select
                     value={newTask.status}
-                    onChange={(e) => setNewTask(prev => ({ ...prev, status: e.target.value as any }))}
+                    onChange={(e) => setNewTask(prev => ({ ...prev, status: e.target.value as unknown as "todo" | "in-progress" | "completed" }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30"
                   >
                     <option value="todo">To Do</option>

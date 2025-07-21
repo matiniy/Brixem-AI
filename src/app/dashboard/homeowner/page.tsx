@@ -4,18 +4,6 @@ import { useRouter } from "next/navigation";
 import ListView from "@/components/ListView";
 import CalendarView from "@/components/CalendarView";
 
-interface Project {
-  id: string;
-  name: string;
-  type: string;
-  status: string;
-  budget: string;
-  progress: number;
-  contractors: any[];
-  createdAt: string;
-}
-
-// Add Message type
 interface Message {
   role: "user" | "ai";
   text: string;
@@ -45,7 +33,6 @@ interface Task {
 }
 
 export default function HomeownerDashboard() {
-  const router = useRouter();
   const [user, setUser] = useState<unknown>(null);
   const [documentsPanelOpen, setDocumentsPanelOpen] = useState(false);
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -153,7 +140,7 @@ export default function HomeownerDashboard() {
   const [projectAnswers, setProjectAnswers] = React.useState({
     projectType: "",
     intendedUse: "",
-    location: (user as unknown as { location?: string })?.location || "",
+    location: (user as unknown as { location?: string })?.location ?? "",
     description: "",
     dates: ""
   });
@@ -524,7 +511,7 @@ export default function HomeownerDashboard() {
                   <span className="text-white font-bold text-sm">B</span>
                 </div>
                 <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
-                  {(user as unknown as { name?: string }) ? `Welcome, ${(user as unknown as { name?: string }).name.split(' ')[0]}!` : 'Welcome!'}
+                  {(user as unknown as { name?: string }) && (user as unknown as { name?: string }).name ? `Welcome, ${(user as unknown as { name?: string }).name.split(' ')[0]}!` : 'Welcome!'}
                 </h1>
               </div>
               {(user as unknown as { name?: string }) && (
@@ -553,9 +540,9 @@ export default function HomeownerDashboard() {
                   </button>
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center">
-                      <span className="text-white font-medium text-sm">{(user as unknown as { name?: string }).name.charAt(0)}</span>
+                      <span className="text-white font-medium text-sm">{(user as unknown as { name?: string }) && (user as unknown as { name?: string }).name ? (user as unknown as { name?: string }).name.charAt(0) : ''}</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-700">{(user as unknown as { name?: string }).name}</span>
+                    <span className="text-sm font-medium text-gray-700">{(user as unknown as { name?: string }) && (user as unknown as { name?: string }).name ? (user as unknown as { name?: string }).name : ''}</span>
                   </div>
                 </div>
               )}

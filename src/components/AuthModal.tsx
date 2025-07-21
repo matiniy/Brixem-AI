@@ -4,7 +4,7 @@ import React, { useState } from "react";
 interface AuthModalProps {
   open: boolean;
   onClose: () => void;
-  onSuccess: (userData: any) => void;
+  onSuccess: (userData: unknown) => void;
 }
 
 export default function AuthModal({ open, onClose, onSuccess }: AuthModalProps) {
@@ -134,7 +134,7 @@ export default function AuthModal({ open, onClose, onSuccess }: AuthModalProps) 
 
         <div className="mt-6 pt-6 border-t border-gray-200">
           <p className="text-xs text-gray-500 text-center">
-            By continuing, you agree to Brixem's Terms of Service and Privacy Policy
+            By continuing, you agree to Brixem&apos;s Terms of Service and Privacy Policy
           </p>
         </div>
       </div>

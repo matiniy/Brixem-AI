@@ -14,7 +14,7 @@ export default function OnboardingFlow({ open, onClose, onComplete }: Onboarding
     email: "",
     role: "",
     experience: "",
-    goals: []
+    goals: [] as string[]
   });
 
   const steps = [
