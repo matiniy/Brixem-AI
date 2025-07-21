@@ -314,7 +314,7 @@ export default function CalendarView({ tasks, onTaskUpdate, onAddTask }: Calenda
                   <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
                   <select
                     value={newTask.priority}
-                    onChange={(e) => setNewTask(prev => ({ ...prev, priority: e.target.value as unknown as "low" | "medium" | "high" }))}
+                    onChange={(e) => setNewTask(prev => ({ ...prev, priority: e.target.value as "low" | "medium" | "high" }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30"
                   >
                     <option value="low">Low</option>
@@ -326,7 +326,7 @@ export default function CalendarView({ tasks, onTaskUpdate, onAddTask }: Calenda
                   <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                   <select
                     value={newTask.status}
-                    onChange={(e) => setNewTask(prev => ({ ...prev, status: e.target.value as unknown as "todo" | "in-progress" | "completed" }))}
+                    onChange={(e) => setNewTask(prev => ({ ...prev, status: e.target.value as "todo" | "in-progress" | "completed" }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30"
                   >
                     <option value="todo">To Do</option>

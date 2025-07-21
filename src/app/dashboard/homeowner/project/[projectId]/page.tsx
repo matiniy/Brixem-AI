@@ -49,6 +49,11 @@ interface Task {
   estimatedHours?: number;
 }
 
+interface Message {
+  role: "user" | "ai";
+  text: string;
+}
+
 // Mock data for each project
 const projectData: Record<string, {
   project: Project;
@@ -656,9 +661,17 @@ export default function ProjectDashboard() {
   const handleProjectCreated = (projectData: unknown) => {
     if (typeof projectData === 'object' && projectData !== null && 'id' in projectData && 'name' in projectData && 'type' in projectData && 'status' in projectData && 'budget' in projectData && 'progress' in projectData && 'contractors' in projectData && 'createdAt' in projectData && 'description' in projectData && 'location' in projectData && 'timeline' in projectData) {
       const newProject: Project = {
-        ...projectData,
-        id: `project-${Date.now()}`,
-        contractors: []
+        id: Date.now().toString(),
+        contractors: [],
+        name: String(projectData.name),
+        type: String(projectData.type),
+        status: String(projectData.status),
+        budget: String(projectData.budget),
+        progress: Number(projectData.progress),
+        createdAt: String(projectData.createdAt),
+        description: String(projectData.description),
+        location: String(projectData.location),
+        timeline: String(projectData.timeline)
       };
       setProjects(prev => [...prev, newProject]);
       // Navigate to the new project
@@ -670,9 +683,17 @@ export default function ProjectDashboard() {
   const handleProjectCreate = (projectData: unknown) => {
     if (typeof projectData === 'object' && projectData !== null && 'name' in projectData && 'type' in projectData && 'budget' in projectData && 'description' in projectData && 'location' in projectData && 'timeline' in projectData) {
       const newProject: Project = {
-        ...projectData,
-        id: `project-${Date.now()}`,
-        contractors: []
+        id: Date.now().toString(),
+        contractors: [],
+        name: String(projectData.name),
+        type: String(projectData.type),
+        status: "planning", // Default status for new projects
+        budget: String(projectData.budget),
+        progress: 0, // Default progress for new projects
+        createdAt: new Date().toISOString(),
+        description: String(projectData.description),
+        location: String(projectData.location),
+        timeline: String(projectData.timeline)
       };
       setProjects(prev => [...prev, newProject]);
       // Navigate to the new project
@@ -694,9 +715,11 @@ export default function ProjectDashboard() {
   };
 
   const handleOnboardingComplete = (userData: unknown) => {
-    if (typeof userData === 'object' && userData !== null) {
-      setUser((prev: unknown) => ({ ...prev, ...userData }));
-    }
+    setUser((prev: unknown) => {
+      const prevObj = typeof prev === "object" && prev !== null ? prev : {};
+      const userObj = typeof userData === "object" && userData !== null ? userData : {};
+      return { ...prevObj, ...userObj };
+    });
     setShowOnboarding(false);
   };
 
@@ -725,12 +748,17 @@ export default function ProjectDashboard() {
 
   const handleAddTask = (newTask: Omit<Task, "id">) => {
     const task: Task = {
-      ...newTask,
       id: `task-${Date.now()}`,
+      title: newTask.title,
+      description: newTask.description,
+      status: newTask.status,
+      priority: newTask.priority,
       progress: 0,
       assignedUsers: [],
       comments: 0,
-      likes: 0
+      likes: 0,
+      dueDate: newTask.dueDate,
+      estimatedHours: newTask.estimatedHours
     };
     setTasks(prev => [...prev, task]);
   };
@@ -739,6 +767,10 @@ export default function ProjectDashboard() {
     setDocuments(prev => prev.map(doc => 
       doc.id === documentId ? { ...doc, status: "downloaded" as const } : doc
     ));
+  };
+
+  const handleDeleteTask = (taskId: string) => {
+    setTasks(prev => prev.filter(task => task.id !== taskId));
   };
 
   if (!project) {
@@ -766,8 +798,6 @@ export default function ProjectDashboard() {
         onProjectSelect={(projectId) => router.push(`/dashboard/homeowner/project/${projectId}`)}
         onProjectCreate={handleProjectCreate}
         onProjectDelete={handleProjectDelete}
-        user={user}
-        onAuthClick={() => setShowAuth(true)}
         isMobileOpen={isMobileSidebarOpen}
         onMobileToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
       />
@@ -861,6 +891,7 @@ export default function ProjectDashboard() {
                   tasks={tasks}
                   onTaskUpdate={handleTaskUpdate}
                   onAddTask={handleAddTask}
+                  onDeleteTask={handleDeleteTask}
                 />
               )}
                               {currentView === "list" && (
