@@ -50,8 +50,9 @@ export default function ListView({ tasks, onTaskUpdate, onAddTask }: ListViewPro
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
-    priority: "medium" as const,
-    status: "todo" as const
+    priority: "medium" as "low" | "medium" | "high",
+    status: "todo" as "todo" | "in-progress" | "completed",
+    dueDate: ""
   });
 
   const handleAddTask = () => {
@@ -66,7 +67,7 @@ export default function ListView({ tasks, onTaskUpdate, onAddTask }: ListViewPro
         comments: 0,
         likes: 0
       });
-      setNewTask({ title: "", description: "", priority: "medium", status: "todo" });
+      setNewTask({ title: "", description: "", priority: "medium", status: "todo", dueDate: "" });
       setShowAddTask(false);
     }
   };
@@ -122,7 +123,7 @@ export default function ListView({ tasks, onTaskUpdate, onAddTask }: ListViewPro
                   <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
                   <select
                     value={newTask.priority}
-                    onChange={(e) => setNewTask(prev => ({ ...prev, priority: e.target.value as unknown as "low" | "medium" | "high" }))}
+                    onChange={(e) => setNewTask(prev => ({ ...prev, priority: e.target.value as "low" | "medium" | "high" }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30"
                   >
                     <option value="low">Low</option>
@@ -134,7 +135,7 @@ export default function ListView({ tasks, onTaskUpdate, onAddTask }: ListViewPro
                   <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                   <select
                     value={newTask.status}
-                    onChange={(e) => setNewTask(prev => ({ ...prev, status: e.target.value as unknown as "todo" | "in-progress" | "completed" }))}
+                    onChange={(e) => setNewTask(prev => ({ ...prev, status: e.target.value as "todo" | "in-progress" | "completed" }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30"
                   >
                     <option value="todo">To Do</option>
