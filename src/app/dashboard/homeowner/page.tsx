@@ -15,17 +15,6 @@ interface Project {
   createdAt: string;
 }
 
-interface Contractor {
-  id: string;
-  name: string;
-  specialty: string;
-  rating: number;
-  reviews: number;
-  availability: string;
-  estimatedCost: string;
-  avatar: string;
-}
-
 // Add Message type
 interface Message {
   role: "user" | "ai";
@@ -125,36 +114,6 @@ export default function HomeownerDashboard() {
       createdAt: "2024-01-30"
     }
   ]);
-
-  const [activeProject, setActiveProject] = useState("1");
-
-  const handleProjectSelect = (projectId: string) => {
-    router.push(`/dashboard/homeowner/project/${projectId}`);
-  };
-
-  const handleProjectCreate = (projectData: any) => {
-    const newProject: Project = {
-      ...projectData,
-      id: `project-${Date.now()}`,
-      contractors: []
-    };
-    setProjects(prev => [...prev, newProject]);
-    // Navigate to the new project
-    router.push(`/dashboard/homeowner/project/${newProject.id}`);
-  };
-
-  const handleProjectDelete = (projectId: string) => {
-    setProjects(prev => prev.filter(project => project.id !== projectId));
-    // If we're on the deleted project, navigate to the first available project or dashboard
-    if (activeProject === projectId) {
-      const remainingProjects = projects.filter(project => project.id !== projectId);
-      if (remainingProjects.length > 0) {
-        router.push(`/dashboard/homeowner/project/${remainingProjects[0].id}`);
-      } else {
-        router.push("/dashboard/homeowner");
-      }
-    }
-  };
 
   // Homepage-style chat state
   const [messages, setMessages] = React.useState<Message[]>([]);
