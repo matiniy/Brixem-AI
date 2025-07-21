@@ -15,7 +15,7 @@ export default function Navbar() {
   const [contactModalType, setContactModalType] = useState<"sales" | "demo">("sales");
 
   return (
-    <header className="relative flex items-center justify-between px-3 sm:px-4 lg:px-6 xl:px-8 py-3 sm:py-4 lg:py-6 bg-white border-b border-gray-100">
+    <header className="relative flex items-center px-3 sm:px-4 lg:px-6 xl:px-8 py-3 sm:py-4 lg:py-6 bg-white border-b border-gray-100">
       {/* Logo */}
       <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
         <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center">
@@ -23,25 +23,26 @@ export default function Navbar() {
         </div>
         <span className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 group-hover:text-[#23c6e6] transition">brixem</span>
       </Link>
-
-      {/* Desktop Navigation */}
-      <nav className="hidden lg:flex items-center gap-4 xl:gap-6 text-gray-700 font-medium">
-        <Link href="/platform" className={`text-sm xl:text-base hover:text-gray-900 transition ${pathname.startsWith('/platform') ? 'text-[#23c6e6] font-semibold' : ''}`}>
-          Platform
-        </Link>
-        <Link href="/solutions" className={`text-sm xl:text-base hover:text-gray-900 transition ${pathname.startsWith('/solutions') ? 'text-[#23c6e6] font-semibold' : ''}`}>
-          Solutions
-        </Link>
-        <Link href="/pricing" className={`text-sm xl:text-base hover:text-gray-900 transition ${pathname.startsWith('/pricing') ? 'text-[#23c6e6] font-semibold' : ''}`}>
-          Pricing
-        </Link>
-        <Link href="/" className={`text-sm xl:text-base hover:text-gray-900 transition ${pathname === '/' ? 'text-[#23c6e6] font-semibold' : ''}`}>
-          Brixem AI
-        </Link>
-        <Link href="/about" className={`text-sm xl:text-base hover:text-gray-900 transition ${pathname.startsWith('/about') ? 'text-[#23c6e6] font-semibold' : ''}`}>
-          About Us
-        </Link>
-      </nav>
+      <div className="flex-1 flex justify-center">
+        {/* Desktop Navigation */}
+        <nav className="hidden lg:flex items-center gap-4 xl:gap-6 text-gray-700 font-medium">
+          <Link href="/platform" className={`text-sm xl:text-base hover:text-gray-900 transition ${pathname.startsWith('/platform') ? 'text-[#23c6e6] font-semibold' : ''}`}>
+            Platform
+          </Link>
+          <Link href="/solutions" className={`text-sm xl:text-base hover:text-gray-900 transition ${pathname.startsWith('/solutions') ? 'text-[#23c6e6] font-semibold' : ''}`}>
+            Solutions
+          </Link>
+          <Link href="/pricing" className={`text-sm xl:text-base hover:text-gray-900 transition ${pathname.startsWith('/pricing') ? 'text-[#23c6e6] font-semibold' : ''}`}>
+            Pricing
+          </Link>
+          <Link href="/" className={`text-sm xl:text-base hover:text-gray-900 transition ${pathname === '/' ? 'text-[#23c6e6] font-semibold' : ''}`}>
+            Brixem AI
+          </Link>
+          <Link href="/about" className={`text-sm xl:text-base hover:text-gray-900 transition ${pathname.startsWith('/about') ? 'text-[#23c6e6] font-semibold' : ''}`}>
+            About Us
+          </Link>
+        </nav>
+      </div>
 
       {/* Desktop CTA Buttons */}
       <div className="hidden lg:flex items-center gap-3 xl:gap-4">
@@ -50,15 +51,6 @@ export default function Navbar() {
           className="text-gray-700 hover:text-gray-900 font-medium transition text-sm xl:text-base"
         >
           Log in
-        </button>
-        <button 
-          onClick={() => {
-            setContactModalType("sales");
-            setShowContactModal(true);
-          }}
-          className="px-3 xl:px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 font-medium transition text-sm xl:text-base"
-        >
-          Contact sales
         </button>
         <button 
           onClick={() => {
@@ -151,16 +143,6 @@ export default function Navbar() {
               </button>
               <button 
                 className="w-full text-left text-gray-700 font-medium text-sm py-2 touch-manipulation"
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  setContactModalType("sales");
-                  setShowContactModal(true);
-                }}
-              >
-                Contact sales
-              </button>
-              <button 
-                className="w-full px-4 py-2 rounded-lg bg-gray-900 text-white font-medium hover:bg-gray-800 transition text-sm touch-manipulation"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   setContactModalType("demo");
