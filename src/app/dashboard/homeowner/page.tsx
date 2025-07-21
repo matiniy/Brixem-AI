@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import ListView from "@/components/ListView";
 import CalendarView from "@/components/CalendarView";
+import Sidebar from "@/components/Sidebar";
+import KanbanBoard from "@/components/KanbanBoard";
 
 interface Message {
   role: "user" | "ai";
@@ -385,9 +387,17 @@ export default function HomeownerDashboard() {
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
-      {/* Removed Sidebar component */}
-      
-            {/* Main Content */}
+      <Sidebar
+        // Provide the necessary props, e.g. projects, activeProject, etc.
+        projects={[]}
+        activeProject={""}
+        onProjectSelect={() => {}}
+        onProjectCreate={() => {}}
+        onProjectDelete={() => {}}
+        isMobileOpen={isMobileSidebarOpen}
+        onMobileToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+      />
+      {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <header className="bg-white shadow-sm border-b flex-shrink-0">
@@ -602,10 +612,11 @@ export default function HomeownerDashboard() {
               
               <div className="flex-1 overflow-hidden">
                 {currentView === "kanban" && (
-                  <ListView
+                  <KanbanBoard
                     tasks={tasks}
                     onTaskUpdate={handleTaskUpdate}
                     onAddTask={handleAddTask}
+                    onDeleteTask={() => {}}
                   />
                 )}
                 {currentView === "list" && (
