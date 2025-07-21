@@ -7,7 +7,7 @@ export default function Orb({
   rotateOnHover = true,
   forceHoverState = false,
 }) {
-  const ctnDom = useRef(null);
+  const ctnDom = useRef<HTMLDivElement>(null);
 
   const vert = /* glsl */ `
     precision highp float;
@@ -168,7 +168,7 @@ export default function Orb({
   `;
 
   useEffect(() => {
-    const container = ctnDom.current;
+    const container = ctnDom.current as HTMLDivElement | null;
     if (!container) return;
 
     const renderer = new Renderer({ alpha: true, premultipliedAlpha: false });
@@ -220,7 +220,7 @@ export default function Orb({
     let currentRot = 0;
     const rotationSpeed = 0.3;
 
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
@@ -239,15 +239,15 @@ export default function Orb({
       }
     };
 
-    const handleMouseLeave = () => {
+    const handleMouseLeave = (e: MouseEvent) => {
       targetHover = 0;
     };
 
     container.addEventListener("mousemove", handleMouseMove);
     container.addEventListener("mouseleave", handleMouseLeave);
 
-    let rafId;
-    const update = (t) => {
+    let rafId: number | undefined;
+    const update = (t: number) => {
       rafId = requestAnimationFrame(update);
       const dt = (t - lastTime) * 0.001;
       lastTime = t;
@@ -268,7 +268,7 @@ export default function Orb({
     rafId = requestAnimationFrame(update);
 
     return () => {
-      cancelAnimationFrame(rafId);
+      cancelAnimationFrame(rafId ?? 0);
       window.removeEventListener("resize", resize);
       container.removeEventListener("mousemove", handleMouseMove);
       container.removeEventListener("mouseleave", handleMouseLeave);
