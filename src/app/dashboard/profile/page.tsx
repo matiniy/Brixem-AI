@@ -48,7 +48,7 @@ export default function ProfilePage() {
     setActiveProject(projectId);
   };
 
-  const handleProjectCreate = (project: any) => {
+  const handleProjectCreate = (project: Project) => {
     const newProject = {
       ...project,
       id: Date.now().toString(),

@@ -1,58 +1,7 @@
-import React, { useContext } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-const projectNames: Record<string, string> = {
-  kitchen: 'Project (Kitchen)',
-  'living-room': 'Project (Living Room)',
-  bathroom: 'Project (Bathroom)',
-  office: 'Project (Office)',
-};
-
-interface Scope {
-  projectType: string;
-  intendedUse: string;
-  location: string;
-  size: string;
-}
-
-const scopeSteps = [
-  { key: "projectType", label: "What type of project is this?", options: ["Renovation", "New Build", "Fit-out"] },
-  { key: "intendedUse", label: "What is the intended use?", options: ["Residential", "Commercial", "Retail", "Other"] },
-  { key: "location", label: "Where is this project located?", input: true },
-  { key: "size", label: "Approximate size (sq ft / m²)?", input: true },
-];
-
-const quotationStep = {
-  key: "quotationDecision",
-  label: "Do you already have a quotation, or should we generate one?",
-  options: ["Upload quotation", "Generate estimate"],
-};
-
-const timelineStep = {
-  key: "timelinePlanner",
-  label: "Timeline Planner",
-};
-const reviewStep = {
-  key: "reviewConfirm",
-  label: "Review & Confirm",
-};
-const createdStep = {
-  key: "projectCreated",
-  label: "Project Created",
-};
-
-const estimateSteps = [
-  { key: "completionDate", label: "Target completion date?", input: "date" },
-  { key: "materialsPreferences", label: "Any specific materials or design preferences?", input: "text" },
-  { key: "permitHelp", label: "Will you need help with permits or approvals?", options: ["Yes", "No"] },
-  { key: "budgetEstimator", label: "Budget Estimator", input: "range" },
-  { key: "timelinePlanner", label: "Timeline Planner" },
-  { key: "reviewConfirm", label: "Review & Confirm" },
-  { key: "projectCreated", label: "Project Created" },
-];
 
 // Add a Project type for the sidebar
 export type Project = {
@@ -92,7 +41,6 @@ export default function Sidebar({
   isMobileOpen = false,
   onMobileToggle
 }: SidebarProps) {
-  const pathname = usePathname();
   const router = useRouter();
   
   // State for project management

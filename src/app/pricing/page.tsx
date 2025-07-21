@@ -1,11 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 
 export default function Pricing() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState("homeowner");
   const [showPayment, setShowPayment] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
@@ -13,11 +12,6 @@ export default function Pricing() {
   useEffect(() => {
     localStorage.setItem("brixem_role", activeTab);
   }, [activeTab]);
-
-  function handleSelectPlan(plan: string) {
-    setSelectedPlan(plan);
-    setShowPayment(true);
-  }
 
   function handleMockPayment() {
     if (selectedPlan) {
@@ -40,25 +34,6 @@ export default function Pricing() {
       }, 100);
     }
   }
-
-  const getRoleTitle = () => {
-    switch (activeTab) {
-      case "contractor": return "Contractors";
-      case "consultant": return "Consultants";
-      default: return "Homeowners";
-    }
-  };
-
-  const getRoleDescription = () => {
-    switch (activeTab) {
-      case "contractor": 
-        return "Scale your business with AI-powered estimation and project management tools.";
-      case "consultant": 
-        return "Deliver expert insights faster with comprehensive project analysis and reporting.";
-      default: 
-        return "Plan your project without the stress. Brixem gives you the tools to scope, price, and manage your renovation.";
-    }
-  };
 
   return (
     <div className="min-h-screen bg-white">
