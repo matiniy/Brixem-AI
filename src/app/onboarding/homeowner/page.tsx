@@ -27,7 +27,7 @@ export default function HomeownerOnboarding() {
               type="text"
               value={userData.name}
               onChange={(e) => setUserData(prev => ({ ...prev, name: e.target.value }))}
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition"
+              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900"
               placeholder="Enter your full name"
             />
           </div>
@@ -39,7 +39,7 @@ export default function HomeownerOnboarding() {
               type="email"
               value={userData.email}
               onChange={(e) => setUserData(prev => ({ ...prev, email: e.target.value }))}
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition"
+              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900"
               placeholder="Enter your email"
             />
           </div>
@@ -88,7 +88,7 @@ export default function HomeownerOnboarding() {
             type="text"
             value={userData.location}
             onChange={(e) => setUserData(prev => ({ ...prev, location: e.target.value }))}
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition"
+            className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900"
             placeholder="Enter your project address or city"
           />
         </div>
