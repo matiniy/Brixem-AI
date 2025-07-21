@@ -23,7 +23,7 @@ export default function AboutPage() {
     },
     {
       title: "Empowerment",
-      description: "We put smart, intuitive tools in your hands so you can make confident decisions whether you're planning, building, or managing.",
+      description: "We put smart, intuitive tools in your hands so you can make confident decisions whether you&apos;re planning, building, or managing.",
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />

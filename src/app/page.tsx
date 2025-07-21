@@ -33,11 +33,11 @@ export default function Home() {
   const [isChatActive, setIsChatActive] = React.useState(false);
 
   const preQuestions = [
-    "I'm a homeowner planning a renovation",
-    "I'm a contractor looking for projects",
+    "I&apos;m a homeowner planning a renovation",
+    "I&apos;m a contractor looking for projects",
     "I need help with project estimation",
-    "I want to learn about Brixem's features",
-    "I'm a consultant seeking tools"
+    "I want to learn about Brixem&apos;s features",
+    "I&apos;m a consultant seeking tools"
   ];
 
   const handleSend = (message: string) => {
