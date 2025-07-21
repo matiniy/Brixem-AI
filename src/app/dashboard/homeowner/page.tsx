@@ -1021,7 +1021,7 @@ export default function HomeownerDashboard() {
           <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-lg shadow-2xl z-50 p-6">
             <h2 className="text-2xl font-bold mb-4">Create New Project</h2>
             <p className="text-gray-700 mb-4">
-              Let's start by understanding your project needs. I'll help you define the scope, budget, and timeline.
+              Let&apos;s start by understanding your project needs. I&apos;ll help you define the scope, budget, and timeline.
             </p>
 
             {/* Simulate chat UI for project creation */}
