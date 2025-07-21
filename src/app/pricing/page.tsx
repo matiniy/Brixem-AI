@@ -172,7 +172,7 @@ export default function Pricing() {
               
               <div className="text-center mb-4 sm:mb-6">
                 <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
-                  Perfect for first-time users who want to explore Brixem's capabilities.
+                  Perfect for first-time users who want to explore Brixem&apos;s capabilities.
                 </p>
               </div>
               
@@ -347,7 +347,7 @@ export default function Pricing() {
                 {activeTab === "consultant" ? "Consultant" : "Contractor"} Pricing Coming Soon!
               </h2>
               <p className="text-lg sm:text-xl text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed">
-                We're working hard to bring you specialized pricing plans for {activeTab === "consultant" ? "consultants" : "contractors"}. 
+                We&apos;re working hard to bring you specialized pricing plans for {activeTab === "consultant" ? "consultants" : "contractors"}. 
                 Sign up for our newsletter to be notified when these plans launch.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -422,7 +422,7 @@ export default function Pricing() {
             Ready to Get Started?
           </h2>
           <p className="text-base sm:text-lg lg:text-xl mb-6 sm:mb-8 text-blue-50 leading-relaxed">
-            Join thousands of construction professionals who've transformed their projects with Brixem
+            Join thousands of construction professionals who&apos;ve transformed their projects with Brixem
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button className="px-6 sm:px-8 py-3 sm:py-4 rounded-lg bg-white text-[#4b1fa7] font-semibold hover:bg-gray-50 transition text-sm sm:text-base">
@@ -444,7 +444,7 @@ export default function Pricing() {
           <div className="space-y-6">
             <div className="bg-white rounded-lg p-6 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Can I cancel my subscription anytime?</h3>
-              <p className="text-gray-600">Yes, you can cancel your Brixem+ subscription at any time. You'll continue to have access until the end of your billing period.</p>
+              <p className="text-gray-600">Yes, you can cancel your Brixem+ subscription at any time. You&apos;ll continue to have access until the end of your billing period.</p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">What payment methods do you accept?</h3>

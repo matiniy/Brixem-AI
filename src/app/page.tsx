@@ -234,7 +234,7 @@ export default function Home() {
               Built for every role in construction
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto px-4">
-              Whether you're planning a renovation, managing projects, or providing expert consultation, 
+              Whether you&apos;re planning a renovation, managing projects, or providing expert consultation, 
               Brixem adapts to your workflow.
             </p>
           </div>

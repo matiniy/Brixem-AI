@@ -177,7 +177,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }: LoginM
 
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <button
               onClick={onSwitchToSignup}
               className="text-[#23c6e6] hover:text-[#4b1fa7] font-medium"
