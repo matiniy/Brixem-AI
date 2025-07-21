@@ -132,9 +132,7 @@ export default function Home() {
     <div className="min-h-screen bg-white">
       <Navbar />
       {/* Hero Section - now white background */}
-      <section className={`relative bg-white overflow-hidden transition-all duration-500 ease-in-out ${
-        isChatActive ? 'py-4 sm:py-6 md:py-8 lg:py-12' : 'py-12 sm:py-16 md:py-20 lg:py-24'
-      }`}>
+      <section className={`relative bg-white overflow-hidden transition-all duration-500 ease-in-out ${isChatActive ? 'py-4 sm:py-6 md:py-8 lg:py-12' : 'py-8 sm:py-12 md:py-16 lg:py-24'}`}>
         {/* Orb Background */}
         <div className="absolute inset-0 opacity-30 sm:opacity-50 pointer-events-none">
           <Orb
@@ -144,11 +142,9 @@ export default function Home() {
             forceHoverState={false}
           />
         </div>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 text-center relative z-10">
+        <div className="max-w-6xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 xl:px-12 text-center relative z-10">
           {/* Subtitle */}
-          <div className={`mb-4 sm:mb-6 transition-all duration-500 ${
-            isChatActive ? 'mb-2' : 'mb-4 sm:mb-6'
-          }`}>
+          <div className={`mb-2 sm:mb-4 transition-all duration-500 ${isChatActive ? 'mb-1' : 'mb-2 sm:mb-4'}`}>
             <span className={`font-semibold tracking-wider text-gray-500 uppercase transition-all duration-500 ${
               isChatActive ? 'text-xs' : 'text-xs sm:text-sm'
             }`}>
@@ -156,9 +152,7 @@ export default function Home() {
             </span>
           </div>
           {/* Main Headline with animated gradient */}
-          <h1 className={`font-bold mb-6 sm:mb-8 leading-tight max-w-4xl mx-auto text-center transition-all duration-500 ${
-            isChatActive ? 'text-lg sm:text-xl md:text-2xl lg:text-3xl mb-3 sm:mb-4' : 'text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl mb-6 sm:mb-8'
-          }`}>
+          <h1 className={`font-bold mb-4 sm:mb-6 leading-tight max-w-4xl mx-auto text-center transition-all duration-500 ${isChatActive ? 'text-lg sm:text-xl md:text-2xl lg:text-3xl mb-2 sm:mb-3' : 'text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl mb-4 sm:mb-6'}`}>
             <span className="block">
               <GradientText
                 className="inline"
@@ -171,15 +165,11 @@ export default function Home() {
             <span className="block text-black">built for construction</span>
           </h1>
           {/* Smaller Subheadline */}
-          <h2 className={`font-normal text-gray-900 transition-all duration-500 ${
-            isChatActive ? 'text-sm sm:text-base mb-4 sm:mb-6' : 'text-sm sm:text-base md:text-lg mb-3 sm:mb-4'
-          }`}>
+          <h2 className={`font-normal text-gray-900 transition-all duration-500 ${isChatActive ? 'text-xs sm:text-sm mb-3 sm:mb-4' : 'text-xs sm:text-sm md:text-base mb-2 sm:mb-3'}`}>
             Brixem gives homeowners and teams instant clarity across renovation and construction projects — from scoping to costing, scheduling, and contractor collaboration.
           </h2>
           {/* AI Chat Card with minimal spacing */}
-          <div className={`flex justify-center items-center transition-all duration-500 ${
-            isChatActive ? 'mt-4 sm:mt-6' : 'mt-3 sm:mt-4'
-          }`}>
+          <div className={`flex flex-col sm:flex-row justify-center items-center transition-all duration-500 ${isChatActive ? 'mt-2 sm:mt-4' : 'mt-2 sm:mt-3'}`}>
             <div className="w-full max-w-2xl">
               {/* Chat Area Only - no card styling */}
               <div className="px-1 pb-1 pt-0">
@@ -195,9 +185,7 @@ export default function Home() {
                 </div>
               </div>
               {/* Pre-existing questions */}
-              <div className={`flex flex-wrap gap-2 justify-center transition-all duration-500 ${
-                isChatActive ? 'mt-2' : 'mt-3 sm:mt-4'
-              }`}>
+              <div className={`flex flex-wrap gap-2 justify-center transition-all duration-500 ${isChatActive ? 'mt-1' : 'mt-2 sm:mt-3'}`}>
                 {preQuestions.map((q, i) => (
                   <button
                     key={i}
@@ -237,7 +225,7 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Homeowner Card */}
             <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 flex flex-col h-full">
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center mb-4 sm:mb-6">
@@ -382,7 +370,7 @@ export default function Home() {
       />
 
       {/* CTA Section */}
-      <section className="py-12 sm:py-16 md:py-20 lg:py-32 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white">
+      <section className="py-8 sm:py-12 md:py-16 lg:py-24 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 text-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
             Ready to see Brixem in action?

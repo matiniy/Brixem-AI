@@ -29,7 +29,7 @@ export default function ChatPanel({ messages, onSend, onTaskConfirm, pendingTask
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto mb-2 space-y-1">
         {messages.map((msg, i) => (
-          <div key={i} className={`p-2 rounded-lg max-w-[80%] ${msg.role === "user" ? "ml-auto bg-black text-white" : "bg-gray-100 text-gray-900"}`}>{msg.text}</div>
+          <div key={i} className={`p-2 rounded-lg max-w-[90%] sm:max-w-[80%] text-base sm:text-sm ${msg.role === "user" ? "ml-auto bg-black text-white" : "bg-gray-100 text-gray-900"}`}>{msg.text}</div>
         ))}
         {/* Task confirmation buttons */}
         {onTaskConfirm && pendingTask && lastMsg && lastMsg.role === "ai" && lastMsg.text.includes(pendingTask) && (
@@ -55,7 +55,7 @@ export default function ChatPanel({ messages, onSend, onTaskConfirm, pendingTask
         <div ref={messagesEndRef} />
       </div>
       <form
-        className="flex gap-2"
+        className="flex gap-2 sm:gap-3 mt-2"
         onSubmit={e => {
           e.preventDefault();
           if (disableInput) return;
@@ -67,13 +67,13 @@ export default function ChatPanel({ messages, onSend, onTaskConfirm, pendingTask
       >
         <input
           ref={inputRef}
-          className="flex-1 px-4 py-2 rounded-xl border border-brixem-gray-200 text-black"
+          className="flex-1 px-4 py-3 sm:py-2 rounded-xl border border-brixem-gray-200 text-black text-base sm:text-sm"
           placeholder={disableInput ? "No free chats left" : "Ask anything about your project..."}
           disabled={disableInput}
         />
         <button
           type="submit"
-          className="px-4 py-2 rounded-xl bg-brixem-primary text-white font-medium"
+          className="px-5 py-3 sm:px-4 sm:py-2 rounded-xl bg-brixem-primary text-white font-medium text-base sm:text-sm"
           disabled={disableInput}
         >
           Send

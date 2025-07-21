@@ -20,15 +20,15 @@ export default function FeatureSection({ title, subtitle, features, gradient = "
     <section className="py-16 sm:py-20 lg:py-24 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
             {title}
           </h2>
-          <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-sm sm:text-base lg:text-lg text-gray-600 max-w-3xl mx-auto">
             {subtitle}
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
           {features.map((feature, index) => (
             <div
               key={index}

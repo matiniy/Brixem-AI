@@ -140,13 +140,13 @@ export default function AnimatedStats() {
   return (
     <div ref={componentRef} className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gray-900">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {stats.map((stat, index) => (
             <div key={index} className="text-center">
               <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center">
                 {stat.icon}
               </div>
-              <div className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2 transition-all duration-300 ${
+              <div className={`text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2 transition-all duration-300 ${
                 animationsComplete[index] ? 'text-white' : 'text-gray-400'
               }`}>
                 {formatValue(animatedValues[index], stat)}

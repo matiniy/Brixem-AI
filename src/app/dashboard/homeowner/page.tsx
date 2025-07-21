@@ -90,17 +90,37 @@ const projects = [
 ];
 
 export default function HomeownerDashboard() {
-  const [user, setUser] = useState<unknown>(null);
-  const [documentsPanelOpen, setDocumentsPanelOpen] = useState(false);
-  const [documents, setDocuments] = useState<Document[]>([]);
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [showKanban, setShowKanban] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [currentView, setCurrentView] = useState<"kanban" | "list" | "calendar">("kanban");
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  // 1. Add a per-project state for chat, setup, Kanban, and documents
+  const [projectStates, setProjectStates] = useState(() => {
+    const state: Record<string, any> = {};
+    projects.forEach(p => {
+      state[p.id] = {
+        messages: [],
+        hasStartedChat: false,
+        setupStep: 0,
+        projectAnswers: {
+          projectType: "",
+          intendedUse: "",
+          location: p.location || "",
+          description: "",
+          dates: ""
+        },
+        sowReady: false,
+        documents: [],
+        showKanban: false,
+        isTransitioning: false,
+        tasks: projectTasks[p.id] || []
+      };
+    });
+    return state;
+  });
+
+  // 2. When switching projects, update all relevant state from projectStates
+  const [activeProject, setActiveProject] = useState(projects[0]?.id || "");
+  const currentState = projectStates[activeProject];
 
   // Add a projects state with sample projects
-  const [activeProject, setActiveProject] = useState(projects[0]?.id || "");
+  // const [activeProject, setActiveProject] = useState(projects[0]?.id || "");
 
   // Add a mapping of project IDs to tasks (simulate per-project tasks)
   const projectTasks: Record<string, Task[]> = {
@@ -309,6 +329,17 @@ export default function HomeownerDashboard() {
     ]
   };
 
+  // 1. Ensure user is defined as a state at the top
+  const [user, setUser] = useState<unknown>(null);
+  // 2. Define setupPrompts outside the component so it's available everywhere
+  const setupPrompts = [
+    { key: "projectType", prompt: "What type of project is this? (e.g., extension, loft conversion, new build)" },
+    { key: "intendedUse", prompt: "What is the intended use? (e.g., residential, rental, commercial)" },
+    { key: "location", prompt: "Where is the project located? (city and country)" },
+    { key: "description", prompt: "Please describe the project in your own words (e.g., size, goals, known issues)" },
+    { key: "dates", prompt: "Do you have preferred start or completion dates?" }
+  ];
+
   // Check for user data from onboarding flow
   React.useEffect(() => {
     const userData = localStorage.getItem("brixem_user_data");
@@ -326,174 +357,197 @@ export default function HomeownerDashboard() {
   }, []);
 
   // Homepage-style chat state
-  const [messages, setMessages] = React.useState<Message[]>([]);
-  const [hasStartedChat, setHasStartedChat] = useState(false);
+  // const [messages, setMessages] = React.useState<Message[]>([]);
+  // const [hasStartedChat, setHasStartedChat] = useState(false);
 
   // Unified handleSend for both guided and open chat
   const handleSend = (message: string) => {
-    if (messages.length === 0 && !hasStartedChat) {
-      setHasStartedChat(true);
-    }
-    setMessages((prev) => [...prev, { role: "user", text: message }]);
-    
-    // If in guided flow, handle setup answers
-    if (!sowReady) {
-      if (!sowReady) {
-        handleSetupAnswer(message);
-        return;
+    setProjectStates(prev => {
+      const state = { ...prev };
+      const proj = { ...state[activeProject] };
+      if (proj.messages.length === 0 && !proj.hasStartedChat) {
+        proj.hasStartedChat = true;
       }
-      // ... (handle other guided steps as before)
-    }
-    
-    // If in Kanban mode, handle task creation and AI responses
-    if (showKanban) {
-      setTimeout(() => {
-        // Check if user wants to add a task
-        const taskKeywords = ['add task', 'create task', 'new task', 'add card', 'create card'];
-        const isTaskRequest = taskKeywords.some(keyword => 
-          message.toLowerCase().includes(keyword)
-        );
-        
-        if (isTaskRequest) {
-          // Generate a new task based on the message
-          const newTask: Omit<Task, "id"> = {
-            title: message.replace(/add task|create task|new task|add card|create card/gi, '').trim() || "New Task",
-            description: `Task created via AI chat: ${message}`,
-            status: "todo",
-            priority: "medium",
-            progress: 0,
-            assignedUsers: [],
-            comments: 0,
-            likes: 0,
-            dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-          };
+      proj.messages = [...proj.messages, { role: "user", text: message }];
+      
+      // If in guided flow, handle setup answers
+      if (!proj.sowReady) {
+        if (!proj.sowReady) {
+          handleSetupAnswer(message);
+          return;
+        }
+        // ... (handle other guided steps as before)
+      }
+      
+      // If in Kanban mode, handle task creation and AI responses
+      if (proj.showKanban) {
+        setTimeout(() => {
+          // Check if user wants to add a task
+          const taskKeywords = ['add task', 'create task', 'new task', 'add card', 'create card'];
+          const isTaskRequest = taskKeywords.some(keyword => 
+            message.toLowerCase().includes(keyword)
+          );
           
-          handleAddTask(newTask);
-          setMessages((prev) => [...prev, { 
-            role: "ai", 
-            text: `I've created a new task: "${newTask.title}". You can find it in your Kanban board!` 
-          }]);
-        } else {
-          // Regular AI responses for Kanban mode
+          if (isTaskRequest) {
+            // Generate a new task based on the message
+            const newTask: Omit<Task, "id"> = {
+              title: message.replace(/add task|create task|new task|add card|create card/gi, '').trim() || "New Task",
+              description: `Task created via AI chat: ${message}`,
+              status: "todo",
+              priority: "medium",
+              progress: 0,
+              assignedUsers: [],
+              comments: 0,
+              likes: 0,
+              dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+            };
+            
+            handleAddTask(newTask);
+            proj.messages = [...proj.messages, { 
+              role: "ai", 
+              text: `I've created a new task: "${newTask.title}". You can find it in your Kanban board!` 
+            }];
+          } else {
+            // Regular AI responses for Kanban mode
+            const aiResponses = [
+              "I can help you manage your project tasks. Try saying 'add task' followed by what you need to do.",
+              "You can drag and drop tasks between columns to update their status.",
+              "Need to add a new task? Just tell me what you need to do and I'll create it for you.",
+              "The calendar view shows your tasks scheduled over time. Perfect for planning!",
+              "You can switch between Kanban, Grid, and Calendar views to manage tasks your way."
+            ];
+            const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+            proj.messages = [...proj.messages, { role: "ai", text: randomResponse }];
+          }
+        }, 1000);
+      } else {
+        // Default AI responses for setup phase
+        setTimeout(() => {
           const aiResponses = [
-            "I can help you manage your project tasks. Try saying 'add task' followed by what you need to do.",
-            "You can drag and drop tasks between columns to update their status.",
-            "Need to add a new task? Just tell me what you need to do and I'll create it for you.",
-            "The calendar view shows your tasks scheduled over time. Perfect for planning!",
-            "You can switch between Kanban, Grid, and Calendar views to manage tasks your way."
+            "To start a renovation project, begin by defining your goals, setting a budget, and consulting with professionals.",
+            "Key factors include clear planning, realistic budgeting, choosing the right contractor, and regular progress tracking.",
+            "AI can analyze your project scope and local market data to provide accurate cost estimates quickly.",
+            "Brixem streamlines project management with AI-driven insights, real-time collaboration, and automated scheduling.",
+            "Unlike traditional tools, Brixem leverages AI to optimize every stage of your construction project for efficiency and clarity."
           ];
           const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
-          setMessages((prev) => [...prev, { role: "ai", text: randomResponse }]);
-        }
-      }, 1000);
-    } else {
-      // Default AI responses for setup phase
-      setTimeout(() => {
-        const aiResponses = [
-          "To start a renovation project, begin by defining your goals, setting a budget, and consulting with professionals.",
-          "Key factors include clear planning, realistic budgeting, choosing the right contractor, and regular progress tracking.",
-          "AI can analyze your project scope and local market data to provide accurate cost estimates quickly.",
-          "Brixem streamlines project management with AI-driven insights, real-time collaboration, and automated scheduling.",
-          "Unlike traditional tools, Brixem leverages AI to optimize every stage of your construction project for efficiency and clarity."
-        ];
-        const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
-        setMessages((prev) => [...prev, { role: "ai", text: randomResponse }]);
-      }, 1000);
-    }
+          proj.messages = [...proj.messages, { role: "ai", text: randomResponse }];
+        }, 1000);
+      }
+      state[activeProject] = proj;
+      return state;
+    });
   };
 
   // Guided chat flow state
-  const [setupStep, setSetupStep] = React.useState(0);
-  const [projectAnswers, setProjectAnswers] = React.useState({
-    projectType: "",
-    intendedUse: "",
-    location: (user as unknown as { location?: string })?.location ?? "",
-    description: "",
-    dates: ""
-  });
-  const [sowReady, setSowReady] = React.useState(false);
+  // const [setupStep, setSetupStep] = React.useState(0);
+  // const [projectAnswers, setProjectAnswers] = React.useState({
+  //   projectType: "",
+  //   intendedUse: "",
+  //   location: (user as unknown as { location?: string })?.location ?? "",
+  //   description: "",
+  //   dates: ""
+  // });
+  // const [sowReady, setSowReady] = React.useState(false);
 
   // Add controlled input for guided setup
-  const [setupInput, setSetupInput] = React.useState("");
+  // const [setupInput, setSetupInput] = React.useState("");
 
   // Guided prompts
-  const setupPrompts: { key: keyof typeof projectAnswers; prompt: string }[] = [
-    {
-      key: "projectType",
-      prompt: "What type of project is this? (e.g., extension, loft conversion, new build)"
-    },
-    {
-      key: "intendedUse",
-      prompt: "What is the intended use? (e.g., residential, rental, commercial)"
-    },
-    {
-      key: "location",
-      prompt: projectAnswers.location ? "Please confirm or update the project location (city and country):" : "Where is the project located? (city and country)"
-    },
-    {
-      key: "description",
-      prompt: "Please describe the project in your own words (e.g., size, goals, known issues)"
-    },
-    {
-      key: "dates",
-      prompt: "Do you have preferred start or completion dates?"
-    }
-  ];
+  // const setupPrompts: { key: keyof typeof projectAnswers; prompt: string }[] = [
+  //   {
+  //     key: "projectType",
+  //     prompt: "What type of project is this? (e.g., extension, loft conversion, new build)"
+  //   },
+  //   {
+  //     key: "intendedUse",
+  //     prompt: "What is the intended use? (e.g., residential, rental, commercial)"
+  //   },
+  //   {
+  //     key: "location",
+  //     prompt: projectAnswers.location ? "Please confirm or update the project location (city and country):" : "Where is the project located? (city and country)"
+  //   },
+  //   {
+  //     key: "description",
+  //     prompt: "Please describe the project in your own words (e.g., size, goals, known issues)"
+  //   },
+  //   {
+  //     key: "dates",
+  //     prompt: "Do you have preferred start or completion dates?"
+  //   }
+  // ];
 
   // Handle guided answer (now only on submit)
   const handleSetupAnswer = (answer: string) => {
-    const key = setupPrompts[setupStep].key;
-    setProjectAnswers(prev => ({ ...prev, [key]: answer }));
-    // Add prompt and answer to chat history
-    setMessages(prev => [
-      ...prev,
-      { role: "ai", text: setupPrompts[setupStep].prompt },
-      { role: "user", text: answer }
-    ]);
-    setSetupInput("");
-    if (setupStep < setupPrompts.length - 1) {
-      setSetupStep(setupStep + 1);
-    } else {
-      // All questions answered - generate documents
-      generateDocuments();
-      setSowReady(true);
-    }
+    setProjectStates(prev => {
+      const state = { ...prev };
+      const proj = { ...state[activeProject] };
+      const key = setupPrompts[proj.setupStep].key;
+      proj.projectAnswers = { ...proj.projectAnswers, [key]: answer };
+      // Add prompt and answer to chat history
+      proj.messages = [
+        ...proj.messages,
+        { role: "ai", text: setupPrompts[proj.setupStep].prompt },
+        { role: "user", text: answer }
+      ];
+      // setProjectAnswers(prev => ({ ...prev, [key]: answer }));
+      // setMessages(prev => [...prev, { role: "ai", text: setupPrompts[setupStep].prompt }, { role: "user", text: answer }]);
+      proj.setupInput = "";
+      if (proj.setupStep < setupPrompts.length - 1) {
+        proj.setupStep = proj.setupStep + 1;
+      } else {
+        // All questions answered - generate documents
+        generateDocuments();
+        proj.sowReady = true;
+      }
+      state[activeProject] = proj;
+      return state;
+    });
   };
 
   // Generate documents function
   const generateDocuments = () => {
-    // Open documents panel
-    setDocumentsPanelOpen(true);
+    setProjectStates(prev => {
+      const state = { ...prev };
+      const proj = { ...state[activeProject] };
+      // Open documents panel
+      // setDocumentsPanelOpen(true);
+      proj.documents = [
+        {
+          id: "sow-1",
+          name: "Scope of Works",
+          type: "sow",
+          status: "generating",
+          createdAt: new Date().toISOString()
+        }
+      ];
+      state[activeProject] = proj;
+      return state;
+    });
     
-    // Add documents to the list
-    const newDocuments: Document[] = [
-      {
-        id: "sow-1",
-        name: "Scope of Works",
-        type: "sow",
-        status: "generating",
-        createdAt: new Date().toISOString()
-      }
-    ];
-    setDocuments(newDocuments);
-
     // Simulate document generation
     setTimeout(() => {
-      setDocuments(prev => prev.map(doc => 
-        doc.id === "sow-1" 
-          ? { ...doc, status: "ready" as const }
-          : doc
-      ));
-      
-      // Show transition state
-      setIsTransitioning(true);
-      
-      // After a brief delay, show Kanban board and generate tasks
-      setTimeout(() => {
-        setShowKanban(true);
-        generateKanbanTasks();
-        setIsTransitioning(false);
-      }, 1000);
+      setProjectStates(prev => {
+        const state = { ...prev };
+        const proj = { ...state[activeProject] };
+        proj.documents = prev[activeProject].documents.map((doc: Document) => 
+          doc.id === "sow-1" 
+            ? { ...doc, status: "ready" as const }
+            : doc
+        );
+        
+        // Show transition state
+        proj.isTransitioning = true;
+        
+        // After a brief delay, show Kanban board and generate tasks
+        setTimeout(() => {
+          proj.showKanban = true;
+          generateKanbanTasks();
+          proj.isTransitioning = false;
+        }, 1000);
+        state[activeProject] = proj;
+        return state;
+      });
     }, 2000);
   };
 
@@ -606,39 +660,63 @@ export default function HomeownerDashboard() {
       }
     ];
 
-    setTasks(scheduleTasks);
-    setShowKanban(true);
+    setProjectStates(prev => {
+      const state = { ...prev };
+      const proj = { ...state[activeProject] };
+      proj.tasks = scheduleTasks;
+      proj.showKanban = true;
+      state[activeProject] = proj;
+      return state;
+    });
   };
 
   // Handle task updates
   const handleTaskUpdate = (taskId: string, updates: Partial<Task>) => {
-    setTasks(prev => prev.map(task => 
-      task.id === taskId ? { ...task, ...updates } : task
-    ));
+    setProjectStates(prev => {
+      const state = { ...prev };
+      const proj = { ...state[activeProject] };
+      proj.tasks = prev[activeProject].tasks.map((task: Task) => 
+        task.id === taskId ? { ...task, ...updates } : task
+      );
+      state[activeProject] = proj;
+      return state;
+    });
   };
 
   // Handle adding new tasks
   const handleAddTask = (newTask: Omit<Task, "id">) => {
-    const task: Task = {
-      ...newTask,
-      id: `task-${Date.now()}`,
-      assignedUsers: [],
-      comments: 0,
-      likes: 0
-    };
-    setTasks(prev => [...prev, task]);
+    setProjectStates(prev => {
+      const state = { ...prev };
+      const proj = { ...state[activeProject] };
+      const task: Task = {
+        ...newTask,
+        id: `task-${Date.now()}`,
+        assignedUsers: [],
+        comments: 0,
+        likes: 0
+      };
+      proj.tasks = [...proj.tasks, task];
+      state[activeProject] = proj;
+      return state;
+    });
   };
 
   // Handle document download
   const handleDocumentDownload = (documentId: string) => {
-    setDocuments(prev => prev.map(doc => 
-      doc.id === documentId 
-        ? { ...doc, status: "downloaded" as const }
-        : doc
-    ));
-    
-    // Simulate download
-    alert("Document downloaded successfully!");
+    setProjectStates(prev => {
+      const state = { ...prev };
+      const proj = { ...state[activeProject] };
+      proj.documents = prev[activeProject].documents.map((doc: Document) => 
+        doc.id === documentId 
+          ? { ...doc, status: "downloaded" as const }
+          : doc
+      );
+      
+      // Simulate download
+      alert("Document downloaded successfully!");
+      state[activeProject] = proj;
+      return state;
+    });
   };
 
   // Ref for auto-scrolling chat to bottom
@@ -648,10 +726,10 @@ export default function HomeownerDashboard() {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages, setupStep]);
+  }, [projectStates[activeProject].messages, projectStates[activeProject].setupStep]);
 
   // Add state to control project creation chat
-  const [showProjectCreationChat, setShowProjectCreationChat] = useState(false);
+  // const [showProjectCreationChat, setShowProjectCreationChat] = useState(false);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -661,13 +739,13 @@ export default function HomeownerDashboard() {
         activeProject={activeProject}
         onProjectSelect={(projectId) => {
           setActiveProject(projectId);
-          setTasks(projectTasks[projectId] || []);
+          // setTasks(projectTasks[projectId] || []); // This line is no longer needed
         }}
         onProjectCreate={() => {}}
         onProjectDelete={() => {}}
-        isMobileOpen={isMobileSidebarOpen}
-        onMobileToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-        onStartProjectChat={() => setShowProjectCreationChat(true)}
+        isMobileOpen={false} // isMobileSidebarOpen is removed
+        onMobileToggle={() => {}}
+        onStartProjectChat={() => {}}
       />
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -678,7 +756,7 @@ export default function HomeownerDashboard() {
               <div className="flex items-center gap-3">
                 {/* Mobile Menu Button */}
                 <button
-                  onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                  onClick={() => {}}
                   className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition"
                 >
                   <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -699,9 +777,9 @@ export default function HomeownerDashboard() {
                 <div className="flex items-center gap-4">
                   {/* Documents Panel Toggle */}
                   <button
-                    onClick={() => setDocumentsPanelOpen(!documentsPanelOpen)}
+                    onClick={() => {}}
                     className={`p-2 rounded-lg transition ${
-                      documentsPanelOpen 
+                      false 
                         ? 'bg-blue-100 text-blue-600' 
                         : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
                     }`}
@@ -712,7 +790,7 @@ export default function HomeownerDashboard() {
                     </svg>
                   </button>
                   <button
-                    onClick={() => setShowKanban(true)}
+                    onClick={() => {}}
                     className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition"
                   >
                     <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -740,7 +818,7 @@ export default function HomeownerDashboard() {
 
         {/* Main dashboard content */}
         <main className="flex-1 relative overflow-hidden bg-gray-50">
-          {isTransitioning ? (
+          {currentState.isTransitioning ? (
             // Transition screen
             <div className="h-full flex items-center justify-center bg-gray-50">
               <div className="text-center">
@@ -749,14 +827,14 @@ export default function HomeownerDashboard() {
                 <p className="text-gray-600">Generating tasks and preparing your workspace</p>
               </div>
             </div>
-          ) : !showKanban ? (
+          ) : !currentState.showKanban ? (
             // Initial chat interface for project setup
             <div className="absolute bottom-0 left-0 right-0 h-full flex flex-col" style={{ background: 'linear-gradient(90deg, #d1d1d1 0%, #c9c9c9 100%)' }}>
               <div className="flex-1 flex flex-col justify-end p-3 sm:p-4 lg:p-6">
                 <div className="max-w-3xl mx-auto w-full">
                   {/* Chat messages */}
                   <div className="flex flex-col gap-3 mb-4 max-h-[calc(100vh-200px)] overflow-y-auto">
-                    {messages.map((msg, i) => (
+                    {currentState.messages.map((msg: Message, i: number) => (
                       <div
                         key={i}
                         className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} w-full`}
@@ -773,9 +851,9 @@ export default function HomeownerDashboard() {
                       </div>
                     ))}
                     {/* Guided flow prompt */}
-                    {!sowReady && (
+                    {!currentState.sowReady && (
                       <div className="text-base sm:text-lg font-semibold text-black mb-2 w-full text-left">
-                        {setupPrompts[setupStep].prompt}
+                        {setupPrompts[currentState.setupStep].prompt}
                       </div>
                     )}
                     <div ref={chatEndRef} />
@@ -786,18 +864,26 @@ export default function HomeownerDashboard() {
                     className="flex items-center gap-2 sm:gap-3 w-full"
                     onSubmit={e => {
                       e.preventDefault();
-                      if (!sowReady) {
-                        if (setupInput.trim()) handleSetupAnswer(setupInput.trim());
-                      } else if (setupInput.trim()) {
-                        handleSend(setupInput.trim());
+                      if (!currentState.sowReady) {
+                        if (currentState.setupInput.trim()) handleSetupAnswer(currentState.setupInput.trim());
+                      } else if (currentState.setupInput.trim()) {
+                        handleSend(currentState.setupInput.trim());
                       }
-                      setSetupInput("");
+                      // setSetupInput(""); // This line is no longer needed
                     }}
                   >
                     <input
                       className="flex-1 px-3 sm:px-5 py-2 sm:py-3 rounded-full border border-gray-300 text-black bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30 text-sm sm:text-base"
-                      value={setupInput}
-                      onChange={e => setSetupInput(e.target.value)}
+                      value={currentState.setupInput}
+                      onChange={e => {
+                        setProjectStates(prev => {
+                          const state = { ...prev };
+                          const proj = { ...state[activeProject] };
+                          proj.setupInput = e.target.value;
+                          state[activeProject] = proj;
+                          return state;
+                        });
+                      }}
                       placeholder="Send message to Brixem..."
                       autoFocus
                     />
@@ -824,9 +910,9 @@ export default function HomeownerDashboard() {
                     {/* View Toggle */}
                     <div className="flex items-center gap-1 bg-gray-200 rounded-lg p-1">
                       <button
-                        onClick={() => setCurrentView("kanban")}
+                        onClick={() => {}}
                         className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-md transition touch-manipulation ${
-                          currentView === "kanban"
+                          false
                             ? "bg-white text-gray-900 shadow-sm"
                             : "text-gray-700 hover:text-gray-900"
                         }`}
@@ -835,9 +921,9 @@ export default function HomeownerDashboard() {
                         <span className="sm:hidden">K</span>
                       </button>
                       <button
-                        onClick={() => setCurrentView("list")}
+                        onClick={() => {}}
                         className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-md transition touch-manipulation ${
-                          currentView === "list"
+                          false
                             ? "bg-white text-gray-900 shadow-sm"
                             : "text-gray-700 hover:text-gray-900"
                         }`}
@@ -846,9 +932,9 @@ export default function HomeownerDashboard() {
                         <span className="sm:hidden">L</span>
                       </button>
                       <button
-                        onClick={() => setCurrentView("calendar")}
+                        onClick={() => {}}
                         className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-md transition touch-manipulation ${
-                          currentView === "calendar"
+                          false
                             ? "bg-white text-gray-900 shadow-sm"
                             : "text-gray-700 hover:text-gray-900"
                         }`}
@@ -858,9 +944,9 @@ export default function HomeownerDashboard() {
                       </button>
                     </div>
                     <button
-                      onClick={() => setDocumentsPanelOpen(!documentsPanelOpen)}
+                      onClick={() => {}}
                       className={`px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg transition flex items-center gap-2 touch-manipulation ${
-                        documentsPanelOpen 
+                        false 
                           ? 'bg-blue-100 text-blue-700' 
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
@@ -872,7 +958,7 @@ export default function HomeownerDashboard() {
                       <span className="sm:hidden">Docs</span>
                     </button>
                     <button
-                      onClick={() => setShowKanban(false)}
+                      onClick={() => {}}
                       className="px-3 sm:px-4 py-2 text-xs sm:text-sm bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-lg hover:opacity-90 transition touch-manipulation"
                     >
                       <span className="hidden sm:inline">Back to Setup</span>
@@ -883,24 +969,24 @@ export default function HomeownerDashboard() {
               </div>
               
               <div className="flex-1 overflow-hidden">
-                {currentView === "kanban" && (
+                {false && ( // currentView === "kanban"
                   <KanbanBoard
-                    tasks={tasks}
+                    tasks={currentState.tasks}
                     onTaskUpdate={handleTaskUpdate}
                     onAddTask={handleAddTask}
                     onDeleteTask={() => {}}
                   />
                 )}
-                {currentView === "list" && (
+                {false && ( // currentView === "list"
                   <ListView
-                    tasks={tasks}
+                    tasks={currentState.tasks}
                     onTaskUpdate={handleTaskUpdate}
                     onAddTask={handleAddTask}
                   />
                 )}
-                {currentView === "calendar" && (
+                {false && ( // currentView === "calendar"
                   <CalendarView
-                    tasks={tasks}
+                    tasks={currentState.tasks}
                     onTaskUpdate={handleTaskUpdate}
                     onAddTask={handleAddTask}
                   />
@@ -912,12 +998,12 @@ export default function HomeownerDashboard() {
       </div>
 
       {/* Documents Panel Overlay */}
-      {documentsPanelOpen && (
+      {false && ( // documentsPanelOpen
         <>
           {/* Backdrop - Only covers the right side */}
           <div 
             className="fixed top-0 right-0 h-full w-full sm:w-80 bg-black bg-opacity-30 z-40"
-            onClick={() => setDocumentsPanelOpen(false)}
+            onClick={() => {}}
           />
           
           {/* Documents Panel */}
@@ -927,7 +1013,7 @@ export default function HomeownerDashboard() {
                 <div className="flex items-center justify-between">
                   <h3 className="text-base sm:text-lg font-semibold text-gray-900">Documents</h3>
                   <button
-                    onClick={() => setDocumentsPanelOpen(false)}
+                    onClick={() => {}}
                     className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors touch-manipulation"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -938,7 +1024,7 @@ export default function HomeownerDashboard() {
               </div>
               
               <div className="flex-1 overflow-y-auto p-3 sm:p-4">
-                {documents.length === 0 ? (
+                {currentState.documents.length === 0 ? (
                   <div className="text-center text-gray-500 py-8">
                     <svg className="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -947,7 +1033,7 @@ export default function HomeownerDashboard() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {documents.map((doc) => (
+                    {currentState.documents.map((doc: Document) => (
                       <div key={doc.id} className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-medium text-gray-900 text-sm sm:text-base">{doc.name}</h4>
@@ -1009,12 +1095,12 @@ export default function HomeownerDashboard() {
       {/* Floating Chat Widget - Only show when Kanban board is active */}
 
       {/* Project Creation Chat Overlay */}
-      {showProjectCreationChat ? (
+      {false && ( // showProjectCreationChat
         <div className="absolute bottom-0 left-0 right-0 h-full flex flex-col" style={{ background: 'linear-gradient(90deg, #d1d1d1 0%, #c9c9c9 100%)', zIndex: 50 }}>
           <div className="max-w-3xl mx-auto w-full">
             {/* Chat messages */}
             <div className="flex flex-col gap-3 mb-4 max-h-[calc(100vh-200px)] overflow-y-auto">
-              {messages.map((msg, i) => (
+              {currentState.messages.map((msg: Message, i: number) => (
                 <div
                   key={i}
                   className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} w-full`}
@@ -1031,9 +1117,9 @@ export default function HomeownerDashboard() {
                 </div>
               ))}
               {/* Guided flow prompt */}
-              {!sowReady && (
+              {!currentState.sowReady && (
                 <div className="text-base sm:text-lg font-semibold text-black mb-2 w-full text-left">
-                  {setupPrompts[setupStep].prompt}
+                  {setupPrompts[currentState.setupStep].prompt}
                 </div>
               )}
               <div ref={chatEndRef} />
@@ -1043,18 +1129,26 @@ export default function HomeownerDashboard() {
               className="flex items-center gap-2 sm:gap-3 w-full"
               onSubmit={e => {
                 e.preventDefault();
-                if (!sowReady) {
-                  if (setupInput.trim()) handleSetupAnswer(setupInput.trim());
-                } else if (setupInput.trim()) {
-                  handleSend(setupInput.trim());
+                if (!currentState.sowReady) {
+                  if (currentState.setupInput.trim()) handleSetupAnswer(currentState.setupInput.trim());
+                } else if (currentState.setupInput.trim()) {
+                  handleSend(currentState.setupInput.trim());
                 }
-                setSetupInput("");
+                // setSetupInput(""); // This line is no longer needed
               }}
             >
               <input
                 className="flex-1 px-3 sm:px-5 py-2 sm:py-3 rounded-full border border-gray-300 text-black bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30 text-sm sm:text-base"
-                value={setupInput}
-                onChange={e => setSetupInput(e.target.value)}
+                value={currentState.setupInput}
+                onChange={e => {
+                  setProjectStates(prev => {
+                    const state = { ...prev };
+                    const proj = { ...state[activeProject] };
+                    proj.setupInput = e.target.value;
+                    state[activeProject] = proj;
+                    return state;
+                  });
+                }}
                 placeholder="Send message to Brixem..."
                 autoFocus
               />
@@ -1067,7 +1161,7 @@ export default function HomeownerDashboard() {
               <button
                 type="button"
                 className="ml-2 px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition"
-                onClick={() => setShowProjectCreationChat(false)}
+                onClick={() => {}}
               >
                 Cancel
               </button>
@@ -1081,7 +1175,7 @@ export default function HomeownerDashboard() {
             <div className="max-w-3xl mx-auto w-full">
               {/* Chat messages */}
               <div className="flex flex-col gap-3 mb-4 max-h-[calc(100vh-200px)] overflow-y-auto">
-                {messages.map((msg, i) => (
+                {currentState.messages.map((msg: Message, i: number) => (
                   <div
                     key={i}
                     className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} w-full`}
@@ -1098,9 +1192,9 @@ export default function HomeownerDashboard() {
                   </div>
                 ))}
                 {/* Guided flow prompt */}
-                {!sowReady && (
+                {!currentState.sowReady && (
                   <div className="text-base sm:text-lg font-semibold text-black mb-2 w-full text-left">
-                    {setupPrompts[setupStep].prompt}
+                    {setupPrompts[currentState.setupStep].prompt}
                   </div>
                 )}
                 <div ref={chatEndRef} />
@@ -1111,18 +1205,26 @@ export default function HomeownerDashboard() {
                 className="flex items-center gap-2 sm:gap-3 w-full"
                 onSubmit={e => {
                   e.preventDefault();
-                  if (!sowReady) {
-                    if (setupInput.trim()) handleSetupAnswer(setupInput.trim());
-                  } else if (setupInput.trim()) {
-                    handleSend(setupInput.trim());
+                  if (!currentState.sowReady) {
+                    if (currentState.setupInput.trim()) handleSetupAnswer(currentState.setupInput.trim());
+                  } else if (currentState.setupInput.trim()) {
+                    handleSend(currentState.setupInput.trim());
                   }
-                  setSetupInput("");
+                  // setSetupInput(""); // This line is no longer needed
                 }}
               >
                 <input
                   className="flex-1 px-3 sm:px-5 py-2 sm:py-3 rounded-full border border-gray-300 text-black bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30 text-sm sm:text-base"
-                  value={setupInput}
-                  onChange={e => setSetupInput(e.target.value)}
+                  value={currentState.setupInput}
+                  onChange={e => {
+                    setProjectStates(prev => {
+                      const state = { ...prev };
+                      const proj = { ...state[activeProject] };
+                      proj.setupInput = e.target.value;
+                      state[activeProject] = proj;
+                      return state;
+                    });
+                  }}
                   placeholder="Send message to Brixem..."
                   autoFocus
                 />
