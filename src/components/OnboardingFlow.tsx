@@ -4,7 +4,7 @@ import React, { useState } from "react";
 interface OnboardingFlowProps {
   open: boolean;
   onClose: () => void;
-  onComplete: (userData: any) => void;
+  onComplete: (userData: { name: string; email: string; role: string; experience: string; goals: string[] }) => void;
 }
 
 export default function OnboardingFlow({ open, onClose, onComplete }: OnboardingFlowProps) {
@@ -195,9 +195,7 @@ export default function OnboardingFlow({ open, onClose, onComplete }: Onboarding
     } else {
       onComplete({
         ...userData,
-        id: `user_${Date.now()}`,
-        role: "homeowner",
-        onboardingComplete: true
+        role: "homeowner"
       });
     }
   };

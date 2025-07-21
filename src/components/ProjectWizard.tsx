@@ -4,7 +4,7 @@ import React, { useState } from "react";
 interface ProjectWizardProps {
   open: boolean;
   onClose: () => void;
-  onComplete: (projectData: any) => void;
+  onComplete: (projectData: ProjectData) => void;
 }
 
 interface ProjectData {
@@ -98,9 +98,6 @@ export default function ProjectWizard({ open, onClose, onComplete }: ProjectWiza
   const handleComplete = () => {
     onComplete({
       ...projectData,
-      id: `project_${Date.now()}`,
-      createdAt: new Date().toISOString(),
-      status: "planning"
     });
   };
 
