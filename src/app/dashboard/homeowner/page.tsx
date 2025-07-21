@@ -650,6 +650,9 @@ export default function HomeownerDashboard() {
     }
   }, [messages, setupStep]);
 
+  // Add state to control project creation chat
+  const [showProjectCreationChat, setShowProjectCreationChat] = useState(false);
+
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
@@ -664,6 +667,7 @@ export default function HomeownerDashboard() {
         onProjectDelete={() => {}}
         isMobileOpen={isMobileSidebarOpen}
         onMobileToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+        onStartProjectChat={() => setShowProjectCreationChat(true)}
       />
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -1003,6 +1007,83 @@ export default function HomeownerDashboard() {
       {/* Modals */}
       {/* Removed AuthModal, ProjectWizard, and FloatingChat if they are not imported or used */}
       {/* Floating Chat Widget - Only show when Kanban board is active */}
+
+      {/* Project Creation Chat Overlay */}
+      {showProjectCreationChat && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 z-40"
+            onClick={() => setShowProjectCreationChat(false)}
+          />
+
+          {/* Project Creation Chat Panel */}
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-lg shadow-2xl z-50 p-6">
+            <h2 className="text-2xl font-bold mb-4">Create New Project</h2>
+            <p className="text-gray-700 mb-4">
+              Let's start by understanding your project needs. I'll help you define the scope, budget, and timeline.
+            </p>
+
+            {/* Simulate chat UI for project creation */}
+            <div className="flex flex-col gap-3 max-h-[calc(100vh-300px)] overflow-y-auto">
+              {messages.map((msg, i) => (
+                <div
+                  key={i}
+                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} w-full`}
+                >
+                  <div
+                    className={`px-3 sm:px-4 py-2 rounded-2xl text-sm sm:text-base max-w-[85%] sm:max-w-[70%] break-words shadow-sm transition-all ${
+                      msg.role === 'user'
+                        ? 'bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white'
+                        : 'bg-gray-100 text-black'
+                    }`}
+                  >
+                    {msg.text}
+                  </div>
+                </div>
+              ))}
+              <div ref={chatEndRef} />
+            </div>
+
+            <form
+              className="flex items-center gap-2 sm:gap-3 w-full mt-4"
+              onSubmit={e => {
+                e.preventDefault();
+                // Simulate sending a message for project creation
+                const newMessage = setupInput.trim();
+                setMessages(prev => [...prev, { role: "user", text: newMessage }]);
+                setSetupInput("");
+
+                // Simulate AI response for project creation
+                setTimeout(() => {
+                  const aiResponses = [
+                    "Great! I've received your project details. Let's start by generating a Scope of Works (SOW) for your kitchen renovation.",
+                    "I'll now generate a detailed schedule of works (WBS) for the entire project.",
+                    "Finally, I'll create a project timeline and schedule for the electrical and plumbing rough-in phase.",
+                    "Your project is now being prepared. You can find your documents in the Documents panel."
+                  ];
+                  const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+                  setMessages(prev => [...prev, { role: "ai", text: randomResponse }]);
+                }, 1000);
+              }}
+            >
+              <input
+                className="flex-1 px-3 sm:px-5 py-2 sm:py-3 rounded-full border border-gray-300 text-black bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30 text-sm sm:text-base"
+                value={setupInput}
+                onChange={e => setSetupInput(e.target.value)}
+                placeholder="What type of project is this? (e.g., extension, loft conversion, new build)"
+                autoFocus
+              />
+              <button
+                type="submit"
+                className="px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold text-sm sm:text-base shadow hover:opacity-90 transition touch-manipulation"
+              >
+                Send
+              </button>
+            </form>
+          </div>
+        </>
+      )}
     </div>
   );
 } 

@@ -25,6 +25,7 @@ interface SidebarProps {
   onProjectDelete?: (projectId: string) => void;
   isMobileOpen?: boolean;
   onMobileToggle?: () => void;
+  onStartProjectChat?: () => void;
 }
 
 export default function Sidebar({ 
@@ -34,7 +35,8 @@ export default function Sidebar({
   onProjectCreate,
   onProjectDelete,
   isMobileOpen = false,
-  onMobileToggle
+  onMobileToggle,
+  onStartProjectChat
 }: SidebarProps) {
   const router = useRouter();
   
@@ -151,7 +153,7 @@ export default function Sidebar({
             <div className="flex items-center justify-between mb-3 sm:mb-4">
               <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Projects</h2>
               <button
-                onClick={() => setShowCreateModal(true)}
+                onClick={onStartProjectChat}
                 className="w-6 h-6 rounded-full bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center text-white hover:opacity-80 transition touch-manipulation"
                 title="Add New Project"
               >
