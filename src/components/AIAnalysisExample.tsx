@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useRef } from "react";
 
 export default function AIAnalysisExample() {
-  const [isVisible, setIsVisible] = useState(false);
   const [estimatedCost, setEstimatedCost] = useState(30000);
   const [confidence, setConfidence] = useState(0);
   const [costAnimationComplete, setCostAnimationComplete] = useState(false);
@@ -15,7 +14,6 @@ export default function AIAnalysisExample() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && !isAnimating) {
-            setIsVisible(true);
             startAnimation();
           }
         });

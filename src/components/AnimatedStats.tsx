@@ -11,7 +11,6 @@ interface StatItem {
 }
 
 export default function AnimatedStats() {
-  const [isVisible, setIsVisible] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [animatedValues, setAnimatedValues] = useState([0, 0, 0, 0]);
   const [animationsComplete, setAnimationsComplete] = useState([false, false, false, false]);
@@ -66,7 +65,6 @@ export default function AnimatedStats() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && !isAnimating) {
-            setIsVisible(true);
             startAnimation();
           }
         });
