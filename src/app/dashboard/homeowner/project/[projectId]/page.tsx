@@ -713,12 +713,7 @@ export default function ProjectDashboard() {
     }
   };
 
-  const handleOnboardingComplete = (userData: unknown) => {
-    // setUser((prev: unknown) => { // This line is removed
-    //   const prevObj = typeof prev === "object" && prev !== null ? prev : {};
-    //   const userObj = typeof userData === "object" && userData !== null ? userData : {};
-    //   return { ...prevObj, ...userObj };
-    // });
+  const handleOnboardingComplete = () => {
     setShowOnboarding(false);
   };
 
