@@ -8,7 +8,6 @@ import Orb from "@/components/Orb";
 import ChatPanel from "@/components/ChatPanel"; // Added import for ChatPanel
 import FeatureSection from "@/components/FeatureSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
-import PricingSection from "@/components/PricingSection";
 import Footer from "@/components/Footer";
 import AnimatedStats from "@/components/AnimatedStats";
 
