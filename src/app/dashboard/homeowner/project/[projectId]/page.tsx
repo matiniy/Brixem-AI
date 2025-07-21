@@ -711,7 +711,7 @@ export default function ProjectDashboard() {
     setTimeout(() => {
       const aiResponse: Message = {
         role: "ai",
-        text: `I understand you're asking about "${message}". Let me help you with that.`
+        text: `I understand you&apos;re asking about "${message}". Let me help you with that.`
       };
       setMessages(prev => [...prev, aiResponse]);
     }, 1000);
