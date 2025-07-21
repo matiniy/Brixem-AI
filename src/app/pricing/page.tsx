@@ -7,7 +7,7 @@ export default function Pricing() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("homeowner");
   const [showPayment, setShowPayment] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<string>("");
+  const [selectedPlan] = useState<string>("");
 
   useEffect(() => {
     localStorage.setItem("brixem_role", activeTab);
