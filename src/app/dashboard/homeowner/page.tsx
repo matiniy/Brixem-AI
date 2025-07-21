@@ -71,50 +71,6 @@ export default function HomeownerDashboard() {
     }
   }, []);
 
-  // Projects state for sidebar
-  const [projects, setProjects] = useState<Project[]>([
-    {
-      id: "1",
-      name: "Kitchen Renovation",
-      type: "kitchen",
-      status: "planning",
-      budget: "$25,000 - $50,000",
-      progress: 65,
-      contractors: [],
-      createdAt: "2024-01-15"
-    },
-    {
-      id: "2",
-      name: "Living Room",
-      type: "living-room",
-      status: "planning",
-      budget: "$15,000 - $30,000",
-      progress: 35,
-      contractors: [],
-      createdAt: "2024-01-20"
-    },
-    {
-      id: "3",
-      name: "Bathroom",
-      type: "bathroom",
-      status: "planning",
-      budget: "$10,000 - $20,000",
-      progress: 80,
-      contractors: [],
-      createdAt: "2024-01-25"
-    },
-    {
-      id: "4",
-      name: "Office",
-      type: "office",
-      status: "planning",
-      budget: "$8,000 - $15,000",
-      progress: 20,
-      contractors: [],
-      createdAt: "2024-01-30"
-    }
-  ]);
-
   // Homepage-style chat state
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [hasStartedChat, setHasStartedChat] = useState(false);

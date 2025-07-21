@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import AuthModal from "@/components/AuthModal";
 
 export default function HomeownerOnboarding() {
   const router = useRouter();
@@ -13,7 +12,6 @@ export default function HomeownerOnboarding() {
     projectType: "",
     location: ""
   });
-  const [loading, setLoading] = useState(false);
 
   const steps = [
     {
@@ -181,16 +179,13 @@ export default function HomeownerOnboarding() {
             <button
               onClick={handleNext}
               disabled={
-                loading ||
                 (step === 0 && (!userData.name || !userData.email)) ||
                 (step === 1 && !userData.projectType) ||
                 (step === 2 && !userData.location)
               }
               className="w-full md:w-auto px-8 py-3 rounded-lg bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {loading
-                ? "Saving..."
-                : (step === steps.length - 1 ? "Create Account" : "Next")}
+              {step === steps.length - 1 ? "Create Account" : "Next"}
             </button>
           </div>
         </div>
