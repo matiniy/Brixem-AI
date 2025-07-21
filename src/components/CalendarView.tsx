@@ -34,8 +34,8 @@ export default function CalendarView({ tasks, onTaskUpdate, onAddTask }: Calenda
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
-    priority: "medium" as const,
-    status: "todo" as const,
+    priority: "medium" as "low" | "medium" | "high",
+    status: "todo" as "todo" | "in-progress" | "completed",
     dueDate: ""
   });
   const [googleCalendarConnected, setGoogleCalendarConnected] = useState(false);
