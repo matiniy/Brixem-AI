@@ -159,7 +159,7 @@ export default function OnboardingFlow({ open, onClose, onComplete }: Onboarding
       )
     },
     {
-      title: "You're all set! 🎉",
+      title: "You&apos;re all set! 🎉",
       subtitle: "Let's start your renovation journey",
       content: (
         <div className="text-center">

@@ -228,7 +228,7 @@ export default function ProjectWizard({ open, onClose, onComplete }: ProjectWiza
             </div>
             <p className="text-sm text-gray-600">
               Based on your {projectData.type} project with a {projectData.budget} budget, 
-              we'll recommend 3-5 qualified contractors and create a detailed project roadmap.
+              we&apos;ll recommend 3-5 qualified contractors and create a detailed project roadmap.
             </p>
           </div>
         )}
