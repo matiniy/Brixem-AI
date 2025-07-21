@@ -238,7 +238,7 @@ export default function AboutPage() {
             Ready to Transform Your Construction Experience?
           </h2>
           <p className="text-base sm:text-lg lg:text-xl mb-6 sm:mb-8 text-blue-50 leading-relaxed">
-            Join thousands of construction professionals who've already discovered the Brixem difference
+            Join thousands of construction professionals who&apos;ve already discovered the Brixem difference
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button className="px-6 sm:px-8 py-3 sm:py-4 rounded-lg bg-white text-[#4b1fa7] font-semibold hover:bg-gray-50 transition text-sm sm:text-base">
