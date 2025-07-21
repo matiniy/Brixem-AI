@@ -425,56 +425,6 @@ export default function HomeownerDashboard() {
     alert("Document downloaded successfully!");
   };
 
-  // Render guided chat or open chat
-  if (!openChat) {
-    if (!sowReady) {
-      // Show conversation so far, then current prompt and input
-      return (
-        <div className="flex flex-col items-center gap-4 w-full">
-          <div className="w-full max-w-xl mx-auto flex flex-col gap-2">
-            {messages.map((msg, i) => (
-              <div key={i} className={`p-2 rounded-lg max-w-[80%] text-black ${msg.role === "user" ? "ml-auto bg-white border border-gray-300" : "bg-gray-100"}`}>{msg.text}</div>
-            ))}
-          </div>
-          <div className="text-lg font-semibold text-black mb-2 w-full max-w-xl text-left">{setupPrompts[setupStep].prompt}</div>
-          <form className="w-full max-w-xl flex gap-2" onSubmit={e => { e.preventDefault(); if (setupInput.trim()) handleSetupAnswer(setupInput.trim()); }}>
-            <input
-              className="flex-1 px-4 py-2 rounded-xl border border-brixem-gray-200 text-black bg-white"
-              value={setupInput}
-              onChange={e => setSetupInput(e.target.value)}
-              placeholder="Type your answer..."
-              autoFocus
-            />
-            <button type="submit" className="px-4 py-2 rounded-xl bg-brixem-primary text-white font-medium">Send</button>
-          </form>
-        </div>
-      );
-    } else if (!wbsReady) {
-      return (
-        <div className="flex flex-col items-center gap-4">
-          <div className="text-lg font-semibold text-gray-800 mb-2">Your Scope of Works is ready! Check the documents panel to download it.</div>
-          <button className="px-4 py-2 rounded-lg bg-brixem-primary text-white font-semibold" onClick={() => handleDocumentStep("sow")}>Continue to WBS</button>
-        </div>
-      );
-    } else if (!scheduleReady) {
-      return (
-        <div className="flex flex-col items-center gap-4">
-          <div className="text-lg font-semibold text-gray-800 mb-2">Your Work Breakdown Structure is ready! Check the documents panel to download it.</div>
-          <button className="px-4 py-2 rounded-lg bg-brixem-primary text-white font-semibold" onClick={() => handleDocumentStep("wbs")}>Continue to Schedule</button>
-        </div>
-      );
-    } else if (!costReady) {
-      return (
-        <div className="flex flex-col items-center gap-4">
-          <div className="text-lg font-semibold text-gray-800 mb-2">Your Schedule of Works is ready! Check the documents panel to download it.</div>
-          <button className="px-4 py-2 rounded-lg bg-brixem-primary text-white font-semibold" onClick={() => handleDocumentStep("schedule")}>Start AI Chat</button>
-        </div>
-      );
-    } else {
-      setOpenChat(true);
-    }
-  }
-
   // Ref for auto-scrolling chat to bottom
   const chatEndRef = React.useRef<HTMLDivElement>(null);
 

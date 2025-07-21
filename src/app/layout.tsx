@@ -2,7 +2,6 @@
 
 import "./globals.css";
 import { Inter, Albert_Sans } from "next/font/google";
-import { usePathname } from 'next/navigation';
 import React, { useState, useEffect } from "react";
 import OnboardingModal from "@/components/OnboardingModal";
 
