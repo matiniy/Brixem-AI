@@ -65,7 +65,8 @@ export default function ListView({ tasks, onTaskUpdate, onAddTask }: ListViewPro
         progress: 0,
         assignedUsers: [],
         comments: 0,
-        likes: 0
+        likes: 0,
+        dueDate: newTask.dueDate
       });
       setNewTask({ title: "", description: "", priority: "medium", status: "todo", dueDate: "" });
       setShowAddTask(false);
