@@ -239,7 +239,7 @@ export default function Orb({
       }
     };
 
-    const handleMouseLeave = (e: MouseEvent) => {
+    const handleMouseLeave = () => {
       targetHover = 0;
     };
 

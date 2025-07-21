@@ -9,32 +9,6 @@ export default function AIAnalysisExample() {
   const [isAnimating, setIsAnimating] = useState(false);
   const componentRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !isAnimating) {
-            startAnimation();
-          }
-        });
-      },
-      {
-        threshold: 0.3, // Trigger when 30% of the component is visible
-        rootMargin: "0px 0px -50px 0px"
-      }
-    );
-
-    if (componentRef.current) {
-      observer.observe(componentRef.current);
-    }
-
-    return () => {
-      if (componentRef.current) {
-        observer.unobserve(componentRef.current);
-      }
-    };
-  }, [isAnimating]);
-
   const startAnimation = () => {
     if (isAnimating) return;
     
@@ -73,6 +47,33 @@ export default function AIAnalysisExample() {
       setIsAnimating(false);
     }, 8000);
   };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !isAnimating) {
+            startAnimation();
+          }
+        });
+      },
+      {
+        threshold: 0.3, // Trigger when 30% of the component is visible
+        rootMargin: "0px 0px -50px 0px"
+      }
+    );
+
+    if (componentRef.current) {
+      observer.observe(componentRef.current);
+    }
+
+    return () => {
+      const ref = componentRef.current;
+      if (ref) {
+        observer.unobserve(ref);
+      }
+    };
+  }, [isAnimating, startAnimation]);
 
   return (
     <div ref={componentRef} className="relative">
