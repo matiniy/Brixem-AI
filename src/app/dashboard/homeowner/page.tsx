@@ -43,6 +43,63 @@ export default function HomeownerDashboard() {
   const [currentView, setCurrentView] = useState<"kanban" | "list" | "calendar">("kanban");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
+  // Add a projects state with sample projects
+  const [projects, setProjects] = useState([
+    {
+      id: "1",
+      name: "Kitchen Renovation",
+      type: "kitchen",
+      status: "in-progress",
+      budget: "$25,000 - $50,000",
+      progress: 65,
+      contractors: [],
+      createdAt: "2024-01-15",
+      description: "Complete kitchen renovation including new cabinets, countertops, and appliances",
+      location: "123 Main St, City",
+      timeline: "8-12 weeks"
+    },
+    {
+      id: "2",
+      name: "Living Room",
+      type: "living-room",
+      status: "planning",
+      budget: "$15,000 - $30,000",
+      progress: 35,
+      contractors: [],
+      createdAt: "2024-01-20",
+      description: "Modern living room redesign with new furniture, lighting, and wall treatments",
+      location: "123 Main St, City",
+      timeline: "4-6 weeks"
+    },
+    {
+      id: "3",
+      name: "Bathroom",
+      type: "bathroom",
+      status: "completed",
+      budget: "$10,000 - $20,000",
+      progress: 100,
+      contractors: [],
+      createdAt: "2024-01-25",
+      description: "Master bathroom renovation with new fixtures, tile, and lighting",
+      location: "123 Main St, City",
+      timeline: "6-8 weeks"
+    },
+    {
+      id: "4",
+      name: "Office",
+      type: "office",
+      status: "planning",
+      budget: "$8,000 - $15,000",
+      progress: 20,
+      contractors: [],
+      createdAt: "2024-01-30",
+      description: "Home office setup with custom desk, storage, and ergonomic furniture",
+      location: "123 Main St, City",
+      timeline: "3-4 weeks"
+    }
+  ]);
+  const [activeProject, setActiveProject] = useState(projects[0]?.id || "");
+
   // Check for user data from onboarding flow
   React.useEffect(() => {
     const userData = localStorage.getItem("brixem_user_data");
@@ -388,10 +445,9 @@ export default function HomeownerDashboard() {
     <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
       <Sidebar
-        // Provide the necessary props, e.g. projects, activeProject, etc.
-        projects={[]}
-        activeProject={""}
-        onProjectSelect={() => {}}
+        projects={projects}
+        activeProject={activeProject}
+        onProjectSelect={setActiveProject}
         onProjectCreate={() => {}}
         onProjectDelete={() => {}}
         isMobileOpen={isMobileSidebarOpen}
