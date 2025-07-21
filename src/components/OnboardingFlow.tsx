@@ -172,7 +172,7 @@ export default function OnboardingFlow({ open, onClose, onComplete }: Onboarding
             Welcome to Brixem, {userData.name}!
           </h3>
           <p className="text-gray-600 mb-6">
-            Based on your experience and goals, we'll customize your dashboard and recommendations. 
+            Based on your experience and goals, we&apos;ll customize your dashboard and recommendations. 
             You&apos;re ready to start planning your renovation projects!
           </p>
           <div className="bg-gradient-to-r from-[#23c6e6]/10 to-[#4b1fa7]/10 rounded-lg p-4 border border-[#23c6e6]/20">
