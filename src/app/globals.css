@@ -1,0 +1,259 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Enable text selection for specific elements */
+input, textarea, [contenteditable] {
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.dashboard-bg {
+  background: #D3D3D3 !important;
+}
+
+/* Modal animations */
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scalein {
+  from {
+    transform: scale(0.95);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes slidein {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-fadein {
+  animation: fadein 0.2s ease-out;
+}
+
+.animate-scalein {
+  animation: scalein 0.2s ease-out;
+}
+
+.animate-slidein {
+  animation: slidein 0.3s ease-out;
+}
+
+/* Touch optimizations */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 640px) {
+  .mobile-hidden {
+    display: none !important;
+  }
+  
+  .mobile-block {
+    display: block !important;
+  }
+  
+  .mobile-text-sm {
+    font-size: 0.875rem !important;
+    line-height: 1.25rem !important;
+  }
+  
+  .mobile-text-xs {
+    font-size: 0.75rem !important;
+    line-height: 1rem !important;
+  }
+  
+  .mobile-p-2 {
+    padding: 0.5rem !important;
+  }
+  
+  .mobile-p-3 {
+    padding: 0.75rem !important;
+  }
+  
+  .mobile-p-4 {
+    padding: 1rem !important;
+  }
+}
+
+/* Prevent horizontal scroll on mobile */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Better focus states for accessibility */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #23c6e6;
+  outline-offset: 2px;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Brixem brand colors */
+.brixem-primary {
+  background: linear-gradient(135deg, #23c6e6 0%, #4b1fa7 100%);
+}
+
+.text-brixem-primary {
+  color: #4b1fa7;
+}
+
+.bg-brixem-primary {
+  background: linear-gradient(135deg, #23c6e6 0%, #4b1fa7 100%);
+}
+
+/* Status colors */
+.status-todo {
+  color: #6C7DFF;
+}
+
+.status-inprogress {
+  color: #FFB547;
+}
+
+.status-completed {
+  color: #2ED47A;
+}
+
+.border-status-todo {
+  border-color: #6C7DFF;
+}
+
+.border-status-inprogress {
+  border-color: #FFB547;
+}
+
+.border-status-completed {
+  border-color: #2ED47A;
+}
+
+.bg-status-todo {
+  background-color: #6C7DFF;
+}
+
+.bg-status-inprogress {
+  background-color: #FFB547;
+}
+
+.bg-status-completed {
+  background-color: #2ED47A;
+}
+
+/* Priority colors */
+.priority-important {
+  background-color: #FF6B6B;
+}
+
+.priority-high {
+  background-color: #FF8E53;
+}
+
+.priority-ok {
+  background-color: #4ECDC4;
+}
+
+/* Gray colors */
+.brixem-gray-200 {
+  background-color: #F0F1F7;
+}
+
+.brixem-gray-700 {
+  color: #7B7B93;
+}
+
+/* Border colors */
+.border-light {
+  border-color: #E6E8F0;
+}
+
+/* Mobile-specific utility classes */
+@media (max-width: 640px) {
+  .mobile-w-full {
+    width: 100% !important;
+  }
+  
+  .mobile-h-auto {
+    height: auto !important;
+  }
+  
+  .mobile-flex-col {
+    flex-direction: column !important;
+  }
+  
+  .mobile-text-center {
+    text-align: center !important;
+  }
+  
+  .mobile-justify-center {
+    justify-content: center !important;
+  }
+  
+  .mobile-items-center {
+    align-items: center !important;
+  }
+}
+
+/* Prevent zoom on input focus for iOS */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  select,
+  textarea,
+  input {
+    font-size: 16px;
+  }
+}
