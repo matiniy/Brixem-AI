@@ -383,60 +383,6 @@ export default function Home() {
         ]}
       />
 
-      {/* Pricing Section */}
-      <PricingSection
-        plans={[
-          {
-            name: "Starter",
-            price: "$29",
-            period: "month",
-            description: "Perfect for individual homeowners and small projects",
-            features: [
-              "Up to 3 projects",
-              "Basic AI estimation",
-              "Document storage (5GB)",
-              "Email support",
-              "Mobile app access"
-            ],
-            cta: "Start Free Trial",
-            ctaVariant: "secondary"
-          },
-          {
-            name: "Professional",
-            price: "$99",
-            period: "month",
-            description: "Ideal for contractors and growing businesses",
-            features: [
-              "Unlimited projects",
-              "Advanced AI features",
-              "Document storage (50GB)",
-              "Priority support",
-              "Team collaboration",
-              "Custom reporting"
-            ],
-            popular: true,
-            cta: "Start Free Trial",
-            ctaVariant: "primary"
-          },
-          {
-            name: "Enterprise",
-            price: "$299",
-            period: "month",
-            description: "For large construction companies and consultants",
-            features: [
-              "Everything in Professional",
-              "Unlimited storage",
-              "Custom integrations",
-              "Dedicated support",
-              "Advanced analytics",
-              "White-label options"
-            ],
-            cta: "Contact Sales",
-            ctaVariant: "secondary"
-          }
-        ]}
-      />
-
       {/* CTA Section */}
       <section className="py-12 sm:py-16 md:py-20 lg:py-32 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 text-center">
@@ -455,13 +401,6 @@ export default function Home() {
 
       {/* Footer */}
       <Footer />
-
-      {/* Floating Action Button */}
-      <button className="fixed bottom-4 sm:bottom-8 right-4 sm:right-8 w-12 h-12 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
-        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-        </svg>
-      </button>
     </div>
   );
 }
