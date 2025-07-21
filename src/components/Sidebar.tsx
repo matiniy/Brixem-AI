@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 // Add a Project type for the sidebar
@@ -24,8 +23,6 @@ interface SidebarProps {
   onProjectSelect?: (projectId: string) => void;
   onProjectCreate?: (project: Omit<Project, "id">) => void;
   onProjectDelete?: (projectId: string) => void;
-  user?: any;
-  onAuthClick?: () => void;
   isMobileOpen?: boolean;
   onMobileToggle?: () => void;
 }
@@ -36,8 +33,6 @@ export default function Sidebar({
   onProjectSelect, 
   onProjectCreate,
   onProjectDelete,
-  user, 
-  onAuthClick,
   isMobileOpen = false,
   onMobileToggle
 }: SidebarProps) {

@@ -59,7 +59,7 @@ export default function ContractorOnboarding() {
     }
   };
 
-  const handleAuthSuccess = (userData: any) => {
+  const handleAuthSuccess = (userData: unknown) => {
     // TODO: Save contractor onboarding data and redirect to feasibility preview
     alert("Onboarding complete! Redirecting to feasibility preview...");
     // router.push("/contractor/feasibility-preview");
