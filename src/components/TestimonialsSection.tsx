@@ -42,7 +42,7 @@ export default function TestimonialsSection({ testimonials }: TestimonialsSectio
               </div>
               
               <p className="text-gray-700 mb-6 text-sm sm:text-base leading-relaxed italic">
-                "{testimonial.content}"
+                &quot;{testimonial.content}&quot;
               </p>
               
               <div className="flex items-center gap-3">
