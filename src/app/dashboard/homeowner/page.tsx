@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import ChatModal from "@/components/ChatModal";
 import ListView from "@/components/ListView";
 import CalendarView from "@/components/CalendarView";
 

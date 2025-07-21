@@ -1,14 +1,11 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import AuthModal from "@/components/AuthModal";
 import ProjectWizard from "@/components/ProjectWizard";
 import ChatModal from "@/components/ChatModal";
 import OnboardingFlow from "@/components/OnboardingFlow";
 import { useRouter } from "next/navigation";
-import ChatPanel from "@/components/ChatPanel";
-import GradientText from "@/components/GradientText";
-import Orb from "@/components/Orb";
 import Sidebar from "@/components/Sidebar";
 import KanbanBoard from "@/components/KanbanBoard";
 import ListView from "@/components/ListView";
@@ -22,27 +19,11 @@ interface Project {
   status: string;
   budget: string;
   progress: number;
-  contractors: any[];
+  contractors: unknown[];
   createdAt: string;
   description: string;
   location: string;
   timeline: string;
-}
-
-interface Contractor {
-  id: string;
-  name: string;
-  specialty: string;
-  rating: number;
-  reviews: number;
-  availability: string;
-  estimatedCost: string;
-  avatar: string;
-}
-
-interface Message {
-  role: "user" | "ai";
-  text: string;
 }
 
 interface Document {
@@ -560,7 +541,7 @@ export default function ProjectDashboard() {
   const projectId = params.projectId as string;
   const router = useRouter();
   
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<unknown>(null);
   const [showAuth, setShowAuth] = useState(false);
   const [showProjectWizard, setShowProjectWizard] = useState(false);
   const [showChat, setShowChat] = useState(false);
@@ -572,7 +553,6 @@ export default function ProjectDashboard() {
 
   // Kanban tasks state
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [showKanban, setShowKanban] = useState(true);
   const [currentView, setCurrentView] = useState<"kanban" | "list" | "calendar">("kanban");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -664,29 +644,40 @@ export default function ProjectDashboard() {
     }
   ]);
 
-  const handleAuthSuccess = (userData: any) => {
+  const handleAuthSuccess = (userData: unknown) => {
     setUser(userData);
     setShowAuth(false);
     // Show onboarding for new users
-    if (!userData.onboardingComplete) {
+    if (!userData || typeof userData !== 'object' || !('onboardingComplete' in userData) || !userData.onboardingComplete) {
       setShowOnboarding(true);
     }
   };
 
-  const handleProjectCreated = (projectData: any) => {
-    setProjects(prev => [...prev, projectData]);
+  const handleProjectCreated = (projectData: unknown) => {
+    if (typeof projectData === 'object' && projectData !== null && 'id' in projectData && 'name' in projectData && 'type' in projectData && 'status' in projectData && 'budget' in projectData && 'progress' in projectData && 'contractors' in projectData && 'createdAt' in projectData && 'description' in projectData && 'location' in projectData && 'timeline' in projectData) {
+      const newProject: Project = {
+        ...projectData,
+        id: `project-${Date.now()}`,
+        contractors: []
+      };
+      setProjects(prev => [...prev, newProject]);
+      // Navigate to the new project
+      router.push(`/dashboard/homeowner/project/${newProject.id}`);
+    }
     setShowProjectWizard(false);
   };
 
-  const handleProjectCreate = (projectData: any) => {
-    const newProject: Project = {
-      ...projectData,
-      id: `project-${Date.now()}`,
-      contractors: []
-    };
-    setProjects(prev => [...prev, newProject]);
-    // Navigate to the new project
-    router.push(`/dashboard/homeowner/project/${newProject.id}`);
+  const handleProjectCreate = (projectData: unknown) => {
+    if (typeof projectData === 'object' && projectData !== null && 'name' in projectData && 'type' in projectData && 'budget' in projectData && 'description' in projectData && 'location' in projectData && 'timeline' in projectData) {
+      const newProject: Project = {
+        ...projectData,
+        id: `project-${Date.now()}`,
+        contractors: []
+      };
+      setProjects(prev => [...prev, newProject]);
+      // Navigate to the new project
+      router.push(`/dashboard/homeowner/project/${newProject.id}`);
+    }
   };
 
   const handleProjectDelete = (projectId: string) => {
@@ -702,8 +693,10 @@ export default function ProjectDashboard() {
     }
   };
 
-  const handleOnboardingComplete = (userData: any) => {
-    setUser((prev: any) => ({ ...prev, ...userData }));
+  const handleOnboardingComplete = (userData: unknown) => {
+    if (typeof userData === 'object' && userData !== null) {
+      setUser((prev: unknown) => ({ ...prev, ...userData }));
+    }
     setShowOnboarding(false);
   };
 

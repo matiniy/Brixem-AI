@@ -5,17 +5,6 @@ import Sidebar from "@/components/Sidebar";
 
 export default function PaymentPage() {
   const [paymentMethod, setPaymentMethod] = useState("card");
-  const [billingInfo, setBillingInfo] = useState({
-    cardNumber: "**** **** **** 1234",
-    expiryDate: "12/25",
-    cvv: "***",
-    name: "John Doe",
-    address: "123 Main St",
-    city: "San Francisco",
-    state: "CA",
-    zipCode: "94102"
-  });
-
   const [subscription] = useState({
     plan: "Pro",
     price: "$29.99",
@@ -59,13 +48,15 @@ export default function PaymentPage() {
     setActiveProject(projectId);
   };
 
-  const handleProjectCreate = (project: any) => {
-    const newProject = {
-      ...project,
-      id: Date.now().toString(),
-      progress: 0
-    };
-    setProjects(prev => [...prev, newProject]);
+  const handleProjectCreate = (project: unknown) => {
+    if (typeof project === "object" && project !== null && "name" in project && "type" in project && "status" in project && "budget" in project && "description" in project && "location" in project && "timeline" in project) {
+      const newProject = {
+        ...project,
+        id: Date.now().toString(),
+        progress: 0
+      };
+      setProjects(prev => [...prev, newProject]);
+    }
   };
 
   const handleProjectDelete = (projectId: string) => {
@@ -155,7 +146,7 @@ export default function PaymentPage() {
                     />
                     <div className="flex-1">
                       <p className="font-medium text-gray-900">Credit Card</p>
-                      <p className="text-sm text-gray-600">{billingInfo.cardNumber}</p>
+                      <p className="text-sm text-gray-600">**** **** **** 1234</p>
                     </div>
                   </div>
                   
