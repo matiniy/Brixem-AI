@@ -2,7 +2,6 @@
 
 import "./globals.css";
 import { Inter, Albert_Sans } from "next/font/google";
-import type { Metadata } from "next";
 import { usePathname } from 'next/navigation';
 import React, { useState, useEffect } from "react";
 import OnboardingModal from "@/components/OnboardingModal";
@@ -17,7 +16,6 @@ export default function RootLayout({
 }) {
   // Use Next.js usePathname to determine the current route
   const pathname = usePathname();
-  const isDashboard = pathname.startsWith('/dashboard');
 
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isClient, setIsClient] = useState(false);
