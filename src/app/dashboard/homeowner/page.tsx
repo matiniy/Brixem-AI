@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import ChatModal from "@/components/ChatModal";
-import OnboardingFlow from "@/components/OnboardingFlow";
 import ListView from "@/components/ListView";
 import CalendarView from "@/components/CalendarView";
 
@@ -60,16 +59,8 @@ interface Task {
 export default function HomeownerDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<unknown>(null);
-  const [showAuth, setShowAuth] = useState(false);
-  const [showProjectWizard, setShowProjectWizard] = useState(false);
-  const [showChat, setShowChat] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
-
-  // Documents panel state
   const [documentsPanelOpen, setDocumentsPanelOpen] = useState(false);
   const [documents, setDocuments] = useState<Document[]>([]);
-
-  // Kanban tasks state
   const [tasks, setTasks] = useState<Task[]>([]);
   const [showKanban, setShowKanban] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -166,78 +157,13 @@ export default function HomeownerDashboard() {
     }
   };
 
-  const [recommendedContractors] = useState<Contractor[]>([
-    {
-      id: "1",
-      name: "Mike Johnson",
-      specialty: "Kitchen & Bath",
-      rating: 4.8,
-      reviews: 127,
-      availability: "Available in 2 weeks",
-      estimatedCost: "$28,000 - $35,000",
-      avatar: "MJ"
-    },
-    {
-      id: "2",
-      name: "Sarah Chen",
-      specialty: "Interior Design",
-      rating: 4.9,
-      reviews: 89,
-      availability: "Available next week",
-      estimatedCost: "$32,000 - $40,000",
-      avatar: "SC"
-    },
-    {
-      id: "3",
-      name: "David Rodriguez",
-      specialty: "General Contractor",
-      rating: 4.7,
-      reviews: 203,
-      availability: "Available in 3 weeks",
-      estimatedCost: "$25,000 - $30,000",
-      avatar: "DR"
-    }
-  ]);
-
-  const handleAuthSuccess = (userData: any) => {
-    setUser(userData);
-    setShowAuth(false);
-    // Show onboarding for new users
-    if (!userData.onboardingComplete) {
-      setShowOnboarding(true);
-    }
-  };
-
-  const handleProjectCreated = (projectData: any) => {
-    setProjects(prev => [...prev, projectData]);
-    setShowProjectWizard(false);
-  };
-
-  const handleOnboardingComplete = (userData: unknown) => {
-    setUser((prev: unknown) => ({ ...(prev as object), ...(userData as object) }));
-    setShowOnboarding(false);
-    // Redirect to scope summary after onboarding
-    router.push("/dashboard/homeowner/ScopeSummaryPage");
-  };
-
   // Homepage-style chat state
   const [messages, setMessages] = React.useState<Message[]>([]);
-  const [isChatActive, setIsChatActive] = React.useState(false);
-  const preQuestions = [
-    "I'm a homeowner planning a renovation",
-    "I'm a contractor looking for projects",
-    "I need help with project estimation",
-    "I want to learn about Brixem's features",
-    "I'm a consultant seeking tools"
-  ];
-
-  // Track if user has started the chat
   const [hasStartedChat, setHasStartedChat] = useState(false);
 
   // Unified handleSend for both guided and open chat
   const handleSend = (message: string) => {
     if (messages.length === 0 && !hasStartedChat) {
-      setIsChatActive(true);
       setHasStartedChat(true);
     }
     setMessages((prev) => [...prev, { role: "user", text: message }]);
@@ -308,22 +234,12 @@ export default function HomeownerDashboard() {
     }
   };
 
-  // Homeowner-specific pre-existing questions
-  const homeownerQuestions = [
-    "How do I start a renovation project?",
-    "What is the average cost of a kitchen remodel?",
-    "How do I find a reliable contractor?",
-    "What permits do I need for home renovation?",
-    "How can I track my renovation progress?",
-    "What are common renovation mistakes to avoid?"
-  ];
-
   // Guided chat flow state
   const [setupStep, setSetupStep] = React.useState(0);
   const [projectAnswers, setProjectAnswers] = React.useState({
     projectType: "",
     intendedUse: "",
-    location: (user as any)?.location || "",
+    location: (user as unknown as { location?: string })?.location || "",
     description: "",
     dates: ""
   });
@@ -597,11 +513,6 @@ export default function HomeownerDashboard() {
     setTasks(prev => [...prev, task]);
   };
 
-  // Handle deleting tasks
-  const handleDeleteTask = (taskId: string) => {
-    setTasks(prev => prev.filter(task => task.id !== taskId));
-  };
-
   // Handle document download
   const handleDocumentDownload = (documentId: string) => {
     setDocuments(prev => prev.map(doc => 
@@ -699,10 +610,10 @@ export default function HomeownerDashboard() {
                   <span className="text-white font-bold text-sm">B</span>
                 </div>
                 <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
-                  {(user as any) ? `Welcome, ${(user as any).name.split(' ')[0]}!` : 'Welcome!'}
+                  {(user as unknown as { name?: string }) ? `Welcome, ${(user as unknown as { name?: string }).name.split(' ')[0]}!` : 'Welcome!'}
                 </h1>
               </div>
-              {(user as any) && (
+              {(user as unknown as { name?: string }) && (
                 <div className="flex items-center gap-4">
                   {/* Documents Panel Toggle */}
                   <button
@@ -719,7 +630,7 @@ export default function HomeownerDashboard() {
                     </svg>
                   </button>
                   <button
-                    onClick={() => setShowChat(true)}
+                    onClick={() => setShowKanban(true)}
                     className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition"
                   >
                     <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -728,9 +639,9 @@ export default function HomeownerDashboard() {
                   </button>
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center">
-                      <span className="text-white font-medium text-sm">{(user as any).name.charAt(0)}</span>
+                      <span className="text-white font-medium text-sm">{(user as unknown as { name?: string }).name.charAt(0)}</span>
                     </div>
-                    <span className="text-sm font-medium text-gray-700">{(user as any).name}</span>
+                    <span className="text-sm font-medium text-gray-700">{(user as unknown as { name?: string }).name}</span>
                   </div>
                 </div>
               )}
@@ -1006,13 +917,6 @@ export default function HomeownerDashboard() {
       {/* Modals */}
       {/* Removed AuthModal, ProjectWizard, and FloatingChat if they are not imported or used */}
       {/* Floating Chat Widget - Only show when Kanban board is active */}
-      {showKanban && (
-        <ChatModal
-          onSend={handleSend}
-          messages={messages}
-          placeholder="Ask about your project tasks or add new tasks..."
-        />
-      )}
     </div>
   );
 } 

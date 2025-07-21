@@ -32,11 +32,6 @@ export default function ScopeSummaryPage() {
   const [editing, setEditing] = useState<string | null>(null);
   const [showChat, setShowChat] = useState(false);
 
-  const handleEdit = (field: string, value: string) => {
-    setScope((prev) => ({ ...prev, [field]: value }));
-    setEditing(null);
-  };
-
   const handleDownload = () => {
     // Mock PDF download
     alert("PDF download coming soon!");
