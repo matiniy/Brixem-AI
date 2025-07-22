@@ -1,7 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import ListView from "@/components/ListView";
-import CalendarView from "@/components/CalendarView";
 import Sidebar from "@/components/Sidebar";
 import KanbanBoard from "@/components/KanbanBoard";
 import DashboardChat from "@/components/DashboardChat";
@@ -977,7 +975,7 @@ export default function HomeownerDashboard() {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [projectStates[activeProject].messages, projectStates[activeProject].setupStep]);
+  }, [currentState.messages, currentState.setupStep]);
 
   // Add state to control project creation chat
   // const [showProjectCreationChat, setShowProjectCreationChat] = useState(false);
