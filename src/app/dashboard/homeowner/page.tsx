@@ -4,7 +4,7 @@ import ListView from "@/components/ListView";
 import CalendarView from "@/components/CalendarView";
 import Sidebar from "@/components/Sidebar";
 import KanbanBoard from "@/components/KanbanBoard";
-import FloatingChat from "@/components/FloatingChat";
+import DashboardChat from "@/components/DashboardChat";
 
 interface Message {
   role: "user" | "ai";
@@ -107,6 +107,7 @@ interface ProjectState {
   isTransitioning: boolean;
   tasks: Task[];
   setupInput?: string;
+  chatExpanded: boolean;
 }
 
 // Add a projects state with sample projects
@@ -340,7 +341,8 @@ export default function HomeownerDashboard() {
         showKanban: false,
         isTransitioning: false,
         tasks: projectTasks[p.id] || [],
-        setupInput: ""
+        setupInput: "",
+        chatExpanded: false
       };
     });
     return state;
@@ -1209,6 +1211,7 @@ export default function HomeownerDashboard() {
                             description: "",
                             dates: ""
                           };
+                          proj.chatExpanded = false;
                           state[activeProject] = proj;
                           return state;
                         });
@@ -1328,12 +1331,22 @@ export default function HomeownerDashboard() {
         </>
       )}
 
-      {/* Floating Chat Widget - Only show when Kanban board is active */}
+      {/* Dashboard Chat Widget - Only show when Kanban board is active */}
       {currentState.showKanban && (
-        <FloatingChat
+        <DashboardChat
           onSend={handleSend}
           messages={currentState.messages}
           placeholder="Ask about your project tasks..."
+          isExpanded={currentState.chatExpanded}
+          onToggleExpanded={(expanded) => {
+            setProjectStates(prev => {
+              const state = { ...prev };
+              const proj = { ...state[activeProject] };
+              proj.chatExpanded = expanded;
+              state[activeProject] = proj;
+              return state;
+            });
+          }}
         />
       )}
 
