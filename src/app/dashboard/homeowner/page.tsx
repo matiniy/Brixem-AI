@@ -1122,8 +1122,8 @@ export default function HomeownerDashboard() {
                     onSubmit={e => {
                       e.preventDefault();
                       if (!currentState.sowReady) {
-                        if (currentState.setupInput.trim()) handleSetupAnswer(currentState.setupInput.trim());
-                      } else if (currentState.setupInput.trim()) {
+                        if (currentState.setupInput?.trim()) handleSetupAnswer(currentState.setupInput.trim());
+                      } else if (currentState.setupInput?.trim()) {
                         handleSend(currentState.setupInput.trim());
                       }
                       // setSetupInput(""); // This line is no longer needed
@@ -1131,7 +1131,7 @@ export default function HomeownerDashboard() {
                   >
                     <input
                       className="flex-1 px-3 sm:px-5 py-2 sm:py-3 rounded-full border border-gray-300 text-black bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30 text-sm sm:text-base"
-                      value={currentState.setupInput ?? ""}
+                      value={currentState.setupInput || ""}
                       onChange={e => {
                         setProjectStates(prev => {
                           const state = { ...prev };
@@ -1421,17 +1421,17 @@ export default function HomeownerDashboard() {
               className="flex items-center gap-2 sm:gap-3 w-full"
               onSubmit={e => {
                 e.preventDefault();
-                if (!currentState.sowReady) {
-                  if (currentState.setupInput.trim()) handleSetupAnswer(currentState.setupInput.trim());
-                } else if (currentState.setupInput.trim()) {
-                  handleSend(currentState.setupInput.trim());
-                }
+                                      if (!currentState.sowReady) {
+                        if (currentState.setupInput?.trim()) handleSetupAnswer(currentState.setupInput.trim());
+                      } else if (currentState.setupInput?.trim()) {
+                        handleSend(currentState.setupInput.trim());
+                      }
                 // setSetupInput(""); // This line is no longer needed
               }}
             >
               <input
                 className="flex-1 px-3 sm:px-5 py-2 sm:py-3 rounded-full border border-gray-300 text-black bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30 text-sm sm:text-base"
-                value={currentState.setupInput ?? ""}
+                                      value={currentState.setupInput || ""}
                 onChange={e => {
                   setProjectStates(prev => {
                     const state = { ...prev };
