@@ -17,12 +17,13 @@ interface DashboardChatProps {
 export default function DashboardChat({ 
   onSend, 
   messages, 
-  placeholder = "Enter a prompt here",
+  placeholder = "Ask about your project tasks...",
   isExpanded = false,
   onToggleExpanded
 }: DashboardChatProps) {
   const [inputValue, setInputValue] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const chatRef = useRef<HTMLDivElement>(null);
@@ -76,20 +77,30 @@ export default function DashboardChat({
     setIsFocused(false);
   };
 
+  const handleChatClick = () => {
+    if (!isExpanded) {
+      onToggleExpanded?.(true);
+    }
+  };
+
   return (
     <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
-      {/* Collapsed State - Light Gray Input Field */}
+      {/* Collapsed State - Light Gray Input Field with Smooth Animations */}
       {!isExpanded && (
         <div 
           ref={chatRef}
-          className={`bg-gray-200/90 backdrop-blur-md rounded-full flex items-center gap-3 shadow-lg border border-gray-300/50 cursor-pointer touch-manipulation transition-all duration-500 ease-in-out hover:bg-gray-200/95 ${
-            isFocused ? 'min-w-[320px] max-w-[450px] px-4 py-3' : 'min-w-[280px] max-w-[380px] px-3 py-2.5'
+          className={`bg-gray-200/90 backdrop-blur-md rounded-full flex items-center gap-3 shadow-lg border border-gray-300/50 cursor-pointer touch-manipulation transition-all duration-300 ease-in-out hover:bg-gray-200/95 hover:shadow-xl ${
+            isFocused || isHovered 
+              ? 'min-w-[320px] max-w-[450px] px-4 py-3 scale-105' 
+              : 'min-w-[280px] max-w-[380px] px-3 py-2.5 scale-100'
           }`}
-          onClick={() => onToggleExpanded?.(true)}
+          onClick={handleChatClick}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
           {/* Attachment Icon */}
           <div className="flex-shrink-0">
-            <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-gray-500 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
             </svg>
           </div>
@@ -105,7 +116,7 @@ export default function DashboardChat({
               onFocus={handleInputFocus}
               onBlur={handleInputBlur}
               placeholder={placeholder}
-              className="w-full bg-transparent text-gray-700 placeholder-gray-500 text-sm focus:outline-none"
+              className="w-full bg-transparent text-gray-700 placeholder-gray-500 text-sm focus:outline-none transition-colors duration-200"
             />
           </div>
 
@@ -126,7 +137,7 @@ export default function DashboardChat({
               type="button"
               onClick={handleSubmit}
               disabled={!inputValue.trim()}
-              className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center hover:bg-gray-400 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center hover:bg-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-110"
             >
               <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -136,11 +147,11 @@ export default function DashboardChat({
         </div>
       )}
 
-      {/* Expanded State - Full Chat Interface */}
+      {/* Expanded State - Full Chat Interface with Smooth Slide Animation */}
       {isExpanded && (
         <div 
           ref={chatRef} 
-          className="bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700/50 w-full sm:w-[500px] h-[600px] sm:h-[500px] animate-in slide-in-from-bottom-2 duration-500 ease-in-out"
+          className="bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-700/50 w-full sm:w-[500px] h-[600px] sm:h-[500px] animate-in slide-in-from-bottom-2 duration-300 ease-out"
         >
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-700/50 bg-gray-900/90 backdrop-blur-sm rounded-t-2xl">
@@ -226,7 +237,7 @@ export default function DashboardChat({
               <button
                 type="submit"
                 disabled={!inputValue.trim()}
-                className="px-6 py-3 bg-gradient-to-r from-[#23c6e6]/90 to-[#4b1fa7]/90 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation shadow-lg hover:shadow-xl backdrop-blur-sm border border-[#23c6e6]/20"
+                className="px-6 py-3 bg-gradient-to-r from-[#23c6e6]/90 to-[#4b1fa7]/90 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation shadow-lg hover:shadow-xl backdrop-blur-sm border border-[#23c6e6]/20 hover:scale-105"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

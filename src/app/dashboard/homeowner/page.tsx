@@ -1386,6 +1386,22 @@ export default function HomeownerDashboard() {
         />
       )}
 
+      {/* Auto-collapse chat when user interacts with dashboard */}
+      {currentState.showKanban && currentState.chatExpanded && (
+        <div 
+          className="fixed inset-0 z-40"
+          onClick={() => {
+            setProjectStates(prev => {
+              const state = { ...prev };
+              const proj = { ...state[activeProject] };
+              proj.chatExpanded = false;
+              state[activeProject] = proj;
+              return state;
+            });
+          }}
+        />
+      )}
+
       {/* Project Creation Chat Overlay */}
       {false && ( // showProjectCreationChat
         <div className="absolute bottom-0 left-0 right-0 h-full flex flex-col" style={{ background: 'linear-gradient(90deg, #d1d1d1 0%, #c9c9c9 100%)', zIndex: 50 }}>
