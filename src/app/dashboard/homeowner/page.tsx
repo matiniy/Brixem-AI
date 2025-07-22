@@ -108,6 +108,7 @@ interface ProjectState {
   tasks: Task[];
   setupInput?: string;
   chatExpanded: boolean;
+  documentsPanelOpen: boolean;
 }
 
 // Add a projects state with sample projects
@@ -342,7 +343,8 @@ export default function HomeownerDashboard() {
         isTransitioning: false,
         tasks: projectTasks[p.id] || [],
         setupInput: "",
-        chatExpanded: false
+        chatExpanded: false,
+        documentsPanelOpen: false
       };
     });
     return state;
@@ -769,23 +771,34 @@ export default function HomeownerDashboard() {
             : doc
         );
         
+        // Open documents panel when SOW is ready
+        proj.documentsPanelOpen = true;
+        
         // Show transition state
         proj.isTransitioning = true;
-        
-        // After a brief delay, show Kanban board and generate tasks
-        setTimeout(() => {
+        state[activeProject] = proj;
+        return state;
+      });
+      
+      // After a brief delay, show Kanban board and generate tasks
+      setTimeout(() => {
+        setProjectStates(prev => {
+          const state = { ...prev };
+          const proj = { ...state[activeProject] };
           proj.showKanban = true;
-          generateKanbanTasks();
           proj.isTransitioning = false;
           // Add a success message to the chat
           proj.messages = [...proj.messages, { 
             role: "ai", 
             text: "✅ Your project board is ready! You can now manage your tasks using the Kanban board. Try saying 'add task' to create new tasks." 
           }];
-        }, 1000);
-        state[activeProject] = proj;
-        return state;
-      });
+          state[activeProject] = proj;
+          return state;
+        });
+        
+        // Generate tasks after state is updated
+        generateKanbanTasks();
+      }, 1000);
     }, 2000);
   };
 
@@ -1015,9 +1028,17 @@ export default function HomeownerDashboard() {
                 <div className="flex items-center gap-4">
                   {/* Documents Panel Toggle */}
                   <button
-                    onClick={() => {}}
+                    onClick={() => {
+                      setProjectStates(prev => {
+                        const state = { ...prev };
+                        const proj = { ...state[activeProject] };
+                        proj.documentsPanelOpen = !proj.documentsPanelOpen;
+                        state[activeProject] = proj;
+                        return state;
+                      });
+                    }}
                     className={`p-2 rounded-lg transition ${
-                      false 
+                      currentState.documentsPanelOpen 
                         ? 'bg-blue-100 text-blue-600' 
                         : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
                     }`}
@@ -1212,6 +1233,7 @@ export default function HomeownerDashboard() {
                             dates: ""
                           };
                           proj.chatExpanded = false;
+                          proj.documentsPanelOpen = false;
                           state[activeProject] = proj;
                           return state;
                         });
@@ -1239,12 +1261,20 @@ export default function HomeownerDashboard() {
       </div>
 
       {/* Documents Panel Overlay */}
-      {false && ( // documentsPanelOpen
+      {currentState.documentsPanelOpen && (
         <>
           {/* Backdrop - Only covers the right side */}
           <div 
             className="fixed top-0 right-0 h-full w-full sm:w-80 bg-black bg-opacity-30 z-40"
-            onClick={() => {}}
+            onClick={() => {
+              setProjectStates(prev => {
+                const state = { ...prev };
+                const proj = { ...state[activeProject] };
+                proj.documentsPanelOpen = false;
+                state[activeProject] = proj;
+                return state;
+              });
+            }}
           />
           
           {/* Documents Panel */}
@@ -1253,10 +1283,18 @@ export default function HomeownerDashboard() {
               <div className="p-3 sm:p-4 border-b border-gray-200">
                 <div className="flex items-center justify-between">
                   <h3 className="text-base sm:text-lg font-semibold text-gray-900">Documents</h3>
-                  <button
-                    onClick={() => {}}
-                    className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors touch-manipulation"
-                  >
+                              <button
+              onClick={() => {
+                setProjectStates(prev => {
+                  const state = { ...prev };
+                  const proj = { ...state[activeProject] };
+                  proj.documentsPanelOpen = false;
+                  state[activeProject] = proj;
+                  return state;
+                });
+              }}
+              className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors touch-manipulation"
+            >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
