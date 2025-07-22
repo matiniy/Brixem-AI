@@ -4,6 +4,7 @@ import ListView from "@/components/ListView";
 import CalendarView from "@/components/CalendarView";
 import Sidebar from "@/components/Sidebar";
 import KanbanBoard from "@/components/KanbanBoard";
+import FloatingChat from "@/components/FloatingChat";
 
 interface Message {
   role: "user" | "ai";
@@ -774,6 +775,11 @@ export default function HomeownerDashboard() {
           proj.showKanban = true;
           generateKanbanTasks();
           proj.isTransitioning = false;
+          // Add a success message to the chat
+          proj.messages = [...proj.messages, { 
+            role: "ai", 
+            text: "✅ Your project board is ready! You can now manage your tasks using the Kanban board. Try saying 'add task' to create new tasks." 
+          }];
         }, 1000);
         state[activeProject] = proj;
         return state;
@@ -1188,7 +1194,25 @@ export default function HomeownerDashboard() {
                       <span className="sm:hidden">Docs</span>
                     </button>
                     <button
-                      onClick={() => {}}
+                      onClick={() => {
+                        setProjectStates(prev => {
+                          const state = { ...prev };
+                          const proj = { ...state[activeProject] };
+                          proj.showKanban = false;
+                          proj.sowReady = false;
+                          proj.setupStep = 0;
+                          proj.messages = [];
+                          proj.projectAnswers = {
+                            projectType: "",
+                            intendedUse: "",
+                            location: proj.projectAnswers.location || "",
+                            description: "",
+                            dates: ""
+                          };
+                          state[activeProject] = proj;
+                          return state;
+                        });
+                      }}
                       className="px-3 sm:px-4 py-2 text-xs sm:text-sm bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-lg hover:opacity-90 transition touch-manipulation"
                     >
                       <span className="hidden sm:inline">Back to Setup</span>
@@ -1199,28 +1223,12 @@ export default function HomeownerDashboard() {
               </div>
               
               <div className="flex-1 overflow-hidden">
-                {false && ( // currentView === "kanban"
-                  <KanbanBoard
-                    tasks={currentState.tasks}
-                    onTaskUpdate={handleTaskUpdate}
-                    onAddTask={handleAddTask}
-                    onDeleteTask={() => {}}
-                  />
-                )}
-                {false && ( // currentView === "list"
-                  <ListView
-                    tasks={currentState.tasks}
-                    onTaskUpdate={handleTaskUpdate}
-                    onAddTask={handleAddTask}
-                  />
-                )}
-                {false && ( // currentView === "calendar"
-                  <CalendarView
-                    tasks={currentState.tasks}
-                    onTaskUpdate={handleTaskUpdate}
-                    onAddTask={handleAddTask}
-                  />
-                )}
+                <KanbanBoard
+                  tasks={currentState.tasks}
+                  onTaskUpdate={handleTaskUpdate}
+                  onAddTask={handleAddTask}
+                  onDeleteTask={() => {}}
+                />
               </div>
             </div>
           )}
@@ -1320,9 +1328,14 @@ export default function HomeownerDashboard() {
         </>
       )}
 
-      {/* Modals */}
-      {/* Removed AuthModal, ProjectWizard, and FloatingChat if they are not imported or used */}
       {/* Floating Chat Widget - Only show when Kanban board is active */}
+      {currentState.showKanban && (
+        <FloatingChat
+          onSend={handleSend}
+          messages={currentState.messages}
+          placeholder="Ask about your project tasks..."
+        />
+      )}
 
       {/* Project Creation Chat Overlay */}
       {false && ( // showProjectCreationChat
