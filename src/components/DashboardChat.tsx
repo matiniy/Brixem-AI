@@ -201,7 +201,7 @@ export default function DashboardChat({
           ref={chatRef} 
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
         >
-         <div className="relative flex flex-col w-full h-full min-w-[320px] sm:w-full sm:max-w-[480px] sm:h-[90vh] sm:max-h-[600px] bg-gray-900/95 backdrop-blur-xl sm:rounded-2xl sm:shadow-2xl sm:border sm:border-[#23c6e6]/30 overflow-x-hidden">
+         <div className="relative flex flex-col w-full h-full min-w-[320px] sm:w-full sm:max-w-[480px] sm:max-h-[calc(100vh-32px)] bg-gray-900/95 backdrop-blur-xl sm:rounded-2xl sm:shadow-2xl sm:border sm:border-[#23c6e6]/30 overflow-x-hidden overflow-y-auto pb-4">
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700/50 bg-gray-900/90 backdrop-blur-sm sticky top-0 left-0 right-0 z-10 sm:rounded-t-2xl">
               <div className="flex items-center gap-3">
