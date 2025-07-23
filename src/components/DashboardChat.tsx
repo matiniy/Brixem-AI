@@ -137,11 +137,11 @@ export default function DashboardChat({
       {!isExpanded && (
         <div 
           ref={chatRef}
-          className={`bg-gray-900/95 backdrop-blur-xl rounded-full flex items-center gap-3 shadow-xl border border-[#23c6e6]/30 cursor-pointer touch-manipulation transition-all duration-300 ease-in-out hover:shadow-2xl ${
-            isFocused || isHovered 
-              ? 'min-w-[320px] max-w-[450px] px-4 py-3 scale-105' 
-              : 'min-w-[280px] max-w-[380px] px-3 py-2.5 scale-100'
-          }`}
+          className={`bg-gray-900/80 backdrop-blur-lg rounded-full flex items-center gap-3 shadow-lg border border-white/10 cursor-pointer touch-manipulation transition-all duration-300 ease-in-out hover:shadow-2xl overflow-x-hidden
+            ${isFocused || isHovered
+              ? 'min-w-[260px] max-w-[320px] px-4 py-2.5 scale-105'
+              : 'min-w-[200px] max-w-[260px] px-3 py-2 scale-100'}
+          `}
           onClick={handleChatClick}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
@@ -201,7 +201,7 @@ export default function DashboardChat({
           ref={chatRef} 
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
         >
-         <div className="relative w-full h-full bg-gray-900/95 backdrop-blur-xl flex flex-col sm:w-[500px] sm:h-[500px] sm:rounded-2xl sm:shadow-2xl sm:border sm:border-[#23c6e6]/30">
+         <div className="relative w-full h-full bg-gray-900/95 backdrop-blur-xl flex flex-col sm:w-[480px] sm:h-[600px] sm:rounded-2xl sm:shadow-2xl sm:border sm:border-[#23c6e6]/30 overflow-x-hidden transition-all duration-500 ease-in-out">
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700/50 bg-gray-900/90 backdrop-blur-sm sticky top-0 left-0 right-0 z-10 sm:rounded-t-2xl">
               <div className="flex items-center gap-3">
@@ -225,8 +225,8 @@ export default function DashboardChat({
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-2 py-2 sm:p-4 h-[calc(100vh-120px)] sm:h-[350px] scrollbar-thin scrollbar-thumb-gray-600/50 scrollbar-track-gray-800/30">
-              <div className="space-y-3 sm:space-y-4">
+            <div className="flex-1 overflow-y-auto px-2 py-2 sm:p-4 h-[calc(100vh-120px)] sm:h-[450px] scrollbar-thin scrollbar-thumb-gray-600/50 scrollbar-track-gray-800/30">
+              <div className="space-y-4 sm:space-y-5 pr-1">
                 {localMessages.length === 0 ? (
                   <div className="text-center text-gray-500 py-12">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800/50 backdrop-blur-sm flex items-center justify-center">
@@ -282,7 +282,7 @@ export default function DashboardChat({
 
             {/* Input */}
             <div className="p-2 sm:p-4 border-t border-gray-700/50 bg-gray-900/90 backdrop-blur-sm sticky bottom-0 left-0 right-0 z-10 sm:rounded-b-2xl">
-              <form onSubmit={handleSubmit} className="flex gap-2 sm:gap-3">
+              <form onSubmit={handleSubmit} className="flex gap-2 sm:gap-3 pb-1">
                 <div className="flex-1 relative">
                   <input
                     ref={inputRef}
@@ -316,7 +316,7 @@ export default function DashboardChat({
                 </button>
               </form>
               {/* Quick Actions */}
-              <div className="flex justify-between mt-2 gap-2">
+              <div className="flex justify-between mt-3 gap-2 pb-1">
                 <button
                   type="button"
                   className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-[#23c6e6]/80 to-[#4b1fa7]/80 text-white text-xs font-medium shadow hover:opacity-90 active:scale-95 transition-all duration-150"
