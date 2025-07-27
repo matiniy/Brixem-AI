@@ -33,6 +33,9 @@ export default function DashboardChat({
   const inputRef = useRef<HTMLInputElement>(null);
   const chatRef = useRef<HTMLDivElement>(null);
 
+  // Use a more reliable state management approach
+  const isActuallyExpanded = internalExpanded || isExpanded;
+
   useEffect(() => {
     setLocalMessages(messages);
   }, [messages]);
@@ -92,7 +95,7 @@ export default function DashboardChat({
   const handleInputFocus = () => {
     setIsFocused(true);
     // Only expand if not already expanded to prevent conflicts
-    if (!internalExpanded) {
+    if (!isActuallyExpanded) {
       setInternalExpanded(true);
       onToggleExpanded?.(true);
     }
@@ -102,9 +105,11 @@ export default function DashboardChat({
     setIsFocused(false);
   };
 
-  const handleChatClick = () => {
-    console.log('Chat clicked, current expanded state:', internalExpanded);
-    if (!internalExpanded) {
+  const handleChatClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Chat clicked, current expanded state:', isActuallyExpanded);
+    if (!isActuallyExpanded) {
       console.log('Expanding chat...');
       setInternalExpanded(true);
       onToggleExpanded?.(true);
@@ -129,9 +134,9 @@ export default function DashboardChat({
   };
 
   return (
-    <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[100]">
+    <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[999999] pointer-events-auto">
       {/* Collapsed State - Unified Style */}
-      {!internalExpanded && (
+      {!isActuallyExpanded && (
         <div 
           ref={chatRef}
           className={`bg-gray-900/90 backdrop-blur-lg rounded-full flex items-center gap-3 shadow-2xl border border-white/20 cursor-pointer touch-manipulation transition-all duration-300 ease-in-out hover:shadow-2xl overflow-x-hidden
@@ -140,6 +145,8 @@ export default function DashboardChat({
               : 'min-w-[220px] max-w-[280px] px-3 py-2 scale-100'}
           `}
           onClick={handleChatClick}
+          onMouseDown={(e) => e.stopPropagation()}
+          onMouseUp={(e) => e.stopPropagation()}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
@@ -193,10 +200,13 @@ export default function DashboardChat({
       )}
 
       {/* Expanded State - Full Chat Interface with Better Visibility */}
-      {internalExpanded && (
+      {isActuallyExpanded && (
         <div 
           ref={chatRef} 
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/80 backdrop-blur-sm pointer-events-auto"
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onMouseUp={(e) => e.stopPropagation()}
         >
          <div 
            className="relative flex flex-col w-full h-full min-w-[320px] sm:w-full sm:max-w-[520px] sm:max-h-[calc(100vh-48px)] bg-gray-900/95 backdrop-blur-xl sm:rounded-2xl sm:shadow-2xl sm:border sm:border-[#23c6e6]/30 overflow-hidden"
