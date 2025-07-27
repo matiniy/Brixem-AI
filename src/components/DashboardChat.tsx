@@ -154,7 +154,14 @@ export default function DashboardChat({
 
     // Expanded state
   return (
-    <div className="fixed bottom-6 right-6 z-[999999] w-80 sm:w-96 h-[500px] sm:h-[600px] bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-[#23c6e6]/30 overflow-hidden flex flex-col">
+    <div 
+      className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      onClick={() => onToggleExpanded?.(false)}
+    >
+      <div 
+        className="relative flex flex-col w-full max-w-sm sm:max-w-lg md:max-w-2xl max-h-[70vh] sm:max-h-[80vh] bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-[#23c6e6]/30 overflow-hidden mx-4"
+        onClick={(e) => e.stopPropagation()}
+      >
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-gray-700/50 bg-gray-900/90">
           <div className="flex items-center gap-3">
