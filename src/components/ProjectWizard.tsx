@@ -169,23 +169,45 @@ export default function ProjectWizard({ open, onClose, onComplete }: ProjectWiza
         {/* Input Fields */}
         {steps[step].input && (
           <div className="mb-8">
-            <input
-              type="text"
-              placeholder={steps[step].placeholder}
-              onChange={(e) => handleInputChange(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition"
-            />
+            <div className="flex items-center gap-2 bg-gray-900/80 backdrop-blur-lg rounded-full px-4 py-2 shadow-lg">
+              <input
+                type="text"
+                placeholder={steps[step].placeholder}
+                onChange={(e) => handleInputChange(e.target.value)}
+                className="flex-1 bg-transparent text-white placeholder-gray-300 text-base focus:outline-none px-2 py-2"
+              />
+              <button
+                type="button"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] shadow hover:opacity-90 transition"
+                onClick={() => setStep(step + 1)}
+              >
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+              </button>
+            </div>
           </div>
         )}
 
         {steps[step].textarea && (
           <div className="mb-8">
-            <textarea
-              placeholder={steps[step].placeholder}
-              onChange={(e) => handleInputChange(e.target.value)}
-              rows={4}
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition resize-none"
-            />
+            <div className="flex items-center gap-2 bg-gray-900/80 backdrop-blur-lg rounded-full px-4 py-2 shadow-lg">
+              <textarea
+                placeholder={steps[step].placeholder}
+                onChange={(e) => handleInputChange(e.target.value)}
+                rows={2}
+                className="flex-1 bg-transparent text-white placeholder-gray-300 text-base focus:outline-none px-2 py-2 resize-none min-h-[40px] max-h-[80px]"
+              />
+              <button
+                type="button"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] shadow hover:opacity-90 transition"
+                onClick={() => setStep(step + 1)}
+              >
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+              </button>
+            </div>
           </div>
         )}
 

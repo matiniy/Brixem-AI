@@ -1263,7 +1263,7 @@ export default function HomeownerDashboard() {
         <>
           {/* Backdrop - Only covers the right side */}
           <div 
-            className="fixed top-0 right-0 h-full w-full sm:w-80 bg-black bg-opacity-30 z-40"
+            className="fixed top-0 right-0 h-full w-full sm:w-80 bg-black bg-opacity-30 z-[9990]"
             onClick={() => {
               setProjectStates(prev => {
                 const state = { ...prev };
@@ -1276,7 +1276,7 @@ export default function HomeownerDashboard() {
           />
           
           {/* Documents Panel */}
-          <div className="fixed top-0 right-0 h-full w-full sm:w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out">
+          <div className="fixed top-0 right-0 h-full w-full sm:w-80 bg-white shadow-2xl z-[9991] transform transition-transform duration-300 ease-in-out">
             <div className="flex flex-col h-full">
               <div className="p-3 sm:p-4 border-b border-gray-200">
                 <div className="flex items-center justify-between">
@@ -1389,7 +1389,7 @@ export default function HomeownerDashboard() {
       {/* Auto-collapse chat when user interacts with dashboard */}
       {currentState.showKanban && currentState.chatExpanded && (
         <div 
-          className="fixed inset-0 z-40"
+          className="fixed inset-0 z-[9998]"
           onClick={() => {
             setProjectStates(prev => {
               const state = { ...prev };
