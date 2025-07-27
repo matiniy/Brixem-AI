@@ -142,7 +142,10 @@ export default function DashboardChat({
               ? 'min-w-[280px] max-w-[340px] px-4 py-2.5 scale-105'
               : 'min-w-[220px] max-w-[280px] px-3 py-2 scale-100'}
           `}
-          onClick={handleChatClick}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleChatClick();
+          }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
@@ -200,8 +203,12 @@ export default function DashboardChat({
         <div 
           ref={chatRef} 
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          onClick={(e) => e.stopPropagation()}
         >
-         <div className="relative flex flex-col w-full h-full min-w-[320px] sm:w-full sm:max-w-[520px] sm:max-h-[calc(100vh-48px)] bg-gray-900/95 backdrop-blur-xl sm:rounded-2xl sm:shadow-2xl sm:border sm:border-[#23c6e6]/30 overflow-hidden">
+         <div 
+           className="relative flex flex-col w-full h-full min-w-[320px] sm:w-full sm:max-w-[520px] sm:max-h-[calc(100vh-48px)] bg-gray-900/95 backdrop-blur-xl sm:rounded-2xl sm:shadow-2xl sm:border sm:border-[#23c6e6]/30 overflow-hidden"
+           onClick={(e) => e.stopPropagation()}
+         >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-4 border-b border-gray-700/50 bg-gray-900/90 backdrop-blur-sm sticky top-0 left-0 right-0 z-10 sm:rounded-t-2xl">
               <div className="flex items-center gap-3">

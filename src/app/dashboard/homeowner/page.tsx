@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import KanbanBoard from "@/components/KanbanBoard";
+import ListView from "@/components/ListView";
+import CalendarView from "@/components/CalendarView";
 import DashboardChat from "@/components/DashboardChat";
 
 interface Message {
@@ -107,6 +109,7 @@ interface ProjectState {
   setupInput?: string;
   chatExpanded: boolean;
   documentsPanelOpen: boolean;
+  currentView: "kanban" | "list" | "calendar";
 }
 
 // Add a projects state with sample projects
@@ -342,7 +345,8 @@ export default function HomeownerDashboard() {
         tasks: projectTasks[p.id] || [],
         setupInput: "",
         chatExpanded: false,
-        documentsPanelOpen: false
+        documentsPanelOpen: false,
+        currentView: "kanban"
       };
     });
     return state;
@@ -1167,9 +1171,17 @@ export default function HomeownerDashboard() {
                     {/* View Toggle */}
                     <div className="flex items-center gap-1 bg-gray-200 rounded-lg p-1">
                       <button
-                        onClick={() => {}}
+                        onClick={() => {
+                          setProjectStates(prev => {
+                            const state = { ...prev };
+                            const proj = { ...state[activeProject] };
+                            proj.currentView = "kanban";
+                            state[activeProject] = proj;
+                            return state;
+                          });
+                        }}
                         className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-md transition touch-manipulation ${
-                          false
+                          currentState.currentView === "kanban"
                             ? "bg-white text-gray-900 shadow-sm"
                             : "text-gray-700 hover:text-gray-900"
                         }`}
@@ -1178,9 +1190,17 @@ export default function HomeownerDashboard() {
                         <span className="sm:hidden">K</span>
                       </button>
                       <button
-                        onClick={() => {}}
+                        onClick={() => {
+                          setProjectStates(prev => {
+                            const state = { ...prev };
+                            const proj = { ...state[activeProject] };
+                            proj.currentView = "list";
+                            state[activeProject] = proj;
+                            return state;
+                          });
+                        }}
                         className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-md transition touch-manipulation ${
-                          false
+                          currentState.currentView === "list"
                             ? "bg-white text-gray-900 shadow-sm"
                             : "text-gray-700 hover:text-gray-900"
                         }`}
@@ -1189,9 +1209,17 @@ export default function HomeownerDashboard() {
                         <span className="sm:hidden">L</span>
                       </button>
                       <button
-                        onClick={() => {}}
+                        onClick={() => {
+                          setProjectStates(prev => {
+                            const state = { ...prev };
+                            const proj = { ...state[activeProject] };
+                            proj.currentView = "calendar";
+                            state[activeProject] = proj;
+                            return state;
+                          });
+                        }}
                         className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-md transition touch-manipulation ${
-                          false
+                          currentState.currentView === "calendar"
                             ? "bg-white text-gray-900 shadow-sm"
                             : "text-gray-700 hover:text-gray-900"
                         }`}
@@ -1232,6 +1260,7 @@ export default function HomeownerDashboard() {
                           };
                           proj.chatExpanded = false;
                           proj.documentsPanelOpen = false;
+                          proj.currentView = "kanban";
                           state[activeProject] = proj;
                           return state;
                         });
@@ -1246,12 +1275,28 @@ export default function HomeownerDashboard() {
               </div>
               
               <div className="flex-1 overflow-hidden">
-                <KanbanBoard
-                  tasks={currentState.tasks}
-                  onTaskUpdate={handleTaskUpdate}
-                  onAddTask={handleAddTask}
-                  onDeleteTask={() => {}}
-                />
+                {currentState.currentView === "kanban" && (
+                  <KanbanBoard
+                    tasks={currentState.tasks}
+                    onTaskUpdate={handleTaskUpdate}
+                    onAddTask={handleAddTask}
+                    onDeleteTask={() => {}}
+                  />
+                )}
+                {currentState.currentView === "list" && (
+                  <ListView
+                    tasks={currentState.tasks}
+                    onTaskUpdate={handleTaskUpdate}
+                    onAddTask={handleAddTask}
+                  />
+                )}
+                {currentState.currentView === "calendar" && (
+                  <CalendarView
+                    tasks={currentState.tasks}
+                    onTaskUpdate={handleTaskUpdate}
+                    onAddTask={handleAddTask}
+                  />
+                )}
               </div>
             </div>
           )}
@@ -1386,8 +1431,8 @@ export default function HomeownerDashboard() {
         />
       )}
 
-      {/* Auto-collapse chat when user interacts with dashboard */}
-      {currentState.showKanban && currentState.chatExpanded && (
+      {/* Auto-collapse chat when user interacts with dashboard - Disabled for better UX */}
+      {/* {currentState.showKanban && currentState.chatExpanded && (
         <div 
           className="fixed inset-0 z-[9998]"
           onClick={() => {
@@ -1400,7 +1445,7 @@ export default function HomeownerDashboard() {
             });
           }}
         />
-      )}
+      )} */}
 
       {/* Project Creation Chat Overlay */}
       {false && ( // showProjectCreationChat
