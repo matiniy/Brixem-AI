@@ -323,6 +323,9 @@ const projectTasks: Record<string, Task[]> = {
 };
 
 export default function HomeownerDashboard() {
+  // Mobile sidebar state
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  
   // 1. Add a per-project state for chat, setup, Kanban, and documents
   const [projectStates, setProjectStates] = useState<Record<string, ProjectState>>(() => {
     const state: Record<string, ProjectState> = {};
@@ -1007,12 +1010,13 @@ export default function HomeownerDashboard() {
         activeProject={activeProject}
         onProjectSelect={(projectId) => {
           setActiveProject(projectId);
-          // setTasks(projectTasks[projectId] || []); // This line is no longer needed
+          // Close mobile sidebar after project selection
+          setIsMobileSidebarOpen(false);
         }}
         onProjectCreate={() => {}}
         onProjectDelete={() => {}}
-        isMobileOpen={false} // isMobileSidebarOpen is removed
-        onMobileToggle={() => {}}
+        isMobileOpen={isMobileSidebarOpen}
+        onMobileToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
         onStartProjectChat={() => {}}
       />
       {/* Main Content */}
@@ -1024,8 +1028,8 @@ export default function HomeownerDashboard() {
               <div className="flex items-center gap-3">
                 {/* Mobile Menu Button */}
                 <button
-                  onClick={() => {}}
-                  className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition"
+                  onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                  className="lg:hidden p-2 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition touch-manipulation"
                 >
                   <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -1349,18 +1353,18 @@ export default function HomeownerDashboard() {
               <div className="p-3 sm:p-4 border-b border-gray-200">
                 <div className="flex items-center justify-between">
                   <h3 className="text-base sm:text-lg font-semibold text-gray-900">Documents</h3>
-                              <button
-              onClick={() => {
-                setProjectStates(prev => {
-                  const state = { ...prev };
-                  const proj = { ...state[activeProject] };
-                  proj.documentsPanelOpen = false;
-                  state[activeProject] = proj;
-                  return state;
-                });
-              }}
-              className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors touch-manipulation"
-            >
+                  <button
+                    onClick={() => {
+                      setProjectStates(prev => {
+                        const state = { ...prev };
+                        const proj = { ...state[activeProject] };
+                        proj.documentsPanelOpen = false;
+                        state[activeProject] = proj;
+                        return state;
+                      });
+                    }}
+                    className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation"
+                  >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -1411,14 +1415,14 @@ export default function HomeownerDashboard() {
                           <div className="mt-3 flex flex-col sm:flex-row gap-2">
                             <button
                               onClick={() => handleDocumentDownload(doc.id)}
-                              className="px-3 py-1 text-xs bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-md hover:opacity-90 transition touch-manipulation"
+                              className="px-3 py-2 text-xs sm:text-sm bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-md hover:opacity-90 active:scale-95 transition touch-manipulation min-h-[44px] flex items-center justify-center"
                             >
                               Download PDF
                             </button>
                             {doc.type === "sow" && (
                               <button
                                 onClick={() => handleDocumentDownload(doc.id)}
-                                className="px-3 py-1 text-xs bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition touch-manipulation"
+                                className="px-3 py-2 text-xs sm:text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 active:scale-95 transition touch-manipulation min-h-[44px] flex items-center justify-center"
                               >
                                 Download Word
                               </button>

@@ -152,7 +152,7 @@ export default function Home() {
             </span>
           </div>
           {/* Main Headline with animated gradient */}
-          <h1 className={`font-bold mb-4 sm:mb-6 leading-tight max-w-4xl mx-auto text-center transition-all duration-500 ${isChatActive ? 'text-lg sm:text-xl md:text-2xl lg:text-3xl mb-2 sm:mb-3' : 'text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl mb-4 sm:mb-6'}`}>
+          <h1 className={`font-bold mb-4 sm:mb-6 leading-tight max-w-4xl mx-auto text-center transition-all duration-500 ${isChatActive ? 'text-lg sm:text-xl md:text-2xl lg:text-3xl mb-2 sm:mb-3' : 'text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-4 sm:mb-6'}`}>
             <span className="block">
               <GradientText
                 className="inline"
@@ -165,7 +165,7 @@ export default function Home() {
             <span className="block text-black">built for construction</span>
           </h1>
           {/* Smaller Subheadline */}
-          <h2 className={`font-normal text-gray-900 transition-all duration-500 ${isChatActive ? 'text-xs sm:text-sm mb-3 sm:mb-4' : 'text-xs sm:text-sm md:text-base mb-2 sm:mb-3'}`}>
+          <h2 className={`font-normal text-gray-900 transition-all duration-500 ${isChatActive ? 'text-xs sm:text-sm mb-3 sm:mb-4' : 'text-sm sm:text-base md:text-lg mb-2 sm:mb-3'}`}>
             Brixem gives homeowners and teams instant clarity across renovation and construction projects — from scoping to costing, scheduling, and contractor collaboration.
           </h2>
           {/* AI Chat Card with minimal spacing */}
@@ -174,7 +174,7 @@ export default function Home() {
               {/* Chat Area Only - no card styling */}
               <div className="px-1 pb-1 pt-0">
                 <div className={`flex flex-col transition-all duration-500 ${
-                  isChatActive ? 'h-64 sm:h-80 md:h-96' : 'h-24 sm:h-32 md:h-40'
+                  isChatActive ? 'h-64 sm:h-80 md:h-96 lg:h-[500px]' : 'h-24 sm:h-32 md:h-40 lg:h-48'
                 }`}>
                   <ChatPanel 
                     messages={messages} 
@@ -227,20 +227,20 @@ export default function Home() {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Homeowner Card */}
-            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 flex flex-col h-full group">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform">
+            <div className="bg-white rounded-2xl p-4 sm:p-6 lg:p-8 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 flex flex-col h-full group">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center mb-3 sm:mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
                 <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                   <circle cx="12" cy="12" r="9" strokeWidth={1.5} className="opacity-30" />
                 </svg>
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Homeowner</h3>
-              <p className="text-gray-600 mb-4 sm:mb-6 leading-relaxed flex-grow text-sm sm:text-base">
+              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 lg:mb-4">Homeowner</h3>
+              <p className="text-gray-600 mb-3 sm:mb-4 lg:mb-6 leading-relaxed flex-grow text-sm sm:text-base">
                 Plan your renovation with confidence. Step-by-step project scoping with dynamic progress tracking 
                 and AI-powered recommendations.
               </p>
               <button 
-                className="w-full px-4 sm:px-6 py-3 rounded-lg bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold hover:opacity-90 transition mt-auto text-sm sm:text-base"
+                className="w-full px-4 sm:px-6 py-3 rounded-lg bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold hover:opacity-90 active:scale-95 transition mt-auto text-sm sm:text-base touch-manipulation min-h-[44px]"
                 onClick={() => router.push("/onboarding/homeowner")}
               >
                 Get Started
