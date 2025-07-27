@@ -338,9 +338,24 @@ export default function HomeownerDashboard() {
           description: "",
           dates: ""
         },
-        sowReady: false,
-        documents: [],
-        showKanban: false,
+        sowReady: p.status === "completed" || p.status === "in-progress",
+        documents: p.status === "completed" || p.status === "in-progress" ? [
+          {
+            id: "sow-1",
+            name: "Scope of Works",
+            type: "sow",
+            status: "ready" as const,
+            createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days ago
+          },
+          {
+            id: "wbs-1",
+            name: "Work Breakdown Structure",
+            type: "wbs",
+            status: "ready" as const,
+            createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() // 5 days ago
+          }
+        ] : [],
+        showKanban: p.status === "completed" || p.status === "in-progress",
         isTransitioning: false,
         tasks: projectTasks[p.id] || [],
         setupInput: "",
@@ -1229,9 +1244,17 @@ export default function HomeownerDashboard() {
                       </button>
                     </div>
                     <button
-                      onClick={() => {}}
+                      onClick={() => {
+                        setProjectStates(prev => {
+                          const state = { ...prev };
+                          const proj = { ...state[activeProject] };
+                          proj.documentsPanelOpen = !proj.documentsPanelOpen;
+                          state[activeProject] = proj;
+                          return state;
+                        });
+                      }}
                       className={`px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg transition flex items-center gap-2 touch-manipulation ${
-                        false 
+                        currentState.documentsPanelOpen 
                           ? 'bg-blue-100 text-blue-700' 
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
