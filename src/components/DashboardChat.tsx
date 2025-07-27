@@ -113,7 +113,7 @@ export default function DashboardChat({
     return (
       <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[999999]">
         <div 
-          className="bg-gray-900/90 backdrop-blur-lg rounded-full flex items-center gap-3 px-4 py-3 shadow-2xl border border-white/20 cursor-pointer transition-all duration-300 hover:shadow-2xl min-w-[280px] max-w-[400px]"
+          className="bg-gray-900/90 backdrop-blur-lg rounded-full flex items-center gap-3 px-4 py-3 shadow-2xl border border-white/20 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105 min-w-[280px] max-w-[400px]"
           onClick={handleChatClick}
         >
           {/* Chat Icon */}
@@ -131,8 +131,9 @@ export default function DashboardChat({
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
+              onFocus={handleChatClick}
               placeholder={placeholder}
-              className="w-full bg-transparent text-white placeholder-gray-300 text-sm focus:outline-none"
+              className="w-full bg-transparent text-white placeholder-gray-300 text-sm focus:outline-none cursor-pointer"
             />
           </div>
 
