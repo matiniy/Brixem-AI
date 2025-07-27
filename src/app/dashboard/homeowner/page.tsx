@@ -1420,6 +1420,7 @@ export default function HomeownerDashboard() {
           placeholder="Ask about your project tasks..."
           isExpanded={currentState.chatExpanded}
           onToggleExpanded={(expanded) => {
+            console.log('Toggle expanded called with:', expanded);
             setProjectStates(prev => {
               const state = { ...prev };
               const proj = { ...state[activeProject] };

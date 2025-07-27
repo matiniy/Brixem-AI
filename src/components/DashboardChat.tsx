@@ -28,6 +28,7 @@ export default function DashboardChat({
   const [isHovered, setIsHovered] = useState(false);
   const [localMessages, setLocalMessages] = useState<Message[]>(messages);
   const [pendingTask, setPendingTask] = useState<string | null>(null);
+  const [internalExpanded, setInternalExpanded] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const chatRef = useRef<HTMLDivElement>(null);
@@ -36,28 +37,19 @@ export default function DashboardChat({
     setLocalMessages(messages);
   }, [messages]);
 
+  // Sync internal expanded state with external state
+  useEffect(() => {
+    setInternalExpanded(isExpanded);
+  }, [isExpanded]);
+
   useEffect(() => {
     if (messagesEndRef.current && isExpanded) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [localMessages, isExpanded]);
 
-  // Handle clicks outside the chat to close it
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (isExpanded && chatRef.current && !chatRef.current.contains(event.target as Node)) {
-        onToggleExpanded?.(false);
-      }
-    };
-
-    if (isExpanded) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isExpanded, onToggleExpanded]);
+  // Removed click-outside detection to prevent chat from disappearing
+  // Users can close chat manually using the X button
 
   // Task-like message detection
   function detectTask(text: string): string | null {
@@ -99,7 +91,9 @@ export default function DashboardChat({
 
   const handleInputFocus = () => {
     setIsFocused(true);
-    if (!isExpanded) {
+    // Only expand if not already expanded to prevent conflicts
+    if (!internalExpanded) {
+      setInternalExpanded(true);
       onToggleExpanded?.(true);
     }
   };
@@ -109,7 +103,10 @@ export default function DashboardChat({
   };
 
   const handleChatClick = () => {
-    if (!isExpanded) {
+    console.log('Chat clicked, current expanded state:', internalExpanded);
+    if (!internalExpanded) {
+      console.log('Expanding chat...');
+      setInternalExpanded(true);
       onToggleExpanded?.(true);
     }
   };
@@ -134,7 +131,7 @@ export default function DashboardChat({
   return (
     <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[100]">
       {/* Collapsed State - Unified Style */}
-      {!isExpanded && (
+      {!internalExpanded && (
         <div 
           ref={chatRef}
           className={`bg-gray-900/90 backdrop-blur-lg rounded-full flex items-center gap-3 shadow-2xl border border-white/20 cursor-pointer touch-manipulation transition-all duration-300 ease-in-out hover:shadow-2xl overflow-x-hidden
@@ -142,10 +139,7 @@ export default function DashboardChat({
               ? 'min-w-[280px] max-w-[340px] px-4 py-2.5 scale-105'
               : 'min-w-[220px] max-w-[280px] px-3 py-2 scale-100'}
           `}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleChatClick();
-          }}
+          onClick={handleChatClick}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
@@ -199,15 +193,13 @@ export default function DashboardChat({
       )}
 
       {/* Expanded State - Full Chat Interface with Better Visibility */}
-      {isExpanded && (
+      {internalExpanded && (
         <div 
           ref={chatRef} 
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
-          onClick={(e) => e.stopPropagation()}
         >
          <div 
            className="relative flex flex-col w-full h-full min-w-[320px] sm:w-full sm:max-w-[520px] sm:max-h-[calc(100vh-48px)] bg-gray-900/95 backdrop-blur-xl sm:rounded-2xl sm:shadow-2xl sm:border sm:border-[#23c6e6]/30 overflow-hidden"
-           onClick={(e) => e.stopPropagation()}
          >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-4 border-b border-gray-700/50 bg-gray-900/90 backdrop-blur-sm sticky top-0 left-0 right-0 z-10 sm:rounded-t-2xl">
@@ -221,7 +213,10 @@ export default function DashboardChat({
                 </div>
               </div>
               <button
-                onClick={() => onToggleExpanded?.(false)}
+                onClick={() => {
+                  setInternalExpanded(false);
+                  onToggleExpanded?.(false);
+                }}
                 className="text-gray-400 hover:text-white transition-colors duration-200 touch-manipulation p-2 rounded-lg hover:bg-gray-800/50"
                 style={{ zIndex: 10 }}
               >
