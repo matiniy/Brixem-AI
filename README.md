@@ -3,6 +3,7 @@
 <!-- Trigger deployment for domain connection fix -->
 <!-- Trigger deployment -->
 <!-- Force fresh deployment -->
+<!-- Trigger deployment for subdomain test -->
 
 A modern AI-powered construction management platform.
 
