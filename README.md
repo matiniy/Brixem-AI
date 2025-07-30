@@ -1,8 +1,9 @@
 # Brixem AI
 
-A modern AI-powered construction management platform.
-
+<!-- Trigger deployment for domain connection fix -->
 <!-- Trigger deployment -->
+
+A modern AI-powered construction management platform.
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
