@@ -39,6 +39,7 @@ export default function Home() {
         setEmailConfirmationStatus({ type: 'loading', message: 'Confirming your email...' });
         
         try {
+          console.log('Processing email confirmation with token_hash:', token_hash);
           const { data, error } = await supabase.auth.verifyOtp({
             token_hash,
             type: 'signup'
@@ -54,6 +55,7 @@ export default function Home() {
           }
 
           if (data.user) {
+            console.log('Email confirmed successfully for user:', data.user.email);
             setEmailConfirmationStatus({
               type: 'success',
               message: 'Email confirmed successfully! Redirecting to dashboard...'
