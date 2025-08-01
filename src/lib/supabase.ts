@@ -340,7 +340,7 @@ export async function signOut() {
 }
 
 // Real-time subscriptions
-export function subscribeToProjectChanges(projectId: string, callback: (payload: any) => void) {
+export function subscribeToProjectChanges(projectId: string, callback: (payload: unknown) => void) {
   return supabase
     .channel(`project:${projectId}`)
     .on('postgres_changes', {
@@ -352,7 +352,7 @@ export function subscribeToProjectChanges(projectId: string, callback: (payload:
     .subscribe();
 }
 
-export function subscribeToUserProjects(userId: string, callback: (payload: any) => void) {
+export function subscribeToUserProjects(userId: string, callback: (payload: unknown) => void) {
   return supabase
     .channel(`user-projects:${userId}`)
     .on('postgres_changes', {

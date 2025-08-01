@@ -5,7 +5,7 @@ interface CacheItem<T> {
 }
 
 class Cache {
-  private storage: Map<string, CacheItem<any>>;
+  private storage: Map<string, CacheItem<unknown>>;
   private maxSize: number;
 
   constructor(maxSize: number = 100) {
@@ -86,7 +86,7 @@ export const cacheKeys = {
 } as const;
 
 // Cache utilities
-export function generateCacheKey(prefix: string, ...params: any[]): string {
+export function generateCacheKey(prefix: string, ...params: unknown[]): string {
   return `${prefix}:${params.join(':')}`;
 }
 
@@ -101,7 +101,7 @@ export function hashString(str: string): string {
 }
 
 // Cached function wrapper
-export function withCache<T extends any[], R>(
+export function withCache<T extends unknown[], R>(
   fn: (...args: T) => Promise<R>,
   keyGenerator: (...args: T) => string,
   ttl: number = 5 * 60 * 1000
@@ -122,7 +122,7 @@ export function withCache<T extends any[], R>(
 
 // Cache middleware for API routes
 export function createCacheMiddleware(ttl: number = 5 * 60 * 1000) {
-  return function cacheMiddleware<T extends any[], R>(
+  return function cacheMiddleware<T extends unknown[], R>(
     fn: (...args: T) => Promise<R>,
     keyGenerator: (...args: T) => string
   ): (...args: T) => Promise<R> {

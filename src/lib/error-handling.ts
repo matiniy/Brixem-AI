@@ -31,7 +31,7 @@ export const errorCodes = {
   PERMISSION_DENIED: 'PERM_001',
 } as const;
 
-export function logError(error: Error | AppError, context?: Record<string, any>) {
+export function logError(error: Error | AppError, context?: Record<string, unknown>) {
   const errorInfo: ErrorInfo = {
     message: error.message,
     code: error instanceof AppError ? error.code : 'UNKNOWN_ERROR',
@@ -53,7 +53,7 @@ export function logError(error: Error | AppError, context?: Record<string, any>)
   return errorInfo;
 }
 
-export function handleApiError(error: any): AppError {
+export function handleApiError(error: unknown): AppError {
   if (error instanceof AppError) {
     return error;
   }
