@@ -2,16 +2,22 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import { signUp } from "@/lib/supabase";
 
 export default function HomeownerOnboarding() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [userData, setUserData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
+    password: "",
+    confirmPassword: "",
     projectType: "",
     location: ""
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const steps = [
     {
@@ -19,21 +25,35 @@ export default function HomeownerOnboarding() {
       subtitle: "Let's get to know you and your renovation goals",
       content: (
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name
-            </label>
-            <input
-              type="text"
-              value={userData.name}
-              onChange={(e) => setUserData(prev => ({ ...prev, name: e.target.value }))}
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900"
-              placeholder="Enter your full name"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                First Name *
+              </label>
+              <input
+                type="text"
+                value={userData.firstName}
+                onChange={(e) => setUserData(prev => ({ ...prev, firstName: e.target.value }))}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900"
+                placeholder="Enter your first name"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Last Name *
+              </label>
+              <input
+                type="text"
+                value={userData.lastName}
+                onChange={(e) => setUserData(prev => ({ ...prev, lastName: e.target.value }))}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900"
+                placeholder="Enter your last name"
+              />
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email Address
+              Email Address *
             </label>
             <input
               type="email"
@@ -43,149 +63,209 @@ export default function HomeownerOnboarding() {
               placeholder="Enter your email"
             />
           </div>
-        </div>
-      )
-    },
-    {
-      title: "What type of project are you planning?",
-      subtitle: "Select the type that best matches your renovation",
-      content: (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[
-            { value: "kitchen", label: "Kitchen Remodel", description: "Cabinets, countertops, appliances" },
-            { value: "bathroom", label: "Bathroom Renovation", description: "Fixtures, tiles, plumbing" },
-            { value: "basement", label: "Basement Finish", description: "Living space, storage, utilities" },
-            { value: "addition", label: "Home Addition", description: "New rooms, extensions" },
-            { value: "exterior", label: "Exterior Work", description: "Siding, roofing, windows" },
-            { value: "landscaping", label: "Landscaping", description: "Yard, garden, hardscaping" },
-            { value: "other", label: "Other", description: "Something else not listed here" }
-          ].map((option) => (
-            <button
-              key={option.value}
-              onClick={() => setUserData(prev => ({ ...prev, projectType: option.value }))}
-              className={`p-4 rounded-lg border-2 transition-all duration-200 text-left ${
-                userData.projectType === option.value
-                  ? "border-[#23c6e6] bg-[#23c6e6]/5"
-                  : "border-gray-200 hover:border-[#23c6e6]"
-              }`}
-            >
-              <h4 className="font-semibold text-gray-900 mb-1">{option.label}</h4>
-              <p className="text-sm text-gray-600">{option.description}</p>
-            </button>
-          ))}
-        </div>
-      )
-    },
-    {
-      title: "Where is your project located?",
-      subtitle: "Enter your project address or city",
-      content: (
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Project Location
-          </label>
-          <input
-            type="text"
-            value={userData.location}
-            onChange={(e) => setUserData(prev => ({ ...prev, location: e.target.value }))}
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900"
-            placeholder="Enter your project address or city"
-          />
-        </div>
-      )
-    },
-    {
-      title: "You're all set! 🎉",
-      subtitle: "Let's start your renovation journey",
-      content: (
-        <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
-            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Password *
+              </label>
+              <input
+                type="password"
+                value={userData.password}
+                onChange={(e) => setUserData(prev => ({ ...prev, password: e.target.value }))}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900"
+                placeholder="Create a password"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Confirm Password *
+              </label>
+              <input
+                type="password"
+                value={userData.confirmPassword}
+                onChange={(e) => setUserData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900"
+                placeholder="Confirm your password"
+              />
+            </div>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">
-            Welcome to Brixem, {userData.name}!
-          </h3>
-          <p className="text-gray-600 mb-6">
-            You&apos;re ready to start planning your renovation projects!
-          </p>
+        </div>
+      )
+    },
+    {
+      title: "What type of project are you planning? 🏗️",
+      subtitle: "This helps us tailor your experience",
+      content: (
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Project Type *
+            </label>
+            <select
+              value={userData.projectType}
+              onChange={(e) => setUserData(prev => ({ ...prev, projectType: e.target.value }))}
+              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900"
+            >
+              <option value="">Select project type</option>
+              <option value="kitchen">Kitchen Renovation</option>
+              <option value="bathroom">Bathroom Remodel</option>
+              <option value="living-room">Living Room</option>
+              <option value="bedroom">Bedroom</option>
+              <option value="basement">Basement</option>
+              <option value="outdoor">Outdoor/Deck</option>
+              <option value="whole-house">Whole House</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Project Location *
+            </label>
+            <input
+              type="text"
+              value={userData.location}
+              onChange={(e) => setUserData(prev => ({ ...prev, location: e.target.value }))}
+              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900"
+              placeholder="City, State"
+            />
+          </div>
         </div>
       )
     }
   ];
 
-  const handleNext = () => {
-    if (step < steps.length - 1) {
-      setStep(step + 1);
+  const validateStep = (stepIndex: number) => {
+    const newErrors: Record<string, string> = {};
+    
+    if (stepIndex === 0) {
+      if (!userData.firstName) newErrors.firstName = "First name is required";
+      if (!userData.lastName) newErrors.lastName = "Last name is required";
+      if (!userData.email) newErrors.email = "Email is required";
+      if (!userData.password) newErrors.password = "Password is required";
+      if (userData.password.length < 8) newErrors.password = "Password must be at least 8 characters";
+      if (userData.password !== userData.confirmPassword) newErrors.confirmPassword = "Passwords do not match";
+    } else if (stepIndex === 1) {
+      if (!userData.projectType) newErrors.projectType = "Project type is required";
+      if (!userData.location) newErrors.location = "Location is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleNext = async () => {
+    if (!validateStep(step)) return;
+
+    if (step === steps.length - 1) {
+      // Final step - create account
+      await handleSignup();
     } else {
-      // Directly redirect to dashboard after last step
-      router.push("/dashboard/homeowner");
+      setStep(step + 1);
+    }
+  };
+
+  const handleSignup = async () => {
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      const userDataForSignup = {
+        first_name: userData.firstName,
+        last_name: userData.lastName,
+        role: 'homeowner' as const,
+        full_name: `${userData.firstName} ${userData.lastName}`,
+        project_type: userData.projectType,
+        location: userData.location
+      };
+
+      const result = await signUp(userData.email, userData.password, userDataForSignup);
+
+      if (result.error) {
+        if (result.error.message.includes('already registered')) {
+          setErrors({ email: 'An account with this email already exists' });
+        } else if (result.error.message.includes('password')) {
+          setErrors({ password: 'Password must be at least 6 characters' });
+        } else {
+          setErrors({ email: result.error.message });
+        }
+      } else {
+        // Success - redirect to dashboard
+        router.push('/dashboard/homeowner');
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      setErrors({ email: 'An error occurred during signup. Please try again.' });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleBack = () => {
-    if (step > 0) {
-      setStep(step - 1);
-    }
+    setStep(Math.max(0, step - 1));
   };
 
-  const getProgress = () => ((step + 1) / steps.length) * 100;
-
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(90deg, #d1d1d1 0%, #c9c9c9 100%)' }}>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <Navbar />
-      <div className="max-w-4xl mx-auto px-4 py-6 md:px-8 md:py-12">
-        <div className="bg-white rounded-2xl shadow-xl p-4 md:p-8">
+      
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="bg-white rounded-2xl shadow-xl p-8">
           {/* Progress Bar */}
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-600">
-                Step {step + 1} of {steps.length}
-              </span>
-              <span className="text-sm font-medium text-[#23c6e6]">
-                {Math.round(getProgress())}% Complete
-              </span>
+            <div className="flex justify-between items-center mb-4">
+              <h1 className="text-2xl font-bold text-gray-900">{steps[step].title}</h1>
+              <span className="text-sm text-gray-500">{step + 1} of {steps.length}</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div 
                 className="bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] h-2 rounded-full transition-all duration-300"
-                style={{ width: `${getProgress()}%` }}
+                style={{ width: `${((step + 1) / steps.length) * 100}%` }}
               ></div>
             </div>
           </div>
 
           {/* Step Content */}
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">
-              {steps[step].title}
-            </h2>
-            <p className="text-gray-600 text-center mb-6">
-              {steps[step].subtitle}
-            </p>
+            <p className="text-gray-600 mb-6">{steps[step].subtitle}</p>
             {steps[step].content}
           </div>
 
+          {/* Error Display */}
+          {Object.keys(errors).length > 0 && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              {Object.entries(errors).map(([field, message]) => (
+                <p key={field} className="text-red-600 text-sm">{message}</p>
+              ))}
+            </div>
+          )}
+
           {/* Navigation */}
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between">
             <button
               onClick={handleBack}
               disabled={step === 0}
-              className="w-full md:w-auto px-6 py-3 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition disabled:opacity-50 mb-2 md:mb-0"
+              className="px-6 py-3 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Back
             </button>
-
             <button
               onClick={handleNext}
-              disabled={
-                (step === 0 && (!userData.name || !userData.email)) ||
-                (step === 1 && !userData.projectType) ||
-                (step === 2 && !userData.location)
-              }
-              className="w-full md:w-auto px-8 py-3 rounded-lg bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2"
+              disabled={isLoading}
+              className="px-8 py-3 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold rounded-lg hover:opacity-90 transition disabled:opacity-50"
             >
-              {step === steps.length - 1 ? "Create Account" : "Next"}
+              {isLoading ? (
+                <div className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Creating account...
+                </div>
+              ) : step === steps.length - 1 ? (
+                "Create Account"
+              ) : (
+                "Next"
+              )}
             </button>
           </div>
         </div>

@@ -15,7 +15,6 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }: Signup
     email: "",
     password: "",
     confirmPassword: "",
-    company: "",
     role: ""
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +39,6 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }: Signup
     if (!formData.password) newErrors.password = "Password is required";
     if (formData.password.length < 8) newErrors.password = "Password must be at least 8 characters";
     if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "Passwords do not match";
-    if (!formData.company) newErrors.company = "Company is required";
     if (!formData.role) newErrors.role = "Role is required";
 
     setErrors(newErrors);
@@ -61,7 +59,6 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }: Signup
       const userData = {
         first_name: formData.firstName,
         last_name: formData.lastName,
-        company: formData.company,
         role: formData.role as 'homeowner' | 'contractor',
         full_name: `${formData.firstName} ${formData.lastName}`
       };
@@ -87,7 +84,6 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }: Signup
           email: "",
           password: "",
           confirmPassword: "",
-          company: "",
           role: ""
         });
         
@@ -236,26 +232,6 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }: Signup
                 <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
               )}
             </div>
-          </div>
-
-          <div>
-            <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
-              Company Name *
-            </label>
-            <input
-              type="text"
-              id="company"
-              name="company"
-              value={formData.company}
-              onChange={handleInputChange}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent ${
-                errors.company ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="Enter your company name"
-            />
-            {errors.company && (
-              <p className="text-red-500 text-sm mt-1">{errors.company}</p>
-            )}
           </div>
 
           <div>
