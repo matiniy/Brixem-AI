@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import { signIn } from '@/lib/supabase';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -29,17 +30,32 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }: LoginM
 
     setIsLoading(true);
     
-    // Mock login - replace with actual authentication
-    setTimeout(() => {
+    try {
+      const { data, error } = await signIn(email, password);
+
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          setErrors({ email: 'Invalid email or password' });
+        } else if (error.message.includes('Email not confirmed')) {
+          setErrors({ email: 'Please check your email and confirm your account' });
+        } else {
+          setErrors({ email: error.message });
+        }
+      } else {
+        // Success - redirect to dashboard
+        onClose();
+        window.location.href = "/dashboard";
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setErrors({ email: 'An error occurred during login. Please try again.' });
+    } finally {
       setIsLoading(false);
-      localStorage.setItem("brixem_user", JSON.stringify({ email, isLoggedIn: true }));
-      onClose();
-      window.location.href = "/dashboard";
-    }, 1500);
+    }
   };
 
   const handleSocialLogin = (provider: string) => {
-    // Mock social login
+    // TODO: Implement social login with Supabase
     console.log(`Logging in with ${provider}`);
   };
 
@@ -58,7 +74,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }: LoginM
         <div className="text-center mb-6">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center">
             <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
             </svg>
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h2>

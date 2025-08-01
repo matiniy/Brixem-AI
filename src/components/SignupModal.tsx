@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import { signUp } from '@/lib/supabase';
 
 interface SignupModalProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }: Signup
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -51,21 +53,56 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }: Signup
     if (!validateForm()) return;
 
     setIsLoading(true);
+    setErrors({});
+    setSuccessMessage("");
     
-    // Mock signup
-    setTimeout(() => {
+    try {
+      // Create user data object
+      const userData = {
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        company_name: formData.company,
+        role: formData.role,
+        full_name: `${formData.firstName} ${formData.lastName}`
+      };
+
+      // Sign up with Supabase
+      const { data, error } = await signUp(formData.email, formData.password, userData);
+
+      if (error) {
+        if (error.message.includes('already registered')) {
+          setErrors({ email: 'An account with this email already exists' });
+        } else if (error.message.includes('password')) {
+          setErrors({ password: 'Password must be at least 6 characters' });
+        } else {
+          setErrors({ email: error.message });
+        }
+      } else {
+        // Success - show confirmation message
+        setSuccessMessage("Account created successfully! Please check your email to confirm your account.");
+        // Reset form
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+          company: "",
+          role: ""
+        });
+        
+        // Close modal after 3 seconds
+        setTimeout(() => {
+          onClose();
+          setSuccessMessage("");
+        }, 3000);
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      setErrors({ email: 'An error occurred during signup. Please try again.' });
+    } finally {
       setIsLoading(false);
-      localStorage.setItem("brixem_user", JSON.stringify({ 
-        email: formData.email, 
-        isLoggedIn: true,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        company: formData.company,
-        role: formData.role
-      }));
-      onClose();
-      window.location.href = "/dashboard";
-    }, 2000);
+    }
   };
 
   if (!isOpen) return null;
@@ -89,6 +126,12 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }: Signup
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Create Account</h2>
           <p className="text-gray-600">Join Brixem and transform your construction projects</p>
         </div>
+
+        {successMessage && (
+          <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-green-800 text-sm">{successMessage}</p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
