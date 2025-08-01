@@ -61,8 +61,8 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }: Signup
       const userData = {
         first_name: formData.firstName,
         last_name: formData.lastName,
-        company_name: formData.company,
-        role: formData.role,
+        company: formData.company,
+        role: formData.role as 'homeowner' | 'contractor',
         full_name: `${formData.firstName} ${formData.lastName}`
       };
 
