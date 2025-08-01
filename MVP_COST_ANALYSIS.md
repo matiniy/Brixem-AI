@@ -38,7 +38,7 @@
 | **Professional** | $79 | Unlimited projects, advanced AI | 8% of users |
 | **Enterprise** | $199 | Custom features, priority support | 2% of users |
 
-### **Revenue Projections (10 Users)**
+### **Revenue Projections (10 Users - Monthly Subscriptions)**
 
 | **Plan** | **Users** | **Monthly Revenue** | **Annual Revenue** |
 |----------|-----------|-------------------|-------------------|
@@ -92,6 +92,29 @@
 | **500** | $6,850 | $3,096.50 | $3,753.50 | 54.8% |
 | **1,000** | $13,700 | $6,193.00 | $7,507.00 | 54.8% |
 
+### **Detailed 1000 Users Analysis**
+
+| **Category** | **Monthly** | **Annual** | **Notes** |
+|--------------|-------------|------------|-----------|
+| **Revenue** | $13,700 | $164,400 | Monthly subscriptions |
+| **AI Costs** | $93 | $1,116 | Optimized GPT-4o-mini |
+| **Infrastructure** | $6,100 | $73,200 | Supabase, Vercel, etc. |
+| **Total Costs** | $6,193 | $74,316 | |
+| **Gross Profit** | $7,507 | $90,084 | |
+| **Profit Margin** | **54.8%** | **54.8%** | |
+
+### **AI Chat Cost Breakdown (1000 Users)**
+
+| **Feature** | **Requests/Month** | **Cost/Request** | **Monthly Cost** | **Annual Cost** |
+|-------------|-------------------|------------------|------------------|----------------|
+| **Chat Messages** | 30,000 | $0.00015 | $4.50 | $54.00 |
+| **Plan of Works** | 1,000 | $0.00065 | $0.65 | $7.80 |
+| **Task Creation** | 10,000 | $0.00025 | $2.50 | $30.00 |
+| **Project Analysis** | 10,000 | $0.00035 | $3.50 | $42.00 |
+| **Document Generation** | 1,000 | $0.00080 | $0.80 | $9.60 |
+| **Daily Summary** | 1,000 | $0.00060 | $0.60 | $7.20 |
+| **Total AI Cost** | **53,000** | **$0.00015 avg** | **$12.55** | **$150.60** |
+
 ### **Break-Even Analysis**
 
 | **Metric** | **Value** |
@@ -141,12 +164,14 @@
 
 ### **Growth Targets**
 
-| **Timeline** | **User Target** | **Revenue Target** |
-|--------------|-----------------|-------------------|
-| **Month 1** | 10 users | $137 |
-| **Month 3** | 25 users | $342 |
-| **Month 6** | 50 users | $685 |
-| **Month 12** | 100 users | $1,370 |
+| **Timeline** | **User Target** | **Revenue Target** | **Monthly Profit** |
+|--------------|-----------------|-------------------|-------------------|
+| **Month 1** | 10 users | $137 | $75 |
+| **Month 3** | 25 users | $342 | $187 |
+| **Month 6** | 50 users | $685 | $375 |
+| **Month 12** | 100 users | $1,370 | $751 |
+| **Year 2** | 500 users | $6,850 | $3,754 |
+| **Year 3** | 1,000 users | $13,700 | $7,507 |
 
 ## 🔧 **MVP Implementation Costs**
 
@@ -189,6 +214,27 @@
 - **Low break-even point**: 4 users
 - **Scalable model**: Costs grow linearly with users
 - **Strong value proposition**: AI-powered construction management
+
+### **Key Financial Highlights**
+
+#### **10 Users (MVP):**
+- **Monthly Revenue**: $137
+- **Monthly Profit**: $75
+- **AI Costs**: $0.93 (0.7% of revenue)
+- **Profit Margin**: 54.8%
+
+#### **1000 Users (Scale):**
+- **Monthly Revenue**: $13,700
+- **Monthly Profit**: $7,507
+- **AI Costs**: $93 (0.7% of revenue)
+- **Annual Profit**: $90,084
+- **Profit Margin**: 54.8%
+
+### **AI Cost Efficiency:**
+- **Extremely low AI costs**: Only 0.7% of revenue
+- **Highly scalable**: Costs grow linearly with usage
+- **Optimized model**: GPT-4o-mini with caching
+- **Predictable expenses**: Easy to forecast and budget
 
 ### **Key Success Factors**
 1. **Focus on user acquisition** - Get to 50+ users quickly
