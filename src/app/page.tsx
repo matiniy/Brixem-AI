@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import Navbar from "@/components/Navbar";
@@ -10,7 +10,7 @@ import PricingSection from "@/components/PricingSection";
 import Footer from "@/components/Footer";
 import FloatingChat from "@/components/FloatingChat";
 
-export default function Home() {
+function EmailConfirmationHandler() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [emailConfirmationStatus, setEmailConfirmationStatus] = useState<{
@@ -79,9 +79,7 @@ export default function Home() {
   }, [searchParams, router]);
 
   return (
-    <div className="min-h-screen bg-white">
-      <Navbar />
-      
+    <>
       {/* Email Confirmation Status */}
       {emailConfirmationStatus.type && (
         <div className={`fixed top-20 left-1/2 transform -translate-x-1/2 z-50 p-4 rounded-lg shadow-lg max-w-md w-full mx-4 ${
@@ -112,6 +110,18 @@ export default function Home() {
           </div>
         </div>
       )}
+    </>
+  );
+}
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-white">
+      <Navbar />
+      
+      <Suspense fallback={null}>
+        <EmailConfirmationHandler />
+      </Suspense>
       
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50">
