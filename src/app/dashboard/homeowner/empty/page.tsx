@@ -1,7 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
 import { sendChatMessage } from "@/lib/ai";
 
 interface Message {
@@ -227,8 +226,8 @@ Format it professionally with clear sections and actionable items.`;
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome to Your First Project!</h2>
                 <p className="text-gray-600 max-w-md mx-auto">
-                  Let's create your first project and generate a comprehensive Plan of Works document. 
-                  I'll guide you through the process step by step.
+                  Let&apos;s create your first project and generate a comprehensive Plan of Works document. 
+                  I&apos;ll guide you through the process step by step.
                 </p>
               </div>
 
