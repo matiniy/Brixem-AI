@@ -118,8 +118,8 @@ export default function EmptyDashboard() {
         }
       } else {
         // Handle general chat after setup
-        const response = await sendChatMessage(message);
-        const aiResponse: Message = { role: "ai", text: response };
+        const response = await sendChatMessage([{ role: "user", text: message }]);
+        const aiResponse: Message = { role: "ai", text: response.message };
         setMessages(prev => [...prev, aiResponse]);
       }
     } catch (error) {
@@ -160,8 +160,8 @@ Please create a detailed Plan of Works that includes:
 
 Format it professionally with clear sections and actionable items.`;
 
-      const plan = await sendChatMessage(prompt);
-      setPlanOfWorks(plan);
+      const plan = await sendChatMessage([{ role: "user", text: prompt }]);
+      setPlanOfWorks(plan.message);
       
       const successMessage: Message = {
         role: "ai",
