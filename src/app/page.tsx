@@ -33,22 +33,36 @@ function EmailConfirmationHandler() {
       const error = searchParams.get('error');
       const errorDescription = searchParams.get('error_description');
 
-      if (error) {
-        console.error('Email confirmation error:', error, errorDescription);
+      // Also check for hash fragment parameters (for Supabase email links)
+      const hash = window.location.hash;
+      const hashParams = new URLSearchParams(hash.substring(1));
+      const hashToken = hashParams.get('token_hash');
+      const hashType = hashParams.get('type');
+      const hashError = hashParams.get('error');
+      const hashErrorDescription = hashParams.get('error_description');
+
+      // Use either URL params or hash params
+      const finalToken = token_hash || hashToken;
+      const finalType = type || hashType;
+      const finalError = error || hashError;
+      const finalErrorDescription = errorDescription || hashErrorDescription;
+
+      if (finalError) {
+        console.error('Email confirmation error:', finalError, finalErrorDescription);
         setEmailConfirmationStatus({
           type: 'error',
-          message: `Email confirmation failed: ${errorDescription || error}`
+          message: `Email confirmation failed: ${finalErrorDescription || finalError}`
         });
         return;
       }
 
-      if (token_hash && type === 'signup') {
+      if (finalToken && finalType === 'signup') {
         setEmailConfirmationStatus({ type: 'loading', message: 'Confirming your email...' });
         
         try {
-          console.log('Processing email confirmation with token_hash:', token_hash);
+          console.log('Processing email confirmation with token_hash:', finalToken);
           const { data, error } = await supabase.auth.verifyOtp({
-            token_hash,
+            token_hash: finalToken,
             type: 'signup'
           });
 
