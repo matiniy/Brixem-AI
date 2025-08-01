@@ -4,6 +4,7 @@
 <!-- Trigger deployment -->
 <!-- Force fresh deployment -->
 <!-- Trigger deployment for subdomain test -->
+<!-- Trigger deployment for TypeScript fixes -->
 
 A modern AI-powered construction management platform.
 
