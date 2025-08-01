@@ -42,9 +42,9 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }: LoginM
           setErrors({ email: result.error.message });
         }
       } else {
-        // Success - redirect to dashboard
+        // Success - redirect to homeowner dashboard
         onClose();
-        window.location.href = "/dashboard";
+        window.location.href = "/dashboard/homeowner";
       }
     } catch (error) {
       console.error('Login error:', error);
