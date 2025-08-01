@@ -20,7 +20,9 @@ class Cache {
     // Remove oldest item if cache is full
     if (this.storage.size >= this.maxSize) {
       const oldestKey = this.storage.keys().next().value;
-      this.storage.delete(oldestKey);
+      if (oldestKey) {
+        this.storage.delete(oldestKey);
+      }
     }
 
     this.storage.set(key, {
