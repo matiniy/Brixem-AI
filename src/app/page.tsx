@@ -65,12 +65,43 @@ function EmailConfirmationHandler() {
             console.log('Email confirmed successfully for user:', data.user.email);
             setEmailConfirmationStatus({
               type: 'success',
-              message: 'Email confirmed successfully! Redirecting to dashboard...'
+              message: 'Email confirmed successfully! Signing you in...'
             });
-            // Email confirmed successfully, redirect to homeowner dashboard
-            setTimeout(() => {
-              router.push('/dashboard/homeowner');
-            }, 2000);
+            
+            // After email confirmation, automatically sign in the user
+            try {
+              // Get the user's profile to check if they've completed onboarding
+              const { data: profileData, error: profileError } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', data.user.id)
+                .single();
+
+              if (profileError && profileError.code !== 'PGRST116') {
+                console.error('Profile fetch error:', profileError);
+              }
+
+              // Check if user has completed onboarding (has role and basic info)
+              const hasCompletedOnboarding = profileData && profileData.role && profileData.first_name;
+              
+              if (hasCompletedOnboarding) {
+                // User has completed onboarding, go to dashboard
+                setTimeout(() => {
+                  router.push('/dashboard/homeowner');
+                }, 2000);
+              } else {
+                // User hasn't completed onboarding, go to onboarding flow
+                setTimeout(() => {
+                  router.push('/onboarding/homeowner');
+                }, 2000);
+              }
+            } catch (signInError) {
+              console.error('Auto sign-in error:', signInError);
+              // If auto sign-in fails, redirect to login
+              setTimeout(() => {
+                router.push('/?message=email_confirmed_please_login');
+              }, 2000);
+            }
           }
         } catch (error) {
           console.error('Email confirmation error:', error);
