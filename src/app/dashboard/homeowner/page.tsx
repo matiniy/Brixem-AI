@@ -5,6 +5,7 @@ import KanbanBoard from "@/components/KanbanBoard";
 import ListView from "@/components/ListView";
 import CalendarView from "@/components/CalendarView";
 import DashboardChat from "@/components/DashboardChat";
+import { sendChatMessage, detectTaskCreation } from "@/lib/ai";
 
 interface Message {
   role: "user" | "ai";
@@ -616,7 +617,7 @@ export default function HomeownerDashboard() {
   // const [hasStartedChat, setHasStartedChat] = useState(false);
 
   // Unified handleSend for both guided and open chat
-  const handleSend = (message: string) => {
+  const handleSend = async (message: string) => {
     setProjectStates(prev => {
       const state = { ...prev };
       const proj = { ...state[activeProject] };
@@ -624,74 +625,85 @@ export default function HomeownerDashboard() {
         proj.hasStartedChat = true;
       }
       proj.messages = [...proj.messages, { role: "user", text: message }];
-      
-      // If in guided flow, handle setup answers
-      if (!proj.sowReady) {
-        if (!proj.sowReady) {
-          handleSetupAnswer(message);
-          return state; // Always return a valid state object
-        }
-        // ... (handle other guided steps as before)
-      }
-      
-      // If in Kanban mode, handle task creation and AI responses
-      if (proj.showKanban) {
-        setTimeout(() => {
-          // Check if user wants to add a task
-          const taskKeywords = ['add task', 'create task', 'new task', 'add card', 'create card'];
-          const isTaskRequest = taskKeywords.some(keyword => 
-            message.toLowerCase().includes(keyword)
-          );
-          
-          if (isTaskRequest) {
-            // Generate a new task based on the message
-            const newTask: Omit<Task, "id"> = {
-              title: message.replace(/add task|create task|new task|add card|create card/gi, '').trim() || "New Task",
-              description: `Task created via AI chat: ${message}`,
-              status: "todo",
-              priority: "medium",
-              progress: 0,
-              assignedUsers: [],
-              comments: 0,
-              likes: 0,
-              dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-            };
-            
-            handleAddTask(newTask);
-            proj.messages = [...proj.messages, { 
-              role: "ai", 
-              text: `I've created a new task: "${newTask.title}". You can find it in your Kanban board!` 
-            }];
-          } else {
-            // Regular AI responses for Kanban mode
-            const aiResponses = [
-              "I can help you manage your project tasks. Try saying 'add task' followed by what you need to do.",
-              "You can drag and drop tasks between columns to update their status.",
-              "Need to add a new task? Just tell me what you need to do and I'll create it for you.",
-              "The calendar view shows your tasks scheduled over time. Perfect for planning!",
-              "You can switch between Kanban, Grid, and Calendar views to manage tasks your way."
-            ];
-            const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
-            proj.messages = [...proj.messages, { role: "ai", text: randomResponse }];
-          }
-        }, 1000);
-      } else {
-        // Default AI responses for setup phase
-        setTimeout(() => {
-          const aiResponses = [
-            "To start a renovation project, begin by defining your goals, setting a budget, and consulting with professionals.",
-            "Key factors include clear planning, realistic budgeting, choosing the right contractor, and regular progress tracking.",
-            "AI can analyze your project scope and local market data to provide accurate cost estimates quickly.",
-            "Brixem streamlines project management with AI-driven insights, real-time collaboration, and automated scheduling.",
-            "Unlike traditional tools, Brixem leverages AI to optimize every stage of your construction project for efficiency and clarity."
-          ];
-          const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
-          proj.messages = [...proj.messages, { role: "ai", text: randomResponse }];
-        }, 1000);
-      }
       state[activeProject] = proj;
       return state;
     });
+
+    // If in guided flow, handle setup answers
+    const currentState = projectStates[activeProject];
+    if (!currentState.sowReady) {
+      handleSetupAnswer(message);
+      return;
+    }
+
+    try {
+      // Get project context for AI
+      const project = projects.find(p => p.id === activeProject);
+      const projectContext = project ? `${project.name} - ${project.type} project (${project.status})` : 'General construction project';
+
+      // Send message to AI
+      const aiResponse = await sendChatMessage(
+        projectStates[activeProject].messages,
+        projectContext
+      );
+
+      // Check if this is a task creation request
+      const detectedTask = detectTaskCreation(message);
+      if (detectedTask) {
+        // Create the task
+        const newTask: Omit<Task, "id"> = {
+          title: detectedTask,
+          description: `Task created via AI chat: ${message}`,
+          status: "todo",
+          priority: "medium",
+          progress: 0,
+          assignedUsers: [],
+          comments: 0,
+          likes: 0,
+          dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        };
+        
+        handleAddTask(newTask);
+        
+        // Add AI response with task confirmation
+        setProjectStates(prev => {
+          const state = { ...prev };
+          const proj = { ...state[activeProject] };
+          proj.messages = [...proj.messages, { 
+            role: "ai", 
+            text: `I've created a new task: "${detectedTask}". You can find it in your Kanban board!` 
+          }];
+          state[activeProject] = proj;
+          return state;
+        });
+      } else {
+        // Add AI response
+        setProjectStates(prev => {
+          const state = { ...prev };
+          const proj = { ...state[activeProject] };
+          proj.messages = [...proj.messages, { 
+            role: "ai", 
+            text: aiResponse.message 
+          }];
+          state[activeProject] = proj;
+          return state;
+        });
+      }
+    } catch (error) {
+      console.error('AI chat error:', error);
+      
+      // Add error message
+      setProjectStates(prev => {
+        const state = { ...prev };
+        const proj = { ...state[activeProject] };
+        proj.messages = [...proj.messages, { 
+          role: "ai", 
+          text: "I'm having trouble connecting right now. Please try again in a moment." 
+        }];
+        state[activeProject] = proj;
+        return state;
+      });
+    }
   };
 
   // Guided chat flow state

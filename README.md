@@ -7,6 +7,48 @@
 
 A modern AI-powered construction management platform.
 
+## AI Integration Setup
+
+### 1. Get OpenAI API Key
+1. Visit [OpenAI Platform](https://platform.openai.com/)
+2. Create an account or sign in
+3. Go to API Keys section
+4. Create a new API key
+5. Copy the API key (keep it secure!)
+
+### 2. Configure Environment Variables
+
+**Option A: Use the setup script (Recommended)**
+```bash
+npm run setup-ai
+```
+
+**Option B: Manual setup**
+1. Copy `env.example` to `.env.local`
+2. Replace `your_openai_api_key_here` with your actual OpenAI API key
+3. Optionally adjust other settings:
+   - `OPENAI_MODEL`: AI model to use (default: gpt-4o-mini)
+   - `OPENAI_MAX_TOKENS`: Maximum response length (default: 1000)
+   - `OPENAI_TEMPERATURE`: Response creativity (0.0-2.0, default: 0.7)
+
+### 3. Test the Integration
+1. Start the development server: `npm run dev`
+2. Open the dashboard
+3. Try chatting with the AI assistant
+4. Test task creation: "Create task: Install new kitchen cabinets"
+
+### Security Notes
+- Never commit your `.env.local` file to version control
+- The API key is stored securely on the server side
+- All AI requests go through Next.js API routes for security
+- Environment variables are automatically ignored by git
+
+## Features
+- **AI Chat**: Intelligent conversation about construction projects
+- **Task Creation**: Natural language task creation via AI
+- **Project Context**: AI understands your specific project details
+- **Error Handling**: Graceful fallbacks when AI is unavailable
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
