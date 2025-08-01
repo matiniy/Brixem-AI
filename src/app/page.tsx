@@ -3,12 +3,19 @@ import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import Navbar from "@/components/Navbar";
+import GradientText from "@/components/GradientText";
+import Orb from "@/components/Orb";
+import ChatPanel from "@/components/ChatPanel";
 import FeatureSection from "@/components/FeatureSection";
-import AnimatedStats from "@/components/AnimatedStats";
 import TestimonialsSection from "@/components/TestimonialsSection";
-import PricingSection from "@/components/PricingSection";
 import Footer from "@/components/Footer";
-import FloatingChat from "@/components/FloatingChat";
+import AnimatedStats from "@/components/AnimatedStats";
+
+// Add Message type locally
+interface Message {
+  role: "user" | "ai";
+  text: string;
+}
 
 function EmailConfirmationHandler() {
   const router = useRouter();
@@ -114,64 +121,281 @@ function EmailConfirmationHandler() {
   );
 }
 
-export default function Home() {
-  return (
-    <div className="min-h-screen bg-white">
-      <Navbar />
-      
-      <Suspense fallback={null}>
-        <EmailConfirmationHandler />
-      </Suspense>
-      
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
-          <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-              Smarter projects, powered by AI
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7]">
-                built for construction
-              </span>
-            </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Brixem gives homeowners and teams instant clarity across renovation and construction projects — from scoping to costing, scheduling, and contractor collaboration.
-            </p>
-            
-            {/* Role Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              {[
-                { text: "I'm a homeowner planning a renovation", icon: "🏠" },
-                { text: "I'm a contractor looking for projects", icon: "🔨" },
-                { text: "I need help with project estimation", icon: "📊" },
-                { text: "I want to learn about Brixem's features", icon: "✨" }
-              ].map((item, index) => (
-                <button
-                  key={index}
-                  className="group p-4 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-[#23c6e6] text-left"
-                >
-                  <div className="flex items-center space-x-3">
-                    <span className="text-2xl">{item.icon}</span>
-                    <span className="text-gray-700 font-medium group-hover:text-[#23c6e6] transition-colors">
-                      {item.text}
-                    </span>
-                  </div>
-                </button>
-              ))}
-            </div>
+function LandingPageContent() {
+  const router = useRouter();
+  
+  // Ensure page starts at top
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-4 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold rounded-lg hover:opacity-90 transition">
+  const [messages, setMessages] = React.useState<Message[]>([
+    // Start with an empty chat
+  ]);
+  const [pendingRedirect, setPendingRedirect] = React.useState<string | null>(null);
+  const [isChatActive, setIsChatActive] = React.useState(false);
+
+  const preQuestions = [
+    "I'm a homeowner planning a renovation",
+    "I'm a contractor looking for projects",
+    "I need help with project estimation",
+    "I want to learn about Brixem's features"
+  ];
+
+  const handleSend = (message: string) => {
+    // Activate chat when first message is sent
+    if (messages.length === 0) {
+      setIsChatActive(true);
+    }
+    
+    setMessages((prev) => [...prev, { role: "user", text: message }]);
+    
+    // Handle manual "yes" responses for signup confirmation
+    if (message.toLowerCase().includes("yes") && pendingRedirect) {
+      router.push(pendingRedirect);
+      return;
+    }
+    
+    // Handle role-based questions with confirmation
+    if (message.includes("homeowner")) {
+      setTimeout(() => {
+        setMessages((prev) => [...prev, { 
+          role: "ai", 
+          text: "Great! I can help you plan your renovation project. Let's get you set up with our homeowner tools. Would you like to sign up to start planning your renovation?" 
+        }]);
+        setPendingRedirect("/onboarding/homeowner");
+      }, 1000);
+      return;
+    } else if (message.includes("contractor")) {
+      setTimeout(() => {
+        setMessages((prev) => [...prev, { 
+          role: "ai", 
+          text: "Perfect! I can help you find projects and manage your business. Let's get you set up with our contractor tools. Would you like to sign up to access our contractor features?" 
+        }]);
+        setPendingRedirect("/onboarding/contractor");
+      }, 1000);
+      return;
+    } else if (message.includes("consultant")) {
+      setTimeout(() => {
+        setMessages((prev) => [...prev, { 
+          role: "ai", 
+          text: "Excellent! I can help you with project consultation tools. Let's get you set up with our consultant features. Would you like to sign up to access our consultant tools?" 
+        }]);
+        setPendingRedirect("/onboarding/contractor"); // Using contractor onboarding for consultants
+      }, 1000);
+      return;
+    } else if (message.includes("estimation")) {
+      setTimeout(() => {
+        setMessages((prev) => [...prev, { 
+          role: "ai", 
+          text: "I can help you with project estimation! Our AI-powered tools provide accurate cost estimates. Would you like to sign up to access our estimation features?" 
+        }]);
+        setPendingRedirect("/onboarding/contractor"); // Estimation tools typically for contractors
+      }, 1000);
+      return;
+    } else if (message.includes("features")) {
+      setTimeout(() => {
+        setMessages((prev) => [...prev, { 
+          role: "ai", 
+          text: "Brixem offers AI-powered project management, cost estimation, contractor matching, and real-time collaboration. Would you like to sign up to explore all our features?" 
+        }]);
+        setPendingRedirect("/onboarding/homeowner"); // Default to homeowner for general features
+      }, 1000);
+      return;
+    }
+    
+    // Simulate AI response for other questions
+    setTimeout(() => {
+      const aiResponses = [
+        "To start a renovation project, begin by defining your goals, setting a budget, and consulting with professionals.",
+        "Key factors include clear planning, realistic budgeting, choosing the right contractor, and regular progress tracking.",
+        "AI can analyze your project scope and local market data to provide accurate cost estimates quickly.",
+        "Brixem streamlines project management with AI-driven insights, real-time collaboration, and automated scheduling.",
+        "Unlike traditional tools, Brixem leverages AI to optimize every stage of your construction project for efficiency and clarity."
+      ];
+      const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+      setMessages((prev) => [...prev, { role: "ai", text: randomResponse }]);
+    }, 1000);
+  };
+
+  const handleConfirmSignup = () => {
+    if (pendingRedirect) {
+      router.push(pendingRedirect);
+    }
+  };
+
+  const handleDeclineSignup = () => {
+    setMessages((prev) => [...prev, { 
+      role: "ai", 
+      text: "No problem! You can always sign up later. Is there anything else I can help you with?" 
+    }]);
+    setPendingRedirect(null);
+  };
+
+  return (
+    <>
+      {/* Hero Section - now white background */}
+      <section className={`relative bg-white overflow-hidden transition-all duration-500 ease-in-out ${isChatActive ? 'py-4 sm:py-6 md:py-8 lg:py-12' : 'py-8 sm:py-12 md:py-16 lg:py-24'}`}>
+        {/* Orb Background */}
+        <div className="absolute inset-0 opacity-30 sm:opacity-50 pointer-events-none">
+          <Orb
+            hue={260}
+            hoverIntensity={0.5}
+            rotateOnHover={true}
+            forceHoverState={false}
+          />
+        </div>
+        <div className="max-w-6xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 xl:px-12 text-center relative z-10">
+          {/* Subtitle */}
+          <div className={`mb-2 sm:mb-4 transition-all duration-500 ${isChatActive ? 'mb-1' : 'mb-2 sm:mb-4'}`}>
+            <span className={`font-semibold tracking-wider text-gray-500 uppercase transition-all duration-500 ${
+              isChatActive ? 'text-xs' : 'text-xs sm:text-sm'
+            }`}>
+              BRIXEM AI FOR EVERY PROJECT
+            </span>
+          </div>
+          {/* Main Headline with animated gradient */}
+          <h1 className={`font-bold mb-4 sm:mb-6 leading-tight max-w-4xl mx-auto text-center transition-all duration-500 ${isChatActive ? 'text-lg sm:text-xl md:text-2xl lg:text-3xl mb-2 sm:mb-3' : 'text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-4 sm:mb-6'}`}>
+            <span className="block">
+              <GradientText
+                className="inline"
+                colors={["#62cff4", "#2c67f2", "#fab2ff", "#1904e5", "#12063b", "#09555c"]}
+                animationSpeed={3}
+              >
+                Smarter projects, powered by AI
+              </GradientText>
+            </span>
+            <span className="block text-black">built for construction</span>
+          </h1>
+          {/* Smaller Subheadline */}
+          <h2 className={`font-normal text-gray-900 transition-all duration-500 ${isChatActive ? 'text-xs sm:text-sm mb-3 sm:mb-4' : 'text-sm sm:text-base md:text-lg mb-2 sm:mb-3'}`}>
+            Brixem gives homeowners and teams instant clarity across renovation and construction projects — from scoping to costing, scheduling, and contractor collaboration.
+          </h2>
+          {/* AI Chat Card with minimal spacing */}
+          <div className={`flex flex-col sm:flex-row justify-center items-center transition-all duration-500 ${isChatActive ? 'mt-2 sm:mt-4' : 'mt-2 sm:mt-3'}`}>
+            <div className="w-full max-w-2xl">
+              {/* Chat Area Only - no card styling */}
+              <div className="px-1 pb-1 pt-0">
+                <div className={`flex flex-col transition-all duration-500 ${
+                  isChatActive ? 'h-64 sm:h-80 md:h-96 lg:h-[500px]' : 'h-24 sm:h-32 md:h-40 lg:h-48'
+                }`}>
+                  <ChatPanel 
+                    messages={messages} 
+                    onSend={handleSend}
+                    onTaskConfirm={pendingRedirect ? (yes) => yes ? handleConfirmSignup() : handleDeclineSignup() : undefined}
+                    pendingTask={pendingRedirect ? "Would you like to sign up?" : null}
+                  />
+                </div>
+              </div>
+              {/* Pre-existing questions */}
+              <div className={`flex flex-wrap gap-2 justify-center transition-all duration-500 ${isChatActive ? 'mt-1' : 'mt-2 sm:mt-3'}`}>
+                {preQuestions.map((q, i) => (
+                  <button
+                    key={i}
+                    className="px-3 sm:px-4 py-2 rounded-full bg-gray-100 text-gray-800 text-xs sm:text-sm font-medium hover:bg-[#e6eaff] border border-gray-200 transition shadow-sm"
+                    onClick={() => {
+                      // Fill the input field instead of sending directly
+                      const inputElement = document.querySelector('input[placeholder="Ask anything about your project..."]') as HTMLInputElement;
+                      if (inputElement) {
+                        inputElement.value = q;
+                        inputElement.focus();
+                      }
+                    }}
+                    type="button"
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <AnimatedStats />
+
+      {/* Role Cards Section */}
+      <section className="py-12 sm:py-16 md:py-20 lg:py-32 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">
+              Built for every role in construction
+            </h2>
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto px-4">
+              Whether you&apos;re planning a renovation, managing projects, or providing expert consultation, 
+              Brixem adapts to your workflow.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {/* Homeowner Card */}
+            <div className="bg-white rounded-2xl p-4 sm:p-6 lg:p-8 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 flex flex-col h-full group">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center mb-3 sm:mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  <circle cx="12" cy="12" r="9" strokeWidth={1.5} className="opacity-30" />
+                </svg>
+              </div>
+              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 lg:mb-4">Homeowner</h3>
+              <p className="text-gray-600 mb-3 sm:mb-4 lg:mb-6 leading-relaxed flex-grow text-sm sm:text-base">
+                Plan your renovation with confidence. Step-by-step project scoping with dynamic progress tracking 
+                and AI-powered recommendations.
+              </p>
+              <button 
+                className="w-full px-4 sm:px-6 py-3 rounded-lg bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold hover:opacity-90 active:scale-95 transition mt-auto text-sm sm:text-base touch-manipulation min-h-[44px]"
+                onClick={() => router.push("/onboarding/homeowner")}
+              >
                 Get Started
               </button>
-              <button className="px-8 py-4 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition">
-                Request Demo
+            </div>
+            
+            {/* Contractor Card */}
+            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 flex flex-col h-full group">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth={1.5} className="opacity-30" />
+                  <circle cx="12" cy="12" r="9" strokeWidth={1} className="opacity-20" />
+                </svg>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Contractor</h3>
+              <p className="text-gray-600 mb-4 sm:mb-6 leading-relaxed flex-grow text-sm sm:text-base">
+                Quote faster. Win more jobs. Advanced feasibility & estimation tools with material & 
+                construction cost analysis.
+              </p>
+              <button
+                className="w-full px-4 sm:px-6 py-3 rounded-lg bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold hover:opacity-90 transition mt-auto text-sm sm:text-base"
+                onClick={() => router.push("/onboarding/contractor")}
+              >
+                Get Started
+              </button>
+            </div>
+            
+            {/* Consultant Card */}
+            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 flex flex-col h-full group">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth={1.5} className="opacity-30" />
+                  <circle cx="12" cy="12" r="9" strokeWidth={1} className="opacity-20" />
+                </svg>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Consultant</h3>
+              <p className="text-gray-600 mb-4 sm:mb-6 leading-relaxed flex-grow text-sm sm:text-base">
+                Support smarter decisions. Faster. Comprehensive project roadmaps with AI-powered 
+                insights and risk assessment.
+              </p>
+              <button className="w-full px-4 sm:px-6 py-3 rounded-lg bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold hover:opacity-90 transition mt-auto text-sm sm:text-base">
+                Get Started
               </button>
             </div>
           </div>
         </div>
       </section>
 
-      <FeatureSection 
+      {/* Features Section */}
+      <FeatureSection
         title="Powerful features for every project"
         subtitle="From initial planning to final completion, Brixem provides the tools you need to succeed"
         features={[
@@ -228,8 +452,9 @@ export default function Home() {
           }
         ]}
       />
-      <AnimatedStats />
-      <TestimonialsSection 
+
+      {/* Testimonials Section */}
+      <TestimonialsSection
         testimonials={[
           {
             name: "Sarah Johnson",
@@ -257,63 +482,41 @@ export default function Home() {
           }
         ]}
       />
-      <PricingSection 
-        plans={[
-          {
-            name: "Starter",
-            price: "$0",
-            period: "month",
-            description: "Perfect for individual homeowners",
-            features: [
-              "Basic project management",
-              "AI cost estimation (3/month)",
-              "Document storage (100MB)",
-              "Email support"
-            ],
-            cta: "Get Started Free",
-            ctaVariant: "primary"
-          },
-          {
-            name: "Professional",
-            price: "$29",
-            period: "month",
-            description: "For contractors and small teams",
-            features: [
-              "Everything in Starter",
-              "Unlimited AI estimations",
-              "Team collaboration",
-              "Advanced scheduling",
-              "Priority support"
-            ],
-            popular: true,
-            cta: "Start Free Trial",
-            ctaVariant: "primary"
-          },
-          {
-            name: "Enterprise",
-            price: "$99",
-            period: "month",
-            description: "For large construction companies",
-            features: [
-              "Everything in Professional",
-              "Custom integrations",
-              "Dedicated account manager",
-              "Advanced analytics",
-              "API access"
-            ],
-            cta: "Contact Sales",
-            ctaVariant: "secondary"
-          }
-        ]}
-      />
+
+      {/* CTA Section */}
+      <section className="py-8 sm:py-12 md:py-16 lg:py-24 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 text-center">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
+            Ready to see Brixem in action?
+          </h2>
+          <p className="text-base sm:text-lg md:text-xl mb-6 sm:mb-8 text-blue-50 leading-relaxed">
+            Find out why leading construction teams across the world turn to Brixem for their 
+            project management and AI-powered estimation needs.
+          </p>
+          <button className="px-6 sm:px-8 py-3 sm:py-4 rounded-lg bg-transparent text-white font-semibold hover:bg-white/10 transition border-2 border-white text-sm sm:text-base">
+            Request demo
+          </button>
+        </div>
+      </section>
+
+      {/* Footer */}
       <Footer />
-      <FloatingChat 
-        onSend={(message) => {
-          console.log('Chat message:', message);
-          // Handle chat messages here
-        }}
-        messages={[]}
-      />
+    </>
+  );
+}
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-white">
+      <Navbar />
+      
+      <Suspense fallback={null}>
+        <EmailConfirmationHandler />
+      </Suspense>
+      
+      <Suspense fallback={null}>
+        <LandingPageContent />
+      </Suspense>
     </div>
   );
 }
