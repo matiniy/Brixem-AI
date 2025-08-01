@@ -304,10 +304,10 @@ export async function signUp(email: string, password: string, userData: Partial<
     });
 
     if (error) throw error;
-    return data;
+    return { data, error: null };
   } catch (error) {
     logError(error as Error, { function: 'signUp', email });
-    throw error;
+    return { data: null, error: error as Error };
   }
 }
 
@@ -319,10 +319,10 @@ export async function signIn(email: string, password: string) {
     });
 
     if (error) throw error;
-    return data;
+    return { data, error: null };
   } catch (error) {
     logError(error as Error, { function: 'signIn', email });
-    throw error;
+    return { data: null, error: error as Error };
   }
 }
 

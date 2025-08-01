@@ -31,15 +31,15 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }: LoginM
     setIsLoading(true);
     
     try {
-      const { data, error } = await signIn(email, password);
+      const result = await signIn(email, password);
 
-      if (error) {
-        if (error.message.includes('Invalid login credentials')) {
+      if (result.error) {
+        if (result.error.message.includes('Invalid login credentials')) {
           setErrors({ email: 'Invalid email or password' });
-        } else if (error.message.includes('Email not confirmed')) {
+        } else if (result.error.message.includes('Email not confirmed')) {
           setErrors({ email: 'Please check your email and confirm your account' });
         } else {
-          setErrors({ email: error.message });
+          setErrors({ email: result.error.message });
         }
       } else {
         // Success - redirect to dashboard

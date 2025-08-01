@@ -67,15 +67,15 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }: Signup
       };
 
       // Sign up with Supabase
-      const { data, error } = await signUp(formData.email, formData.password, userData);
+      const result = await signUp(formData.email, formData.password, userData);
 
-      if (error) {
-        if (error.message.includes('already registered')) {
+      if (result.error) {
+        if (result.error.message.includes('already registered')) {
           setErrors({ email: 'An account with this email already exists' });
-        } else if (error.message.includes('password')) {
+        } else if (result.error.message.includes('password')) {
           setErrors({ password: 'Password must be at least 6 characters' });
         } else {
-          setErrors({ email: error.message });
+          setErrors({ email: result.error.message });
         }
       } else {
         // Success - show confirmation message
