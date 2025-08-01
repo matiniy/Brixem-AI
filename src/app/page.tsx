@@ -99,10 +99,27 @@ function EmailConfirmationHandler() {
               const hasCompletedOnboarding = profileData && profileData.role && profileData.first_name;
               
               if (hasCompletedOnboarding) {
-                // User has completed onboarding, go to dashboard
-                setTimeout(() => {
-                  router.push('/dashboard/homeowner');
-                }, 2000);
+                // Check if user has any projects
+                const { data: projectsData, error: projectsError } = await supabase
+                  .from('projects')
+                  .select('id')
+                  .eq('user_id', data.user.id)
+                  .limit(1);
+
+                if (projectsError) {
+                  console.error('Projects fetch error:', projectsError);
+                }
+
+                // If user has projects, go to regular dashboard, otherwise go to empty dashboard
+                if (projectsData && projectsData.length > 0) {
+                  setTimeout(() => {
+                    router.push('/dashboard/homeowner');
+                  }, 2000);
+                } else {
+                  setTimeout(() => {
+                    router.push('/dashboard/homeowner/empty');
+                  }, 2000);
+                }
               } else {
                 // User hasn't completed onboarding, go to onboarding flow
                 setTimeout(() => {
