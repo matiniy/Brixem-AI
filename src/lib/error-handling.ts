@@ -59,7 +59,7 @@ export function handleApiError(error: unknown): AppError {
   }
 
   // Handle OpenAI API errors
-  if (error?.code === 'insufficient_quota') {
+  if (error && typeof error === 'object' && 'code' in error && error.code === 'insufficient_quota') {
     return new AppError(
       'AI service quota exceeded. Please try again later or upgrade your plan.',
       errorCodes.QUOTA_EXCEEDED
@@ -67,7 +67,7 @@ export function handleApiError(error: unknown): AppError {
   }
 
   // Handle network errors
-  if (error?.message?.includes('fetch')) {
+  if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string' && error.message.includes('fetch')) {
     return new AppError(
       'Network connection error. Please check your internet connection.',
       errorCodes.NETWORK_ERROR
@@ -75,7 +75,7 @@ export function handleApiError(error: unknown): AppError {
   }
 
   // Handle authentication errors
-  if (error?.status === 401) {
+  if (error && typeof error === 'object' && 'status' in error && error.status === 401) {
     return new AppError(
       'Authentication failed. Please log in again.',
       errorCodes.AUTHENTICATION_FAILED
@@ -83,10 +83,11 @@ export function handleApiError(error: unknown): AppError {
   }
 
   // Default error
-  return new AppError(
-    error?.message || 'An unexpected error occurred. Please try again.',
-    errorCodes.API_ERROR
-  );
+  const errorMessage = error && typeof error === 'object' && 'message' in error && typeof error.message === 'string' 
+    ? error.message 
+    : 'An unexpected error occurred. Please try again.';
+  
+  return new AppError(errorMessage, errorCodes.API_ERROR);
 }
 
 export function showErrorToast(error: AppError) {
