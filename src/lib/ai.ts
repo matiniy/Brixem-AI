@@ -16,31 +16,63 @@ export interface AIError {
   error: string;
 }
 
+import { handleApiError, logError } from './error-handling';
+import { cache, cacheKeys, hashString } from './cache';
+import { validateAndSanitizeInput } from './validation';
+
 export async function sendChatMessage(
   messages: Message[],
   projectContext?: string
 ): Promise<AIResponse> {
   try {
+    // Validate and sanitize inputs
+    const sanitizedMessages = messages.map(msg => ({
+      ...msg,
+      text: validateAndSanitizeInput(msg.text, 4000)
+    }));
+
+    const sanitizedContext = projectContext ? validateAndSanitizeInput(projectContext, 1000) : undefined;
+
+    // Generate cache key for this request
+    const requestHash = hashString(JSON.stringify({ messages: sanitizedMessages, projectContext: sanitizedContext }));
+    const cacheKey = cacheKeys.aiResponse(requestHash);
+
+    // Check cache first
+    const cached = cache.get<AIResponse>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        messages,
-        projectContext,
+        messages: sanitizedMessages,
+        projectContext: sanitizedContext,
       }),
     });
 
     if (!response.ok) {
       const errorData: AIError = await response.json();
-      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      const error = handleApiError(new Error(errorData.error || `HTTP error! status: ${response.status}`));
+      logError(error, { endpoint: '/api/chat', status: response.status });
+      throw error;
     }
 
     const data: AIResponse = await response.json();
+    
+    // Cache the response for 1 hour
+    cache.set(cacheKey, data, 60 * 60 * 1000);
+    
     return data;
   } catch (error) {
-    console.error('AI chat error:', error);
+    logError(error as Error, { 
+      function: 'sendChatMessage',
+      messagesCount: messages.length,
+      hasProjectContext: !!projectContext
+    });
     throw error;
   }
 }
