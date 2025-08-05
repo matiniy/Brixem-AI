@@ -38,7 +38,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
       </head>
-      <body className="bg-sidebar-bg text-gray-dark font-sans min-h-screen overflow-x-hidden">
+      <body className="bg-white text-gray-dark font-sans min-h-screen overflow-x-hidden">
         {/* Only render OnboardingModal on client to avoid hydration mismatch */}
         {isClient && (
           <OnboardingModal open={showOnboarding} onClose={() => setShowOnboarding(false)} onSelectRole={handleSelectRole} />

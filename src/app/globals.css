@@ -32,19 +32,11 @@ body {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  /* Mobile layout optimizations */
-  padding-left: 16px;
-  padding-right: 16px;
   scroll-behavior: smooth;
 }
 
 /* Mobile-specific layout improvements */
 @media (max-width: 640px) {
-  body {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-  
   section {
     margin-bottom: 32px;
   }
