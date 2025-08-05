@@ -164,32 +164,6 @@ export default function Navbar() {
         </div>
       )}
 
-            {/* Mobile CTA Buttons */}
-            <div className="space-y-2 sm:space-y-3 pt-3 sm:pt-4">
-              <button 
-                className="w-full text-left text-gray-700 font-medium text-sm py-2 touch-manipulation"
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  setShowLoginModal(true);
-                }}
-              >
-                Log in
-              </button>
-              <button 
-                className="w-full text-left text-gray-700 font-medium text-sm py-2 touch-manipulation"
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  setContactModalType("demo");
-                  setShowContactModal(true);
-                }}
-              >
-                Request demo
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Mobile CTA Button (visible when menu is closed) */}
       <button 
         onClick={() => {
