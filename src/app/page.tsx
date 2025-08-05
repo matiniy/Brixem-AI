@@ -296,8 +296,8 @@ function LandingPageContent() {
 
   return (
     <>
-      {/* Hero Section - now white background */}
-      <section className={`relative bg-white overflow-hidden transition-all duration-500 ease-in-out ${isChatActive ? 'py-4 sm:py-6 md:py-8 lg:py-12' : 'py-8 sm:py-12 md:py-16 lg:py-24'}`}>
+      {/* Hero Section - Mobile Optimized */}
+      <section className={`relative bg-white overflow-hidden transition-all duration-500 ease-in-out min-h-screen flex items-center ${isChatActive ? 'py-8 sm:py-12 md:py-16 lg:py-20' : 'py-12 sm:py-16 md:py-20 lg:py-24'}`}>
         {/* Orb Background */}
         <div className="absolute inset-0 opacity-30 sm:opacity-50 pointer-events-none">
           <Orb
@@ -307,9 +307,9 @@ function LandingPageContent() {
             forceHoverState={false}
           />
         </div>
-        <div className="max-w-6xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 xl:px-12 text-center relative z-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 text-center relative z-10 w-full">
           {/* Subtitle */}
-          <div className={`mb-2 sm:mb-4 transition-all duration-500 ${isChatActive ? 'mb-1' : 'mb-2 sm:mb-4'}`}>
+          <div className={`mb-4 sm:mb-6 transition-all duration-500 ${isChatActive ? 'mb-2' : 'mb-4 sm:mb-6'}`}>
             <span className={`font-semibold tracking-wider text-gray-500 uppercase transition-all duration-500 ${
               isChatActive ? 'text-xs' : 'text-xs sm:text-sm'
             }`}>
@@ -317,7 +317,7 @@ function LandingPageContent() {
             </span>
           </div>
           {/* Main Headline with animated gradient */}
-          <h1 className={`font-bold mb-4 sm:mb-6 leading-tight max-w-4xl mx-auto text-center transition-all duration-500 ${isChatActive ? 'text-lg sm:text-xl md:text-2xl lg:text-3xl mb-2 sm:mb-3' : 'text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-4 sm:mb-6'}`}>
+          <h1 className={`font-bold mb-6 sm:mb-8 leading-tight max-w-4xl mx-auto text-center transition-all duration-500 ${isChatActive ? 'text-xl sm:text-2xl md:text-3xl lg:text-4xl mb-4 sm:mb-6' : 'text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl mb-6 sm:mb-8'}`}>
             <span className="block">
               <GradientText
                 className="inline"
@@ -330,16 +330,16 @@ function LandingPageContent() {
             <span className="block text-black">built for construction</span>
           </h1>
           {/* Smaller Subheadline */}
-          <h2 className={`font-normal text-gray-900 transition-all duration-500 ${isChatActive ? 'text-xs sm:text-sm mb-3 sm:mb-4' : 'text-sm sm:text-base md:text-lg mb-2 sm:mb-3'}`}>
+          <h2 className={`font-normal text-gray-900 transition-all duration-500 mb-8 sm:mb-10 ${isChatActive ? 'text-sm sm:text-base mb-6 sm:mb-8' : 'text-base sm:text-lg md:text-xl mb-8 sm:mb-10'}`}>
             Brixem gives homeowners and teams instant clarity across renovation and construction projects — from scoping to costing, scheduling, and contractor collaboration.
           </h2>
-          {/* AI Chat Card with minimal spacing */}
-          <div className={`flex flex-col sm:flex-row justify-center items-center transition-all duration-500 ${isChatActive ? 'mt-2 sm:mt-4' : 'mt-2 sm:mt-3'}`}>
-            <div className="w-full max-w-2xl">
+          {/* AI Chat Card with mobile-optimized spacing */}
+          <div className={`flex flex-col justify-center items-center transition-all duration-500 w-full max-w-2xl mx-auto ${isChatActive ? 'mt-6 sm:mt-8' : 'mt-8 sm:mt-10'}`}>
+            <div className="w-full">
               {/* Chat Area Only - no card styling */}
-              <div className="px-1 pb-1 pt-0">
+              <div className="px-2 pb-2 pt-0">
                 <div className={`flex flex-col transition-all duration-500 ${
-                  isChatActive ? 'h-64 sm:h-80 md:h-96 lg:h-[500px]' : 'h-24 sm:h-32 md:h-40 lg:h-48'
+                  isChatActive ? 'h-72 sm:h-80 md:h-96 lg:h-[500px]' : 'h-32 sm:h-40 md:h-48 lg:h-56'
                 }`}>
                   <ChatPanel 
                     messages={messages} 
@@ -349,12 +349,12 @@ function LandingPageContent() {
                   />
                 </div>
               </div>
-              {/* Pre-existing questions */}
-              <div className={`flex flex-wrap gap-2 justify-center transition-all duration-500 ${isChatActive ? 'mt-1' : 'mt-2 sm:mt-3'}`}>
+              {/* Pre-existing questions - mobile optimized */}
+              <div className={`flex flex-col gap-3 justify-center transition-all duration-500 mt-6 sm:mt-8 ${isChatActive ? 'mt-4 sm:mt-6' : 'mt-6 sm:mt-8'}`}>
                 {preQuestions.map((q, i) => (
                   <button
                     key={i}
-                    className="px-3 sm:px-4 py-2 rounded-full bg-gray-100 text-gray-800 text-xs sm:text-sm font-medium hover:bg-[#e6eaff] border border-gray-200 transition shadow-sm"
+                    className="px-4 sm:px-6 py-3 sm:py-4 rounded-xl bg-gray-100 text-gray-800 text-sm sm:text-base font-medium hover:bg-[#e6eaff] border border-gray-200 transition shadow-sm touch-manipulation min-h-[44px]"
                     onClick={() => {
                       // Fill the input field instead of sending directly
                       const inputElement = document.querySelector('input[placeholder="Ask anything about your project..."]') as HTMLInputElement;
@@ -377,11 +377,11 @@ function LandingPageContent() {
       {/* Stats Section */}
       <AnimatedStats />
 
-      {/* Role Cards Section */}
-      <section className="py-12 sm:py-16 md:py-20 lg:py-32 bg-gray-50">
+      {/* Role Cards Section - Mobile Optimized */}
+      <section className="py-16 sm:py-20 md:py-24 lg:py-32 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
-          <div className="text-center mb-12 sm:mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">
+          <div className="text-center mb-16 sm:mb-20">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-6 sm:mb-8">
               Built for every role in construction
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto px-4">
@@ -390,22 +390,22 @@ function LandingPageContent() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {/* Homeowner Card */}
-            <div className="bg-white rounded-2xl p-4 sm:p-6 lg:p-8 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 flex flex-col h-full group">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center mb-3 sm:mb-4 lg:mb-6 group-hover:scale-110 transition-transform">
-                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 flex flex-col h-full group">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center mb-6 sm:mb-8 group-hover:scale-110 transition-transform">
+                <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                   <circle cx="12" cy="12" r="9" strokeWidth={1.5} className="opacity-30" />
                 </svg>
               </div>
-              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 lg:mb-4">Homeowner</h3>
-              <p className="text-gray-600 mb-3 sm:mb-4 lg:mb-6 leading-relaxed flex-grow text-sm sm:text-base">
+              <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Homeowner</h3>
+              <p className="text-gray-600 mb-6 sm:mb-8 leading-relaxed flex-grow text-base sm:text-lg">
                 Plan your renovation with confidence. Step-by-step project scoping with dynamic progress tracking 
                 and AI-powered recommendations.
               </p>
               <button 
-                className="w-full px-4 sm:px-6 py-3 rounded-lg bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold hover:opacity-90 active:scale-95 transition mt-auto text-sm sm:text-base touch-manipulation min-h-[44px]"
+                className="w-full px-6 sm:px-8 py-4 rounded-xl bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold hover:opacity-90 active:scale-95 transition mt-auto text-base sm:text-lg touch-manipulation min-h-[48px]"
                 onClick={() => router.push("/onboarding/homeowner")}
               >
                 Get Started
@@ -414,20 +414,20 @@ function LandingPageContent() {
             
             {/* Contractor Card */}
             <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 flex flex-col h-full group">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform">
-                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center mb-6 sm:mb-8 group-hover:scale-110 transition-transform">
+                <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth={1.5} className="opacity-30" />
                   <circle cx="12" cy="12" r="9" strokeWidth={1} className="opacity-20" />
                 </svg>
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Contractor</h3>
-              <p className="text-gray-600 mb-4 sm:mb-6 leading-relaxed flex-grow text-sm sm:text-base">
+              <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Contractor</h3>
+              <p className="text-gray-600 mb-6 sm:mb-8 leading-relaxed flex-grow text-base sm:text-lg">
                 Quote faster. Win more jobs. Advanced feasibility & estimation tools with material & 
                 construction cost analysis.
               </p>
               <button
-                className="w-full px-4 sm:px-6 py-3 rounded-lg bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold hover:opacity-90 transition mt-auto text-sm sm:text-base"
+                className="w-full px-6 sm:px-8 py-4 rounded-xl bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold hover:opacity-90 transition mt-auto text-base sm:text-lg touch-manipulation min-h-[48px]"
                 onClick={() => router.push("/onboarding/contractor")}
               >
                 Get Started
@@ -436,15 +436,15 @@ function LandingPageContent() {
             
             {/* Consultant Card */}
             <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 flex flex-col h-full group">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform">
-                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center mb-6 sm:mb-8 group-hover:scale-110 transition-transform">
+                <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth={1.5} className="opacity-30" />
                   <circle cx="12" cy="12" r="9" strokeWidth={1} className="opacity-20" />
                 </svg>
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Consultant</h3>
-              <p className="text-gray-600 mb-4 sm:mb-6 leading-relaxed flex-grow text-sm sm:text-base">
+              <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Consultant</h3>
+              <p className="text-gray-600 mb-6 sm:mb-8 leading-relaxed flex-grow text-base sm:text-lg">
                 Support smarter decisions. Faster. Comprehensive project roadmaps with AI-powered 
                 insights and risk assessment.
               </p>

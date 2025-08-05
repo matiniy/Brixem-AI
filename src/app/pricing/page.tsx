@@ -38,23 +38,23 @@ export default function Pricing() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      {/* Hero Section */}
-      <section className="pt-20 sm:pt-24 lg:pt-32 pb-12 sm:pb-16 lg:pb-20 bg-gradient-to-br from-gray-50 to-white">
+      {/* Hero Section - Mobile Optimized */}
+      <section className="pt-16 sm:pt-20 lg:pt-24 pb-12 sm:pb-16 lg:pb-20 bg-gradient-to-br from-gray-50 to-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 text-center">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 mb-4 sm:mb-6">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-900 mb-6 sm:mb-8">
             Choose Your Plan
           </h1>
-          <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-600 mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed">
             Select the perfect plan for your construction project needs
           </p>
           
-          {/* Role Tabs */}
-          <div className="flex justify-center mb-4 sm:mb-6">
-            <div className="bg-white rounded-xl p-1 shadow-lg border border-gray-200">
+          {/* Role Tabs - Mobile Optimized */}
+          <div className="flex justify-center mb-8 sm:mb-12">
+            <div className="bg-white rounded-xl p-1 shadow-lg border border-gray-200 w-full max-w-md">
               <div className="flex space-x-1">
                 <button
                   onClick={() => setActiveTab("homeowner")}
-                  className={`px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                  className={`flex-1 px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-semibold text-sm sm:text-base transition-all duration-200 touch-manipulation min-h-[44px] ${
                     activeTab === "homeowner"
                       ? "bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white shadow-md"
                       : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
@@ -64,7 +64,7 @@ export default function Pricing() {
                 </button>
                 <button
                   onClick={() => setActiveTab("consultant")}
-                  className={`px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                  className={`flex-1 px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-semibold text-sm sm:text-base transition-all duration-200 touch-manipulation min-h-[44px] ${
                     activeTab === "consultant"
                       ? "bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white shadow-md"
                       : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
@@ -74,7 +74,7 @@ export default function Pricing() {
                 </button>
                 <button
                   onClick={() => setActiveTab("contractor")}
-                  className={`px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                  className={`flex-1 px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-semibold text-sm sm:text-base transition-all duration-200 touch-manipulation min-h-[44px] ${
                     activeTab === "contractor"
                       ? "bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white shadow-md"
                       : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"

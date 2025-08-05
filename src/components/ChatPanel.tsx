@@ -27,16 +27,18 @@ export default function ChatPanel({ messages, onSend, onTaskConfirm, pendingTask
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto mb-2 space-y-1">
+      <div className="flex-1 overflow-y-auto mb-4 space-y-3">
         {messages.map((msg, i) => (
-          <div key={i} className={`p-2 rounded-lg max-w-[90%] sm:max-w-[80%] text-base sm:text-sm ${msg.role === "user" ? "ml-auto bg-black text-white" : "bg-gray-100 text-gray-900"}`}>{msg.text}</div>
+          <div key={i} className={`p-3 sm:p-4 rounded-2xl max-w-[85%] text-sm sm:text-base shadow-sm ${msg.role === "user" ? "ml-auto bg-black text-white" : "bg-gray-100 text-gray-900"}`}>
+            <p className="whitespace-pre-wrap leading-relaxed">{msg.text}</p>
+          </div>
         ))}
         {/* Task confirmation buttons */}
         {onTaskConfirm && pendingTask && lastMsg && lastMsg.role === "ai" && lastMsg.text.includes(pendingTask) && (
-          <div className="flex gap-2 mt-2">
+          <div className="flex gap-3 mt-4">
             <button
               type="button"
-              className="px-4 py-2 min-w-[80px] rounded-lg bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold shadow hover:opacity-90 transition border-0"
+              className="px-6 py-3 min-w-[80px] rounded-xl bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold shadow hover:opacity-90 transition border-0 touch-manipulation min-h-[44px]"
               style={{ display: 'inline-block' }}
               onClick={() => onTaskConfirm(true)}
             >
@@ -44,7 +46,7 @@ export default function ChatPanel({ messages, onSend, onTaskConfirm, pendingTask
             </button>
             <button
               type="button"
-              className="px-4 py-2 min-w-[64px] rounded-lg bg-gray-200 text-black font-semibold hover:bg-gray-300 transition border border-gray-300"
+              className="px-6 py-3 min-w-[64px] rounded-xl bg-gray-200 text-black font-semibold hover:bg-gray-300 transition border border-gray-300 touch-manipulation min-h-[44px]"
               style={{ display: 'inline-block' }}
               onClick={() => onTaskConfirm(false)}
             >
@@ -55,7 +57,7 @@ export default function ChatPanel({ messages, onSend, onTaskConfirm, pendingTask
         <div ref={messagesEndRef} />
       </div>
       <form
-        className="flex gap-2 sm:gap-3 mt-2"
+        className="flex gap-3 mt-4"
         onSubmit={e => {
           e.preventDefault();
           if (disableInput) return;
@@ -67,13 +69,13 @@ export default function ChatPanel({ messages, onSend, onTaskConfirm, pendingTask
       >
         <input
           ref={inputRef}
-          className="flex-1 px-4 py-3 sm:py-2 rounded-xl border border-brixem-gray-200 text-black text-base sm:text-sm"
+          className="flex-1 px-4 py-3 rounded-xl border border-gray-300 text-black text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder={disableInput ? "No free chats left" : "Ask anything about your project..."}
           disabled={disableInput}
         />
         <button
           type="submit"
-          className="px-5 py-3 sm:px-4 sm:py-2 rounded-xl bg-brixem-primary text-white font-medium text-base sm:text-sm"
+          className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-medium text-base touch-manipulation min-h-[44px] hover:opacity-90 transition"
           disabled={disableInput}
         >
           Send

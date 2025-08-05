@@ -77,58 +77,92 @@ export default function Navbar() {
         </svg>
       </button>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - Full Screen Modal */}
       {isMobileMenuOpen && (
-        <div className="absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg lg:hidden z-50">
-          <div className="px-3 sm:px-4 py-4 sm:py-6 space-y-3 sm:space-y-4">
-            {/* Mobile Navigation Links */}
-            <div className="space-y-2 sm:space-y-3">
-              <div className="border-b border-gray-100 pb-2 sm:pb-3">
-                <Link 
-                  href="/platform" 
-                  className={`block text-sm ${pathname.startsWith('/platform') ? 'text-[#23c6e6] font-semibold' : 'text-gray-700'}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Platform
-                </Link>
-              </div>
-              <div className="border-b border-gray-100 pb-2 sm:pb-3">
-                <Link 
-                  href="/solutions" 
-                  className={`block text-sm ${pathname.startsWith('/solutions') ? 'text-[#23c6e6] font-semibold' : 'text-gray-700'}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Solutions
-                </Link>
-              </div>
-              <div className="border-b border-gray-100 pb-2 sm:pb-3">
-                <Link 
-                  href="/pricing" 
-                  className={`block text-sm ${pathname.startsWith('/pricing') ? 'text-[#23c6e6] font-semibold' : 'text-gray-700'}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Pricing
-                </Link>
-              </div>
-              <div className="border-b border-gray-100 pb-2 sm:pb-3">
-                <Link 
-                  href="/" 
-                  className={`block text-sm ${pathname === '/' ? 'text-[#23c6e6] font-semibold' : 'text-gray-700'}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Brixem AI
-                </Link>
-              </div>
-              <div className="border-b border-gray-100 pb-2 sm:pb-3">
-                <Link 
-                  href="/about" 
-                  className={`block text-sm ${pathname.startsWith('/about') ? 'text-[#23c6e6] font-semibold' : 'text-gray-700'}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  About Us
-                </Link>
-              </div>
+        <div className="fixed inset-0 bg-white z-50 lg:hidden">
+          <div className="flex flex-col h-full">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-6 border-b border-gray-200">
+              <Link href="/" className="flex items-center gap-3 group" onClick={() => setIsMobileMenuOpen(false)}>
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">B</span>
+                </div>
+                <span className="text-xl font-bold text-gray-900">brixem</span>
+              </Link>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-2 rounded-lg hover:bg-gray-100 transition touch-manipulation"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
+            
+            {/* Navigation Links */}
+            <div className="flex-1 px-6 py-8 space-y-6">
+              <Link 
+                href="/platform" 
+                className={`block text-lg font-medium py-3 ${pathname.startsWith('/platform') ? 'text-[#23c6e6]' : 'text-gray-700'}`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Platform
+              </Link>
+              <Link 
+                href="/solutions" 
+                className={`block text-lg font-medium py-3 ${pathname.startsWith('/solutions') ? 'text-[#23c6e6]' : 'text-gray-700'}`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Solutions
+              </Link>
+              <Link 
+                href="/pricing" 
+                className={`block text-lg font-medium py-3 ${pathname.startsWith('/pricing') ? 'text-[#23c6e6]' : 'text-gray-700'}`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Pricing
+              </Link>
+              <Link 
+                href="/" 
+                className={`block text-lg font-medium py-3 ${pathname === '/' ? 'text-[#23c6e6]' : 'text-gray-700'}`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Brixem AI
+              </Link>
+              <Link 
+                href="/about" 
+                className={`block text-lg font-medium py-3 ${pathname.startsWith('/about') ? 'text-[#23c6e6]' : 'text-gray-700'}`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                About Us
+              </Link>
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="px-6 py-8 space-y-4 border-t border-gray-200">
+              <button 
+                onClick={() => {
+                  setShowLoginModal(true);
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full px-6 py-4 text-lg font-medium text-gray-700 hover:text-gray-900 transition"
+              >
+                Log in
+              </button>
+              <button 
+                onClick={() => {
+                  setContactModalType("demo");
+                  setShowContactModal(true);
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full px-6 py-4 rounded-xl bg-gray-900 text-white font-medium hover:bg-gray-800 transition text-lg touch-manipulation min-h-[48px]"
+              >
+                Request demo
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
             {/* Mobile CTA Buttons */}
             <div className="space-y-2 sm:space-y-3 pt-3 sm:pt-4">
