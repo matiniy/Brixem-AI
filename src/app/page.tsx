@@ -324,10 +324,9 @@ function LandingPageContent() {
                 colors={["#62cff4", "#2c67f2", "#fab2ff", "#1904e5", "#12063b", "#09555c"]}
                 animationSpeed={3}
               >
-                Smarter projects, powered by AI
+                Smarter projects, powered by AI built for construction
               </GradientText>
             </span>
-            <span className="block text-black">built for construction</span>
           </h1>
           {/* Smaller Subheadline */}
           <h2 className={`font-normal text-gray-900 transition-all duration-500 mb-8 sm:mb-10 ${isChatActive ? 'text-sm sm:text-base mb-6 sm:mb-8' : 'text-base sm:text-lg md:text-xl mb-8 sm:mb-10'}`}>
