@@ -4,7 +4,6 @@ import { useState } from 'react';
 import PrimaryButton from './PrimaryButton';
 
 interface ZeroStateProps {
-  onCreateProject: () => void;
   onProjectCreated: (projectData: ProjectData) => void;
 }
 
@@ -23,7 +22,7 @@ interface ProjectData {
   type: string;
 }
 
-export function ZeroState({ onCreateProject, onProjectCreated }: ZeroStateProps) {
+export function ZeroState({ onProjectCreated }: ZeroStateProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',

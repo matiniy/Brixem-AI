@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ZeroState } from '@/components/ZeroState';
-import { CreateProjectDialog, ProjectFormData } from '@/components/CreateProjectDialog';
-import { createProject, getProjects } from '../actions';
+import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
+import { ZeroState } from '@/components/ZeroState';
+import { CreateProjectDialog } from '@/components/CreateProjectDialog';
+import { createProject, getProjects } from '../actions';
 
 interface Project {
   id: string;
@@ -15,7 +16,7 @@ interface Project {
   status: string;
   created_at: string;
   updated_at: string;
-  progress: number;
+  progress: number; // Added to match Sidebar Project type
 }
 
 export default function HomeownerDashboard() {
@@ -59,7 +60,13 @@ export default function HomeownerDashboard() {
     }
   };
 
-  const handleProjectCreated = async (projectData: any) => {
+  const handleProjectCreated = async (projectData: {
+    name: string;
+    location: string;
+    size_sqft?: number;
+    description: string;
+    type: string;
+  }) => {
     try {
       // Create the project using the server action
       await createProject(projectData);
@@ -152,7 +159,7 @@ export default function HomeownerDashboard() {
         {/* Main Content */}
         <main className="flex-1 overflow-hidden bg-gray-50">
           {projects.length === 0 ? (
-            <ZeroState onCreateProject={handleCreateProject} onProjectCreated={handleProjectCreated} />
+            <ZeroState onProjectCreated={handleProjectCreated} />
           ) : (
             <div className="p-6">
               <div className="mb-6">
