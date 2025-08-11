@@ -46,14 +46,34 @@ export default function HomeownerDashboard() {
     }
   };
 
-  const handleCreateProject = async (projectData: ProjectFormData) => {
+  const handleCreateProject = async () => {
     try {
-      await createProject(projectData);
-      // The server action will redirect to the new project page
+      setIsLoading(true);
+      // The ZeroState component will now handle the project creation through chat
+      // We'll show the project creation dialog as a fallback
+      setShowCreateDialog(true);
     } catch (error) {
       console.error('Error creating project:', error);
-      // You could show a toast notification here
-      alert('Failed to create project. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleProjectCreated = async (projectData: any) => {
+    try {
+      // Create the project using the server action
+      await createProject(projectData);
+      
+      // Reload projects to show the new one
+      await loadProjects();
+      
+      // Close the dialog
+      setShowCreateDialog(false);
+      
+      // Show success message
+      // You could add a toast notification here
+    } catch (error) {
+      console.error('Error creating project:', error);
     }
   };
 
@@ -132,7 +152,7 @@ export default function HomeownerDashboard() {
         {/* Main Content */}
         <main className="flex-1 overflow-hidden bg-gray-50">
           {projects.length === 0 ? (
-            <ZeroState onCreateProject={() => setShowCreateDialog(true)} />
+            <ZeroState onCreateProject={handleCreateProject} onProjectCreated={handleProjectCreated} />
           ) : (
             <div className="p-6">
               <div className="mb-6">
