@@ -1,6 +1,20 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
 
+interface StripeSubscription {
+  id: string;
+  customer: string;
+  status: string;
+  current_period_end: number;
+  items: {
+    data: Array<{
+      price: {
+        lookup_key?: string;
+      };
+    }>;
+  };
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.text();
@@ -40,7 +54,7 @@ export async function POST(request: Request) {
   }
 }
 
-async function handleSubscriptionUpdate(subscription: any) {
+async function handleSubscriptionUpdate(subscription: StripeSubscription) {
   try {
     const supabase = createServerClient();
     
@@ -90,7 +104,7 @@ async function handleSubscriptionUpdate(subscription: any) {
   }
 }
 
-async function handleSubscriptionCancellation(subscription: any) {
+async function handleSubscriptionCancellation(subscription: StripeSubscription) {
   try {
     const supabase = createServerClient();
     

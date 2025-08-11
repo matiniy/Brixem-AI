@@ -104,7 +104,7 @@ export async function recordUsageEvent(
   workspaceId: string, 
   event: string, 
   qty: number = 1, 
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 ): Promise<void> {
   try {
     const supabase = await createUserClient();
@@ -136,7 +136,7 @@ export async function getUsageSummary(workspaceId: string): Promise<{
     const currentPlan = await getCurrentPlan(workspaceId);
     const limits = USAGE_LIMITS[currentPlan];
     
-    const usage = {};
+    const usage: Record<string, { current: number; limit: number; percentage: number }> = {};
     
     for (const [event, limit] of Object.entries(limits)) {
       const current = await getMonthlyUsage(workspaceId, event);

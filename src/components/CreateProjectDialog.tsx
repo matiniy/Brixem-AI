@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { PrimaryButton } from './PrimaryButton';
+import PrimaryButton from './PrimaryButton';
 
 interface CreateProjectDialogProps {
   isOpen: boolean;
@@ -25,18 +25,22 @@ export function CreateProjectDialog({ isOpen, onClose, onSubmit }: CreateProject
     description: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<Partial<ProjectFormData>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleInputChange = (field: keyof ProjectFormData, value: string | number) => {
+  const handleInputChange = (field: keyof ProjectFormData, value: string | number | undefined) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
     }
   };
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<ProjectFormData> = {};
+    const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
       newErrors.name = 'Project name is required';

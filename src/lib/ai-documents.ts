@@ -65,7 +65,8 @@ Format the response in clean markdown with proper headings, bullet points, and t
 }
 
 async function generateWithOpenAI(systemPrompt: string, userPrompt: string): Promise<string> {
-  const OpenAI = require('openai');
+  // Dynamic import to avoid bundling issues
+  const { default: OpenAI } = await import('openai');
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
   });

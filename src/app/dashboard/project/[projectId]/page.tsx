@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getProject } from '../../actions';
-import { PrimaryButton } from '@/components/PrimaryButton';
+import PrimaryButton from '@/components/PrimaryButton';
 
 interface Project {
   id: string;
@@ -14,10 +14,10 @@ interface Project {
   status: string;
   created_at: string;
   updated_at: string;
-  workspaces: {
+  workspaces: Array<{
     id: string;
     name: string;
-  };
+  }>;
 }
 
 export default function ProjectDetailPage() {
@@ -27,14 +27,6 @@ export default function ProjectDetailPage() {
   
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isGenerating, setIsGenerating] = useState(false);
-
-  useEffect(() => {
-    if (projectId) {
-      loadProject();
-    }
-  }, [projectId]);
-
   const loadProject = async () => {
     try {
       setIsLoading(true);
@@ -48,6 +40,14 @@ export default function ProjectDetailPage() {
       setIsLoading(false);
     }
   };
+
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  useEffect(() => {
+    if (projectId) {
+      loadProject();
+    }
+  }, [projectId, loadProject]);
 
   const handleGenerateDocuments = async () => {
     try {
@@ -69,7 +69,7 @@ export default function ProjectDetailPage() {
         throw new Error('Failed to generate documents');
       }
 
-      const result = await response.json();
+      await response.json(); // Response is consumed but not used yet
       
       // Show success message and redirect to documents view
       alert('Documents generated successfully! You can now download your Scope of Work and Estimate.');
@@ -100,7 +100,7 @@ export default function ProjectDetailPage() {
       <div className="flex h-screen items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Project Not Found</h2>
-          <p className="text-gray-600 mb-6">The project you're looking for doesn't exist or you don't have access to it.</p>
+          <p className="text-gray-600 mb-6">The project you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.</p>
           <button
             onClick={() => router.push('/dashboard/homeowner')}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
@@ -257,7 +257,7 @@ export default function ProjectDetailPage() {
               {/* Workspace Info */}
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <h4 className="text-sm font-medium text-gray-700 mb-2">Workspace</h4>
-                <p className="text-sm text-gray-900">{project.workspaces.name}</p>
+                <p className="text-sm text-gray-900">{project.workspaces[0]?.name || 'Unknown'}</p>
               </div>
             </div>
 

@@ -28,10 +28,7 @@ export async function POST(request: Request) {
         location,
         description,
         size_sqft,
-        workspaces!inner (
-          id,
-          name
-        )
+        workspace_id
       `)
       .eq('id', projectId)
       .single();
@@ -42,7 +39,7 @@ export async function POST(request: Request) {
 
     // Check usage limits
     try {
-      await assertWithinCap(project.workspaces.id, 'generate_doc');
+      await assertWithinCap(project.workspace_id, 'generate_doc');
     } catch (error) {
       if (error instanceof Error) {
         return NextResponse.json({ error: error.message }, { status: 429 });
@@ -80,7 +77,7 @@ export async function POST(request: Request) {
     }
 
     // Record usage event
-    await recordUsageEvent(project.workspaces.id, 'generate_doc', 1, { 
+    await recordUsageEvent(project.workspace_id, 'generate_doc', 1, { 
       document_id: document.id, 
       type: type 
     });

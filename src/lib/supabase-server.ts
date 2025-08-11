@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import { cookies } from 'next/headers';
 
 // Server-side Supabase client with service role key for privileged operations
 export function createServerClient() {
@@ -27,20 +26,15 @@ export async function createUserClient() {
     throw new Error('Missing Supabase environment variables for user client');
   }
 
-  const cookieStore = await cookies();
-  
   return createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: false
     },
-    cookies: {
-      getAll() {
-        return cookieStore.getAll().map(cookie => ({
-          name: cookie.name,
-          value: cookie.value
-        }));
+    global: {
+      headers: {
+        'X-Client-Info': 'brixem-dashboard'
       }
     }
   });

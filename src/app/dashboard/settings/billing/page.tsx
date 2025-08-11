@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { PrimaryButton } from '@/components/PrimaryButton';
+import PrimaryButton from '@/components/PrimaryButton';
 
 interface UsageSummary {
   plan: 'free' | 'plus';

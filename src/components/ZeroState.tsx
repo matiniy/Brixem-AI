@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { PlusIcon, DocumentTextIcon, ChartBarIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
-import { PrimaryButton } from './PrimaryButton';
+import PrimaryButton from './PrimaryButton';
 
 interface ZeroStateProps {
   onCreateProject: () => void;
@@ -90,7 +90,7 @@ export function ZeroState({ onCreateProject }: ZeroStateProps) {
       {/* Feature Highlights */}
       <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full">
         <div className="text-left">
-          <h3 className="font-semibold text-gray-900 mb-3">What you'll get:</h3>
+          <h3 className="font-semibold text-gray-900 mb-3">What you&apos;ll get:</h3>
           <ul className="space-y-2 text-gray-600">
             <li className="flex items-center">
               <CheckCircleIcon className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" />
