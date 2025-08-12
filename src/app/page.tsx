@@ -350,12 +350,12 @@ function LandingPageContent() {
                   />
                 </div>
               </div>
-              {/* Pre-existing questions - mobile optimized */}
-              <div className={`flex flex-col gap-3 justify-center transition-all duration-500 mt-6 sm:mt-8 ${isChatActive ? 'mt-4 sm:mt-6' : 'mt-6 sm:mt-8'}`}>
+              {/* Pre-existing questions - 2x2 grid with smaller cards */}
+              <div className={`grid grid-cols-2 gap-3 justify-center transition-all duration-500 mt-6 sm:mt-8 ${isChatActive ? 'mt-4 sm:mt-6' : 'mt-6 sm:mt-8'}`}>
                 {preQuestions.map((q, i) => (
                   <button
                     key={i}
-                    className="px-4 sm:px-6 py-3 sm:py-4 rounded-xl bg-gray-100 text-gray-800 text-sm sm:text-base font-medium hover:bg-[#e6eaff] border border-gray-200 transition shadow-sm touch-manipulation min-h-[44px]"
+                    className="px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-gray-100 text-gray-800 text-xs sm:text-sm font-medium hover:bg-[#e6eaff] border border-gray-200 transition shadow-sm touch-manipulation min-h-[40px] text-center leading-tight"
                     onClick={() => {
                       // Fill the input field instead of sending directly
                       const inputElement = document.querySelector('input[placeholder="Ask anything about your project..."]') as HTMLInputElement;
