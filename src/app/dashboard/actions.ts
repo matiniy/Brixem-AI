@@ -9,6 +9,7 @@ export interface CreateProjectData {
   location: string;
   size_sqft?: number;
   description?: string;
+  type?: string;
 }
 
 export async function createProject(formData: CreateProjectData) {
@@ -42,6 +43,7 @@ export async function createProject(formData: CreateProjectData) {
         location: formData.location,
         size_sqft: formData.size_sqft,
         description: formData.description,
+        type: formData.type,
         created_by: user.id,
         status: 'draft'
       })
@@ -84,6 +86,7 @@ export async function getProjects() {
         location,
         description,
         size_sqft,
+        type,
         status,
         created_at,
         updated_at
