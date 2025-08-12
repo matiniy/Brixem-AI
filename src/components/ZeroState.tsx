@@ -118,8 +118,27 @@ export function ZeroState({ onProjectCreated }: ZeroStateProps) {
         setMessages(prev => [...prev, completionMessage]);
         setIsGenerating(false);
         
+        // Add debugging
+        console.log('Calling onProjectCreated with data:', updatedProjectData);
+        
         // Call the parent function with the updated project data
-        onProjectCreated(updatedProjectData);
+        try {
+          onProjectCreated(updatedProjectData);
+          console.log('onProjectCreated called successfully');
+          
+          // Add a fallback redirect after a longer delay
+          setTimeout(() => {
+            console.log('Fallback redirect triggered');
+            // Force redirect to dashboard after 5 seconds if parent doesn't handle it
+            window.location.href = '/dashboard/homeowner';
+          }, 5000);
+        } catch (error) {
+          console.error('Error calling onProjectCreated:', error);
+          // If there's an error, redirect anyway
+          setTimeout(() => {
+            window.location.href = '/dashboard/homeowner';
+          }, 2000);
+        }
       }, 3000);
     }
   };
