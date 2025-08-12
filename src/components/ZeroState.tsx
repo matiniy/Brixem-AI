@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import PrimaryButton from './PrimaryButton';
 
 interface ZeroStateProps {
@@ -42,6 +42,7 @@ export function ZeroState({ onProjectCreated }: ZeroStateProps) {
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const steps = [
     { question: "What would you like to call your project?", field: 'name' },
@@ -50,6 +51,11 @@ export function ZeroState({ onProjectCreated }: ZeroStateProps) {
     { question: "What's the approximate size in square feet?", field: 'size_sqft' },
     { question: "Describe your project in detail. What are your goals and requirements?", field: 'description' }
   ];
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -68,10 +74,12 @@ export function ZeroState({ onProjectCreated }: ZeroStateProps) {
     const field = steps[currentStep - 1].field as keyof ProjectData;
     const value = field === 'size_sqft' ? parseInt(inputValue) || undefined : inputValue;
     
-    setProjectData(prev => ({
-      ...prev,
+    const updatedProjectData = {
+      ...projectData,
       [field]: value
-    }));
+    };
+    
+    setProjectData(updatedProjectData);
 
     // Move to next step or complete
     if (currentStep < 5) {
@@ -111,8 +119,8 @@ export function ZeroState({ onProjectCreated }: ZeroStateProps) {
         setMessages(prev => [...prev, completionMessage]);
         setIsGenerating(false);
         
-        // Call the parent function to create the project with collected data
-        onProjectCreated(projectData);
+        // Call the parent function with the updated project data
+        onProjectCreated(updatedProjectData);
       }, 3000);
     }
   };
@@ -125,59 +133,94 @@ export function ZeroState({ onProjectCreated }: ZeroStateProps) {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full">
+    <div className="flex-1 flex flex-col h-full bg-gray-50">
       {/* Chat Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <h2 className="text-lg font-semibold text-gray-900">Brixem AI Assistant</h2>
-        <p className="text-sm text-gray-600">Let me help you build your project step by step</p>
+      <div className="bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center">
+            <span className="text-white font-bold text-sm">B</span>
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">Brixem AI Assistant</h2>
+            <p className="text-sm text-gray-600">Let me help you build your project step by step</p>
+          </div>
+        </div>
       </div>
 
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-6">
         {messages.map((message) => (
           <div
             key={message.id}
             className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
+            {message.role === 'assistant' && (
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0 mr-3">
+                <span className="text-white font-bold text-xs">B</span>
+              </div>
+            )}
+            
             <div
-              className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+              className={`max-w-2xl px-4 py-3 rounded-2xl ${
                 message.role === 'user'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-900'
+                  ? 'bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white ml-auto'
+                  : 'bg-white text-gray-900 shadow-sm border border-gray-100'
               }`}
             >
-              <p className="text-sm">{message.content}</p>
-              <p className="text-xs opacity-70 mt-1">
-                {message.timestamp.toLocaleTimeString()}
+              <p className="text-sm leading-relaxed">{message.content}</p>
+              <p className={`text-xs mt-2 ${
+                message.role === 'user' ? 'text-blue-100' : 'text-gray-400'
+              }`}>
+                {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>
+            
+            {message.role === 'user' && (
+              <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0 ml-3">
+                <span className="text-gray-600 font-medium text-xs">U</span>
+              </div>
+            )}
           </div>
         ))}
         
         {isGenerating && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 text-gray-900 px-4 py-2 rounded-lg">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0 mr-3">
+              <span className="text-white font-bold text-xs">B</span>
+            </div>
+            <div className="bg-white text-gray-900 px-4 py-3 rounded-2xl shadow-sm border border-gray-100">
               <div className="flex items-center space-x-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                <span className="text-sm">Generating your project and documents...</span>
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                </div>
+                <span className="text-sm text-gray-600">Creating your project...</span>
               </div>
             </div>
           </div>
         )}
+        
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Progress Indicator */}
-      <div className="bg-white border-t border-gray-200 px-6 py-3">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-gray-600">Project Setup Progress</span>
-          <span className="text-sm font-medium text-blue-600">{currentStep}/5</span>
+      <div className="bg-white border-t border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-medium text-gray-700">Project Setup Progress</span>
+          <span className="text-sm font-semibold text-blue-600">{currentStep}/5</span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div 
-            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+            className="bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] h-2 rounded-full transition-all duration-500 ease-out"
             style={{ width: `${(currentStep / 5) * 100}%` }}
           ></div>
         </div>
+        {currentStep <= 5 && (
+          <p className="text-xs text-gray-500 mt-2 text-center">
+            Step {currentStep}: {steps[currentStep - 1].question}
+          </p>
+        )}
       </div>
 
       {/* Chat Input */}
@@ -189,23 +232,17 @@ export function ZeroState({ onProjectCreated }: ZeroStateProps) {
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder={currentStep <= 5 ? `Answer: ${steps[currentStep - 1].question}` : "Type your message..."}
-            className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="flex-1 border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
             disabled={isGenerating}
           />
           <PrimaryButton
             onClick={handleSendMessage}
             disabled={!inputValue.trim() || isGenerating}
-            className="px-6"
+            className="px-6 py-3 rounded-xl"
           >
             {isGenerating ? 'Processing...' : 'Send'}
           </PrimaryButton>
         </div>
-        
-        {currentStep <= 5 && (
-          <p className="text-xs text-gray-500 mt-2">
-            Step {currentStep} of 5: {steps[currentStep - 1].question}
-          </p>
-        )}
       </div>
     </div>
   );

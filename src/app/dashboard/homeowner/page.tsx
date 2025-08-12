@@ -68,6 +68,8 @@ export default function HomeownerDashboard() {
     type: string;
   }) => {
     try {
+      console.log('Creating project with data:', projectData);
+      
       // Create the project using the server action
       await createProject(projectData);
       
@@ -78,9 +80,11 @@ export default function HomeownerDashboard() {
       setShowCreateDialog(false);
       
       // Show success message
+      console.log('Project created successfully!');
       // You could add a toast notification here
     } catch (error) {
       console.error('Error creating project:', error);
+      // Keep dialog open on error so user can try again
     }
   };
 
