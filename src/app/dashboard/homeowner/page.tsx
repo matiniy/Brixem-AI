@@ -71,7 +71,8 @@ export default function HomeownerDashboard() {
       console.log('Creating project with data:', projectData);
       
       // Create the project using the server action
-      await createProject(projectData);
+      const newProject = await createProject(projectData);
+      console.log('Project created:', newProject);
       
       // Reload projects to show the new one
       await loadProjects();
@@ -81,7 +82,14 @@ export default function HomeownerDashboard() {
       
       // Show success message
       console.log('Project created successfully!');
-      // You could add a toast notification here
+      
+      // Automatically redirect to the new project's kanban dashboard
+      if (newProject && newProject.id) {
+        // Add a small delay to show the success message
+        setTimeout(() => {
+          window.location.href = `/dashboard/project/${newProject.id}`;
+        }, 1500);
+      }
     } catch (error) {
       console.error('Error creating project:', error);
       // Keep dialog open on error so user can try again

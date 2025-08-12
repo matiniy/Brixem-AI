@@ -111,7 +111,7 @@ export function ZeroState({ onProjectCreated }: ZeroStateProps) {
         const completionMessage: ChatMessage = {
           id: (Date.now() + 2).toString(),
           role: 'assistant',
-          content: "🎉 Project created successfully! I've generated your Scope of Work document. You can now view and download it, or continue to add more details to your project.",
+          content: "🎉 Project created successfully! I've generated your Scope of Work document. Redirecting you to your project dashboard...",
           timestamp: new Date()
         };
         

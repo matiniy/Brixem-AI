@@ -58,8 +58,8 @@ export async function createProject(formData: CreateProjectData) {
     // Revalidate dashboard to show new project
     revalidatePath('/dashboard');
     
-    // Redirect to the new project
-    redirect(`/dashboard/project/${project.id}`);
+    // Return the created project data
+    return project;
     
   } catch (error) {
     console.error('Error in createProject action:', error);
