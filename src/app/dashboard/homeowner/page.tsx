@@ -135,10 +135,6 @@ export default function HomeownerDashboard() {
                   </svg>
                 </button>
                 
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">B</span>
-                </div>
-                
                 <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
                   Dashboard
                 </h1>

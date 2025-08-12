@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import PrimaryButton from './PrimaryButton';
 
 interface ZeroStateProps {
   onProjectCreated: (projectData: ProjectData) => void;
@@ -133,69 +132,49 @@ export function ZeroState({ onProjectCreated }: ZeroStateProps) {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-gray-50">
+    <div className="flex-1 flex flex-col h-full bg-gray-900/95 backdrop-blur-xl">
       {/* Chat Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
+      <div className="bg-gray-900/90 backdrop-blur-sm border-b border-gray-700/50 px-6 py-4 rounded-t-2xl">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center">
-            <span className="text-white font-bold text-sm">B</span>
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold text-sm">AI</span>
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Brixem AI Assistant</h2>
-            <p className="text-sm text-gray-600">Let me help you build your project step by step</p>
+            <h2 className="text-lg font-semibold text-white">Brixem AI Assistant</h2>
+            <p className="text-sm text-gray-400">Let me help you build your project step by step</p>
           </div>
         </div>
       </div>
 
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-6">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-900/50">
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in duration-300`}
           >
-            {message.role === 'assistant' && (
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0 mr-3">
-                <span className="text-white font-bold text-xs">B</span>
-              </div>
-            )}
-            
             <div
-              className={`max-w-2xl px-4 py-3 rounded-2xl ${
+              className={`px-4 py-3 rounded-2xl text-sm max-w-[85%] break-words shadow-sm backdrop-blur-sm ${
                 message.role === 'user'
-                  ? 'bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white ml-auto'
-                  : 'bg-white text-gray-900 shadow-sm border border-gray-100'
+                  ? 'bg-gradient-to-r from-[#23c6e6]/90 to-[#4b1fa7]/90 text-white rounded-br-md border border-[#23c6e6]/20'
+                  : 'bg-gray-800/70 text-gray-100 rounded-bl-md border border-gray-700/50'
               }`}
             >
-              <p className="text-sm leading-relaxed">{message.content}</p>
-              <p className={`text-xs mt-2 ${
-                message.role === 'user' ? 'text-blue-100' : 'text-gray-400'
-              }`}>
-                {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </p>
+              {message.content}
             </div>
-            
-            {message.role === 'user' && (
-              <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0 ml-3">
-                <span className="text-gray-600 font-medium text-xs">U</span>
-              </div>
-            )}
           </div>
         ))}
         
         {isGenerating && (
-          <div className="flex justify-start">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0 mr-3">
-              <span className="text-white font-bold text-xs">B</span>
-            </div>
-            <div className="bg-white text-gray-900 px-4 py-3 rounded-2xl shadow-sm border border-gray-100">
+          <div className="flex justify-start animate-in fade-in duration-300">
+            <div className="px-4 py-3 rounded-2xl text-sm bg-gray-800/70 text-gray-100 rounded-bl-md border border-gray-700/50 shadow-sm backdrop-blur-sm">
               <div className="flex items-center space-x-2">
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                 </div>
-                <span className="text-sm text-gray-600">Creating your project...</span>
+                <span className="text-sm text-gray-400">Creating your project...</span>
               </div>
             </div>
           </div>
@@ -205,44 +184,69 @@ export function ZeroState({ onProjectCreated }: ZeroStateProps) {
       </div>
 
       {/* Progress Indicator */}
-      <div className="bg-white border-t border-gray-200 px-6 py-4">
+      <div className="bg-gray-900/90 backdrop-blur-sm border-t border-gray-700/50 px-6 py-4 rounded-b-2xl">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-medium text-gray-700">Project Setup Progress</span>
-          <span className="text-sm font-semibold text-blue-600">{currentStep}/5</span>
+          <span className="text-sm font-medium text-gray-300">Project Setup Progress</span>
+          <span className="text-sm font-semibold text-[#23c6e6]">{currentStep}/5</span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-gray-700/50 rounded-full h-2">
           <div 
             className="bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] h-2 rounded-full transition-all duration-500 ease-out"
             style={{ width: `${(currentStep / 5) * 100}%` }}
           ></div>
         </div>
         {currentStep <= 5 && (
-          <p className="text-xs text-gray-500 mt-2 text-center">
+          <p className="text-xs text-gray-400 mt-2 text-center">
             Step {currentStep}: {steps[currentStep - 1].question}
           </p>
         )}
       </div>
 
       {/* Chat Input */}
-      <div className="bg-white border-t border-gray-200 px-6 py-4">
-        <div className="flex space-x-3">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder={currentStep <= 5 ? `Answer: ${steps[currentStep - 1].question}` : "Type your message..."}
-            className="flex-1 border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-            disabled={isGenerating}
-          />
-          <PrimaryButton
-            onClick={handleSendMessage}
+      <div className="bg-gray-900/90 backdrop-blur-sm border-t border-gray-700/50 px-6 py-4 rounded-b-2xl">
+        <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex gap-3">
+          <div className="flex-1 relative">
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder={currentStep <= 5 ? `Answer: ${steps[currentStep - 1].question}` : "Type your message..."}
+              className="w-full px-4 py-3 text-sm bg-gray-800/70 backdrop-blur-sm border border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30 focus:border-[#23c6e6] text-white placeholder-gray-400 transition-all duration-200"
+              disabled={isGenerating}
+            />
+            {inputValue.trim() && (
+              <button
+                type="button"
+                onClick={() => setInputValue("")}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+          <button
+            type="submit"
             disabled={!inputValue.trim() || isGenerating}
-            className="px-6 py-3 rounded-xl"
+            className="px-6 py-3 bg-gradient-to-r from-[#23c6e6]/90 to-[#4b1fa7]/90 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation shadow-lg hover:shadow-xl backdrop-blur-sm border border-[#23c6e6]/20"
           >
-            {isGenerating ? 'Processing...' : 'Send'}
-          </PrimaryButton>
-        </div>
+            {isGenerating ? (
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <span>Processing...</span>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+                <span>Send</span>
+              </div>
+            )}
+          </button>
+        </form>
       </div>
     </div>
   );
