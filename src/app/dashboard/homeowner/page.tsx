@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import { ZeroState } from '@/components/ZeroState';
-import { CreateProjectDialog } from '@/components/CreateProjectDialog';
 import { createProject, getProjects } from '../actions';
 
 interface Project {
@@ -22,7 +21,7 @@ interface Project {
 export default function HomeownerDashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showChatInterface, setShowChatInterface] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Load projects on component mount
@@ -48,16 +47,8 @@ export default function HomeownerDashboard() {
   };
 
   const handleCreateProject = async () => {
-    try {
-      setIsLoading(true);
-      // The ZeroState component will now handle the project creation through chat
-      // We'll show the project creation dialog as a fallback
-      setShowCreateDialog(true);
-    } catch (error) {
-      console.error('Error creating project:', error);
-    } finally {
-      setIsLoading(false);
-    }
+    // Show the chat interface instead of dialog
+    setShowChatInterface(true);
   };
 
   const handleProjectCreated = async (projectData: {
@@ -77,8 +68,8 @@ export default function HomeownerDashboard() {
       // Reload projects to show the new one
       await loadProjects();
       
-      // Close the dialog
-      setShowCreateDialog(false);
+      // Hide the chat interface
+      setShowChatInterface(false);
       
       // Show success message
       console.log('Project created successfully! Redirecting to Kanban board...');
@@ -103,7 +94,7 @@ export default function HomeownerDashboard() {
       console.error('Error creating project:', error);
       // Show error to user
       alert('Failed to create project. Please try again.');
-      // Keep dialog open on error so user can try again
+      // Keep chat interface open on error so user can try again
     }
   };
 
@@ -130,7 +121,7 @@ export default function HomeownerDashboard() {
         projects={projects}
         activeProject=""
         onProjectSelect={handleProjectSelect}
-        onProjectCreate={() => setShowCreateDialog(true)}
+        onProjectCreate={() => setShowChatInterface(true)}
         onProjectDelete={() => {}}
         isMobileOpen={isMobileSidebarOpen}
         onMobileToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
@@ -162,7 +153,7 @@ export default function HomeownerDashboard() {
               {/* Header Actions */}
               <div className="flex items-center gap-4">
                 <button
-                  onClick={() => setShowCreateDialog(true)}
+                  onClick={() => setShowChatInterface(true)}
                   className="px-4 py-2 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-lg hover:opacity-90 transition flex items-center gap-2"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -188,7 +179,29 @@ export default function HomeownerDashboard() {
 
         {/* Main Content */}
         <main className="flex-1 overflow-hidden bg-gray-50">
-          {projects.length === 0 ? (
+          {showChatInterface ? (
+            <div className="h-full flex flex-col">
+              {/* Chat Header with Back Button */}
+              <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setShowChatInterface(false)}
+                    className="p-2 rounded-lg hover:bg-gray-100 transition"
+                  >
+                    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <h2 className="text-lg font-semibold text-gray-900">Create New Project</h2>
+                </div>
+              </div>
+              
+              {/* Chat Interface */}
+              <div className="flex-1">
+                <ZeroState onProjectCreated={handleProjectCreated} />
+              </div>
+            </div>
+          ) : projects.length === 0 ? (
             <ZeroState onProjectCreated={handleProjectCreated} />
           ) : (
             <div className="p-6">
@@ -264,7 +277,7 @@ export default function HomeownerDashboard() {
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
                 <div className="flex flex-wrap gap-4">
                   <button
-                    onClick={() => setShowCreateDialog(true)}
+                    onClick={() => setShowChatInterface(true)}
                     className="px-4 py-2 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-lg hover:opacity-90 transition flex items-center gap-2"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -293,11 +306,7 @@ export default function HomeownerDashboard() {
       </div>
 
       {/* Create Project Dialog */}
-      <CreateProjectDialog
-        isOpen={showCreateDialog}
-        onClose={() => setShowCreateDialog(false)}
-        onSubmit={handleCreateProject}
-      />
+      {/* Removed CreateProjectDialog as it's now handled by the chat interface */}
     </div>
   );
 } 
