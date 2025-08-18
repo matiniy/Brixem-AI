@@ -46,11 +46,6 @@ export default function HomeownerDashboard() {
     }
   };
 
-  const handleCreateProject = async () => {
-    // Show the chat interface instead of dialog
-    setShowChatInterface(true);
-  };
-
   const handleProjectCreated = async (projectData: {
     name: string;
     location: string;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getProject } from '../../actions';
 import PrimaryButton from '@/components/PrimaryButton';
@@ -80,7 +80,7 @@ export default function ProjectDetailPage() {
     }
   ]);
 
-  const loadProject = async () => {
+  const loadProject = useCallback(async () => {
     try {
       setIsLoading(true);
       const projectData = await getProject(projectId);
@@ -92,7 +92,7 @@ export default function ProjectDetailPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [projectId, router]);
 
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -294,7 +294,7 @@ export default function ProjectDetailPage() {
                     <span className="text-white font-bold text-xs">B</span>
                   </div>
                   <div className="bg-white text-gray-900 px-4 py-3 rounded-2xl shadow-sm border border-gray-100 max-w-2xl">
-                    <p className="text-sm leading-relaxed">Hi! I'm here to help you with {project.name}. I can answer questions about your project, help you track progress, generate documents, and more. What would you like to know?</p>
+                    <p className="text-sm leading-relaxed">Hi! I&apos;m here to help you with {project.name}. I can answer questions about your project, help you track progress, generate documents, and more. What would you like to know?</p>
                     <p className="text-xs mt-2 text-gray-400">Just now</p>
                   </div>
                 </div>
@@ -314,7 +314,7 @@ export default function ProjectDetailPage() {
                     <span className="text-white font-bold text-xs">B</span>
                   </div>
                   <div className="bg-white text-gray-900 px-4 py-3 rounded-2xl shadow-sm border border-gray-100 max-w-2xl">
-                    <p className="text-sm leading-relaxed">Of course! {project.name} is currently in <strong>{project.status}</strong> status. Here's what I can tell you:</p>
+                    <p className="text-sm leading-relaxed">Of course! {project.name} is currently in <strong>{project.status}</strong> status. Here&apos;s what I can tell you:</p>
                     <ul className="text-sm mt-2 space-y-1 text-gray-700">
                       <li>• Location: {project.location}</li>
                       {project.size_sqft && <li>• Size: {project.size_sqft} sq ft</li>}
