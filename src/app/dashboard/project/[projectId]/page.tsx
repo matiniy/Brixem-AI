@@ -36,6 +36,13 @@ interface Task {
   estimatedHours?: number;
 }
 
+interface ChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  timestamp: string;
+}
+
 export default function ProjectDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -187,7 +194,7 @@ export default function ProjectDetailPage() {
   ];
 
   // Chat functionality
-  const [chatMessages, setChatMessages] = useState([
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       id: "1",
       role: "assistant",
@@ -201,7 +208,7 @@ export default function ProjectDetailPage() {
   const handleSendMessage = async () => {
     if (!chatInput.trim()) return;
 
-    const userMessage = {
+    const userMessage: ChatMessage = {
       id: Date.now().toString(),
       role: "user",
       content: chatInput.trim(),
@@ -221,10 +228,10 @@ export default function ProjectDetailPage() {
     }, 1000);
   };
 
-  const generateAIResponse = (userInput: string): any => {
+  const generateAIResponse = (userInput: string): ChatMessage => {
     if (!project) return {
       id: Date.now().toString(),
-      role: "assistant",
+      role: "assistant" as const,
       content: "I'm sorry, but I can't access the project information right now. Please try refreshing the page.",
       timestamp: new Date().toLocaleTimeString()
     };
@@ -234,7 +241,7 @@ export default function ProjectDetailPage() {
     if (input.includes("project") || input.includes("status")) {
       return {
         id: Date.now().toString(),
-        role: "assistant",
+        role: "assistant" as const,
         content: `Your project "${project.name}" is currently in ${project.status} status. Here's what I can tell you:\n\n• Location: ${project.location}\n${project.size_sqft ? `• Size: ${project.size_sqft} sq ft\n` : ''}${project.description ? `• Description: ${project.description}\n` : ''}\n\nI can help you with project planning, cost estimation, contractor recommendations, and more. What specific aspect would you like to explore?`,
         timestamp: new Date().toLocaleTimeString()
       };
@@ -243,7 +250,7 @@ export default function ProjectDetailPage() {
     if (input.includes("cost") || input.includes("estimate") || input.includes("budget")) {
       return {
         id: Date.now().toString(),
-        role: "assistant",
+        role: "assistant" as const,
         content: `I can help you with cost estimation for your ${project.name} project! Based on typical construction costs in your area, here's a rough estimate:\n\n• Materials: $${Math.round((project.size_sqft || 1000) * 60)}\n• Labor: $${Math.round((project.size_sqft || 1000) * 75)}\n• Overhead: $${Math.round((project.size_sqft || 1000) * 15)}\n\n**Total Estimated Cost: $${Math.round((project.size_sqft || 1000) * 150)}**\n\nWould you like me to generate a detailed cost breakdown document for you?`,
         timestamp: new Date().toLocaleTimeString()
       };
@@ -252,7 +259,7 @@ export default function ProjectDetailPage() {
     if (input.includes("contractor") || input.includes("vendor") || input.includes("help")) {
       return {
         id: Date.now().toString(),
-        role: "assistant",
+        role: "assistant" as const,
         content: `Great question! I can connect you with verified local contractors and vendors for your ${project.name} project. I have access to:\n\n• General contractors\n• Specialized trades (electrical, plumbing, HVAC)\n• Design professionals\n• Material suppliers\n\nWould you like me to show you some local contractor options, or do you have a specific trade in mind?`,
         timestamp: new Date().toLocaleTimeString()
       };
@@ -261,7 +268,7 @@ export default function ProjectDetailPage() {
     if (input.includes("schedule") || input.includes("timeline") || input.includes("when")) {
       return {
         id: Date.now().toString(),
-        role: "assistant",
+        role: "assistant" as const,
         content: `For your ${project.name} project, here's a typical timeline:\n\n**Phase 1: Planning & Permits (2-4 weeks)**\n• Design finalization\n• Permit applications\n• Contractor selection\n\n**Phase 2: Construction (8-12 weeks)**\n• Site preparation\n• Main construction work\n• Finishing touches\n\n**Phase 3: Completion (1-2 weeks)**\n• Final inspections\n• Punch list completion\n\nWould you like me to create a detailed project schedule document for you?`,
         timestamp: new Date().toLocaleTimeString()
       };
@@ -270,7 +277,7 @@ export default function ProjectDetailPage() {
     // Default response
     return {
       id: Date.now().toString(),
-      role: "assistant",
+      role: "assistant" as const,
       content: `I understand you're asking about "${userInput}". I'm here to help with all aspects of your ${project.name} project. I can assist with:\n\n• Project planning and documentation\n• Cost estimation and budgeting\n• Contractor recommendations\n• Timeline and scheduling\n• Building codes and permits\n\nWhat specific information would be most helpful for you right now?`,
       timestamp: new Date().toLocaleTimeString()
     };
