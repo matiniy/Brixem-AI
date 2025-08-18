@@ -186,6 +186,103 @@ export default function ProjectDetailPage() {
     }
   ];
 
+  // Chat functionality
+  const [chatMessages, setChatMessages] = useState([
+    {
+      id: "1",
+      role: "assistant",
+      content: project ? `Hi! I'm here to help you with your ${project.name} project. I can answer questions about construction, help you plan your renovation, and connect you with local contractors. What would you like to know?` : "Hi! I'm here to help you with your project. I can answer questions about construction, help you plan your renovation, and connect you with local contractors. What would you like to know?",
+      timestamp: new Date().toLocaleTimeString()
+    }
+  ]);
+  const [chatInput, setChatInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+
+  const handleSendMessage = async () => {
+    if (!chatInput.trim()) return;
+
+    const userMessage = {
+      id: Date.now().toString(),
+      role: "user",
+      content: chatInput.trim(),
+      timestamp: new Date().toLocaleTimeString()
+    };
+
+    // Add user message
+    setChatMessages(prev => [...prev, userMessage]);
+    setChatInput("");
+    setIsTyping(true);
+
+    // Simulate AI response
+    setTimeout(() => {
+      const aiResponse = generateAIResponse(chatInput.trim());
+      setChatMessages(prev => [...prev, aiResponse]);
+      setIsTyping(false);
+    }, 1000);
+  };
+
+  const generateAIResponse = (userInput: string): any => {
+    if (!project) return {
+      id: Date.now().toString(),
+      role: "assistant",
+      content: "I'm sorry, but I can't access the project information right now. Please try refreshing the page.",
+      timestamp: new Date().toLocaleTimeString()
+    };
+
+    const input = userInput.toLowerCase();
+    
+    if (input.includes("project") || input.includes("status")) {
+      return {
+        id: Date.now().toString(),
+        role: "assistant",
+        content: `Your project "${project.name}" is currently in ${project.status} status. Here's what I can tell you:\n\n• Location: ${project.location}\n${project.size_sqft ? `• Size: ${project.size_sqft} sq ft\n` : ''}${project.description ? `• Description: ${project.description}\n` : ''}\n\nI can help you with project planning, cost estimation, contractor recommendations, and more. What specific aspect would you like to explore?`,
+        timestamp: new Date().toLocaleTimeString()
+      };
+    }
+    
+    if (input.includes("cost") || input.includes("estimate") || input.includes("budget")) {
+      return {
+        id: Date.now().toString(),
+        role: "assistant",
+        content: `I can help you with cost estimation for your ${project.name} project! Based on typical construction costs in your area, here's a rough estimate:\n\n• Materials: $${Math.round((project.size_sqft || 1000) * 60)}\n• Labor: $${Math.round((project.size_sqft || 1000) * 75)}\n• Overhead: $${Math.round((project.size_sqft || 1000) * 15)}\n\n**Total Estimated Cost: $${Math.round((project.size_sqft || 1000) * 150)}**\n\nWould you like me to generate a detailed cost breakdown document for you?`,
+        timestamp: new Date().toLocaleTimeString()
+      };
+    }
+    
+    if (input.includes("contractor") || input.includes("vendor") || input.includes("help")) {
+      return {
+        id: Date.now().toString(),
+        role: "assistant",
+        content: `Great question! I can connect you with verified local contractors and vendors for your ${project.name} project. I have access to:\n\n• General contractors\n• Specialized trades (electrical, plumbing, HVAC)\n• Design professionals\n• Material suppliers\n\nWould you like me to show you some local contractor options, or do you have a specific trade in mind?`,
+        timestamp: new Date().toLocaleTimeString()
+      };
+    }
+    
+    if (input.includes("schedule") || input.includes("timeline") || input.includes("when")) {
+      return {
+        id: Date.now().toString(),
+        role: "assistant",
+        content: `For your ${project.name} project, here's a typical timeline:\n\n**Phase 1: Planning & Permits (2-4 weeks)**\n• Design finalization\n• Permit applications\n• Contractor selection\n\n**Phase 2: Construction (8-12 weeks)**\n• Site preparation\n• Main construction work\n• Finishing touches\n\n**Phase 3: Completion (1-2 weeks)**\n• Final inspections\n• Punch list completion\n\nWould you like me to create a detailed project schedule document for you?`,
+        timestamp: new Date().toLocaleTimeString()
+      };
+    }
+    
+    // Default response
+    return {
+      id: Date.now().toString(),
+      role: "assistant",
+      content: `I understand you're asking about "${userInput}". I'm here to help with all aspects of your ${project.name} project. I can assist with:\n\n• Project planning and documentation\n• Cost estimation and budgeting\n• Contractor recommendations\n• Timeline and scheduling\n• Building codes and permits\n\nWhat specific information would be most helpful for you right now?`,
+      timestamp: new Date().toLocaleTimeString()
+    };
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
   const generateMockSOW = (projectData: Project) => {
     const projectType = projectData.type || 'renovation';
     const size = projectData.size_sqft || 1000;
@@ -662,40 +759,25 @@ Any modifications to this scope of work must be documented in writing and approv
             {/* Chat Messages Area */}
             <div className="flex-1 p-4 sm:p-6 bg-gray-50 overflow-y-auto min-h-0">
               <div className="space-y-3 sm:space-y-4">
-                <div className="flex items-start gap-2 sm:gap-3">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-bold text-xs">B</span>
+                {chatMessages.map((message) => (
+                  <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`bg-white text-gray-900 px-3 sm:px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 max-w-[calc(100%-3rem)] sm:max-w-2xl ${message.role === 'user' ? 'ml-auto' : ''}`}>
+                      <p className="text-xs sm:text-sm leading-relaxed">{message.content}</p>
+                      <p className="text-xs mt-1 sm:mt-2 text-gray-400">{message.timestamp}</p>
+                    </div>
                   </div>
-                  <div className="bg-white text-gray-900 px-3 sm:px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 max-w-[calc(100%-3rem)] sm:max-w-2xl">
-                    <p className="text-xs sm:text-sm leading-relaxed">Hi! I&apos;m here to help you with {project.name}. I can answer questions about your project, help you track progress, generate documents, and more. What would you like to know?</p>
-                    <p className="text-xs mt-1 sm:mt-2 text-gray-400">Just now</p>
+                ))}
+                {isTyping && (
+                  <div className="flex items-start gap-2 sm:gap-3 justify-end">
+                    <div className="bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white px-3 sm:px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl max-w-[calc(100%-3rem)] sm:max-w-2xl">
+                      <p className="text-xs sm:text-sm leading-relaxed">Typing...</p>
+                      <p className="text-xs mt-1 sm:mt-2 text-blue-100">Just now</p>
+                    </div>
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
+                      <span className="text-gray-600 font-medium text-xs">U</span>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="flex items-start gap-2 sm:gap-3 justify-end">
-                  <div className="bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white px-3 sm:px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl max-w-[calc(100%-3rem)] sm:max-w-2xl">
-                    <p className="text-xs sm:text-sm leading-relaxed">Can you show me the current project status?</p>
-                    <p className="text-xs mt-1 sm:mt-2 text-blue-100">Just now</p>
-                  </div>
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
-                    <span className="text-gray-600 font-medium text-xs">U</span>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-2 sm:gap-3">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-bold text-xs">B</span>
-                  </div>
-                  <div className="bg-white text-gray-900 px-3 sm:px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 max-w-[calc(100%-3rem)] sm:max-w-2xl">
-                    <p className="text-xs sm:text-sm leading-relaxed">Of course! {project.name} is currently in <strong>{project.status}</strong> status. Here&apos;s what I can tell you:</p>
-                    <ul className="text-xs sm:text-sm mt-2 space-y-1 text-gray-700">
-                      <li>• Location: {project.location}</li>
-                      {project.size_sqft && <li>• Size: {project.size_sqft} sq ft</li>}
-                      {project.description && <li>• Description: {project.description}</li>}
-                    </ul>
-                    <p className="text-xs mt-1 sm:mt-2 text-gray-400">Just now</p>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
             
@@ -706,8 +788,11 @@ Any modifications to this scope of work must be documented in writing and approv
                   type="text"
                   placeholder="Ask me about your project..."
                   className="flex-1 border border-gray-300 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyPress={handleKeyPress}
                 />
-                <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-lg sm:rounded-xl text-sm font-medium hover:opacity-90 transition flex-shrink-0">
+                <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-lg sm:rounded-xl text-sm font-medium hover:opacity-90 transition flex-shrink-0" onClick={handleSendMessage}>
                   Send
                 </button>
               </div>
