@@ -42,7 +42,7 @@ export default function ProjectDetailPage() {
   
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'kanban'>('kanban'); // Default to kanban
+  const [activeTab, setActiveTab] = useState<'overview' | 'kanban' | 'chat'>('kanban'); // Default to kanban
   const [tasks, setTasks] = useState<Task[]>([
     // Sample tasks for new projects
     {
@@ -235,6 +235,16 @@ export default function ProjectDetailPage() {
               Kanban Board
             </button>
             <button
+              onClick={() => setActiveTab('chat')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'chat'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Chat
+            </button>
+            <button
               onClick={() => setActiveTab('overview')}
               className={`py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'overview'
@@ -261,6 +271,75 @@ export default function ProjectDetailPage() {
             onAddTask={handleAddTask}
             onDeleteTask={handleDeleteTask}
           />
+        </div>
+      ) : activeTab === 'chat' ? (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Project Chat</h2>
+            <p className="text-gray-600">Chat with AI about {project.name} - ask questions, get updates, and manage your project</p>
+          </div>
+          
+          {/* Chat Interface */}
+          <div className="bg-white rounded-lg border border-gray-200 h-[600px]">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">Brixem AI Assistant</h3>
+              <p className="text-sm text-gray-600">How can I help you with {project.name} today?</p>
+            </div>
+            
+            {/* Chat Messages Area */}
+            <div className="flex-1 p-6 bg-gray-50 h-[500px] overflow-y-auto">
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0">
+                    <span className="text-white font-bold text-xs">B</span>
+                  </div>
+                  <div className="bg-white text-gray-900 px-4 py-3 rounded-2xl shadow-sm border border-gray-100 max-w-2xl">
+                    <p className="text-sm leading-relaxed">Hi! I'm here to help you with {project.name}. I can answer questions about your project, help you track progress, generate documents, and more. What would you like to know?</p>
+                    <p className="text-xs mt-2 text-gray-400">Just now</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3 justify-end">
+                  <div className="bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white px-4 py-3 rounded-2xl max-w-2xl">
+                    <p className="text-sm leading-relaxed">Can you show me the current project status?</p>
+                    <p className="text-xs mt-2 text-blue-100">Just now</p>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
+                    <span className="text-gray-600 font-medium text-xs">U</span>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0">
+                    <span className="text-white font-bold text-xs">B</span>
+                  </div>
+                  <div className="bg-white text-gray-900 px-4 py-3 rounded-2xl shadow-sm border border-gray-100 max-w-2xl">
+                    <p className="text-sm leading-relaxed">Of course! {project.name} is currently in <strong>{project.status}</strong> status. Here's what I can tell you:</p>
+                    <ul className="text-sm mt-2 space-y-1 text-gray-700">
+                      <li>• Location: {project.location}</li>
+                      {project.size_sqft && <li>• Size: {project.size_sqft} sq ft</li>}
+                      {project.description && <li>• Description: {project.description}</li>}
+                    </ul>
+                    <p className="text-xs mt-2 text-gray-400">Just now</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Chat Input */}
+            <div className="p-6 border-t border-gray-200">
+              <div className="flex space-x-3">
+                <input
+                  type="text"
+                  placeholder="Ask me about your project..."
+                  className="flex-1 border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                />
+                <button className="px-6 py-3 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-xl text-sm font-medium hover:opacity-90 transition">
+                  Send
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       ) : (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -353,6 +432,16 @@ export default function ProjectDetailPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2 2" />
                     </svg>
                     View Kanban Board
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab('chat')}
+                    className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    View Chat
                   </button>
 
                   <button
