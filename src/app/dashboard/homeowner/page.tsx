@@ -161,17 +161,6 @@ export default function HomeownerDashboard() {
                   </svg>
                   <span className="hidden sm:inline">New Project</span>
                 </button>
-                
-                {/* Test redirect button for debugging */}
-                <button
-                  onClick={() => {
-                    console.log('Test redirect button clicked');
-                    window.location.href = '/dashboard/project/test-123';
-                  }}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm"
-                >
-                  Test Redirect
-                </button>
               </div>
             </div>
           </div>
