@@ -126,16 +126,23 @@ export function ZeroState({ onProjectCreated }: ZeroStateProps) {
           onProjectCreated(updatedProjectData);
           console.log('onProjectCreated called successfully');
           
-          // Add a fallback redirect after a longer delay
+          // Add a more immediate fallback redirect
           setTimeout(() => {
-            console.log('Fallback redirect triggered');
-            // Force redirect to dashboard after 5 seconds if parent doesn't handle it
+            console.log('Immediate fallback redirect to dashboard');
             window.location.href = '/dashboard/homeowner';
-          }, 5000);
+          }, 3000);
+          
+          // Add a longer fallback redirect after a longer delay
+          setTimeout(() => {
+            console.log('Longer fallback redirect triggered');
+            // Force redirect to dashboard after 8 seconds if parent doesn't handle it
+            window.location.href = '/dashboard/homeowner';
+          }, 8000);
         } catch (error) {
           console.error('Error calling onProjectCreated:', error);
           // If there's an error, redirect anyway
           setTimeout(() => {
+            console.log('Error fallback redirect');
             window.location.href = '/dashboard/homeowner';
           }, 2000);
         }

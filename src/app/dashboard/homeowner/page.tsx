@@ -72,7 +72,7 @@ export default function HomeownerDashboard() {
       
       // Create the project using the server action
       const newProject = await createProject(projectData);
-      console.log('Project created:', newProject);
+      console.log('Project created successfully:', newProject);
       
       // Reload projects to show the new one
       await loadProjects();
@@ -81,17 +81,28 @@ export default function HomeownerDashboard() {
       setShowCreateDialog(false);
       
       // Show success message
-      console.log('Project created successfully!');
+      console.log('Project created successfully! Redirecting to Kanban board...');
       
       // Automatically redirect to the new project's kanban dashboard
       if (newProject && newProject.id) {
+        console.log('Redirecting to project:', newProject.id);
         // Add a small delay to show the success message
         setTimeout(() => {
+          console.log('Executing redirect to:', `/dashboard/project/${newProject.id}`);
           window.location.href = `/dashboard/project/${newProject.id}`;
         }, 1500);
+      } else {
+        console.error('Project created but no ID returned:', newProject);
+        // Fallback redirect
+        setTimeout(() => {
+          console.log('Fallback redirect to dashboard');
+          window.location.href = '/dashboard/homeowner';
+        }, 2000);
       }
     } catch (error) {
       console.error('Error creating project:', error);
+      // Show error to user
+      alert('Failed to create project. Please try again.');
       // Keep dialog open on error so user can try again
     }
   };
@@ -158,6 +169,17 @@ export default function HomeownerDashboard() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
                   <span className="hidden sm:inline">New Project</span>
+                </button>
+                
+                {/* Test redirect button for debugging */}
+                <button
+                  onClick={() => {
+                    console.log('Test redirect button clicked');
+                    window.location.href = '/dashboard/project/test-123';
+                  }}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm"
+                >
+                  Test Redirect
                 </button>
               </div>
             </div>
