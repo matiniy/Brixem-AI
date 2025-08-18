@@ -726,7 +726,7 @@ Any modifications to this scope of work must be documented in writing and approv
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6">
                 <h4 className="text-base sm:text-lg font-semibold text-blue-900 mb-2 sm:mb-3">Scope of Work (SOW)</h4>
-                <p className="text-sm text-gray-700">A detailed document outlining the scope of work, materials, and labor for the project.</p>
+                <p className="text-sm text-gray-700 mb-4">A detailed document outlining the scope of work, materials, and labor for the project.</p>
                 <div className="mt-4 flex items-center gap-2">
                   <PrimaryButton
                     onClick={handleGenerateDocuments}
@@ -763,7 +763,7 @@ Any modifications to this scope of work must be documented in writing and approv
                     className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg transition flex items-center gap-2 justify-center ${
                       generatedDocuments.sow 
                         ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                        : 'bg-gray-200 text-gray-600 cursor-not-allowed'
                     }`}
                   >
                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -774,13 +774,13 @@ Any modifications to this scope of work must be documented in writing and approv
                 </div>
                 {generatedDocuments.sow && (
                   <div className="mt-4 p-3 bg-white rounded border text-xs overflow-auto max-h-32">
-                    <pre className="whitespace-pre-wrap">{generatedDocuments.sow.substring(0, 200)}...</pre>
+                    <pre className="whitespace-pre-wrap text-gray-800">{generatedDocuments.sow.substring(0, 200)}...</pre>
                   </div>
                 )}
               </div>
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 sm:p-6">
                 <h4 className="text-base sm:text-lg font-semibold text-green-900 mb-2 sm:mb-3">Estimate</h4>
-                <p className="text-sm text-gray-700">A preliminary cost estimate for the project based on the scope of work.</p>
+                <p className="text-sm text-gray-700 mb-4">A preliminary cost estimate for the project based on the scope of work.</p>
                 <div className="mt-4 flex items-center gap-2">
                   <PrimaryButton
                     onClick={handleGenerateDocuments}
@@ -817,7 +817,7 @@ Any modifications to this scope of work must be documented in writing and approv
                     className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg transition flex items-center gap-2 justify-center ${
                       generatedDocuments.estimate 
                         ? 'bg-green-600 text-white hover:bg-green-700' 
-                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                        : 'bg-gray-200 text-gray-600 cursor-not-allowed'
                     }`}
                   >
                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -828,13 +828,13 @@ Any modifications to this scope of work must be documented in writing and approv
                 </div>
                 {generatedDocuments.estimate && (
                   <div className="mt-4 p-3 bg-white rounded border text-xs overflow-auto max-h-32">
-                    <pre className="whitespace-pre-wrap">{generatedDocuments.estimate.substring(0, 200)}...</pre>
+                    <pre className="whitespace-pre-wrap text-gray-800">{generatedDocuments.estimate.substring(0, 200)}...</pre>
                   </div>
                 )}
               </div>
               <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 sm:p-6">
                 <h4 className="text-base sm:text-lg font-semibold text-purple-900 mb-2 sm:mb-3">Work Breakdown Structure (WBS)</h4>
-                <p className="text-sm text-gray-700">A detailed breakdown of the project tasks and their dependencies.</p>
+                <p className="text-sm text-gray-700 mb-4">A detailed breakdown of the project tasks and their dependencies.</p>
                 <div className="mt-4 flex items-center gap-2">
                   <PrimaryButton
                     onClick={handleGenerateDocuments}
@@ -871,7 +871,7 @@ Any modifications to this scope of work must be documented in writing and approv
                     className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg transition flex items-center gap-2 justify-center ${
                       generatedDocuments.wbs 
                         ? 'bg-purple-600 text-white hover:bg-purple-700' 
-                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                        : 'bg-gray-200 text-gray-600 cursor-not-allowed'
                     }`}
                   >
                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -882,13 +882,13 @@ Any modifications to this scope of work must be documented in writing and approv
                 </div>
                 {generatedDocuments.wbs && (
                   <div className="mt-4 p-3 bg-white rounded border text-xs overflow-auto max-h-32">
-                    <pre className="whitespace-pre-wrap">{generatedDocuments.wbs.substring(0, 200)}...</pre>
+                    <pre className="whitespace-pre-wrap text-gray-800">{generatedDocuments.wbs.substring(0, 200)}...</pre>
                   </div>
                 )}
               </div>
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 sm:p-6">
                 <h4 className="text-base sm:text-lg font-semibold text-yellow-900 mb-2 sm:mb-3">Project Schedule</h4>
-                <p className="text-sm text-gray-700">A detailed timeline for the project, including key milestones and phases.</p>
+                <p className="text-sm text-gray-700 mb-4">A detailed timeline for the project, including key milestones and phases.</p>
                 <div className="mt-4 flex items-center gap-2">
                   <PrimaryButton
                     onClick={handleGenerateDocuments}
@@ -925,7 +925,7 @@ Any modifications to this scope of work must be documented in writing and approv
                     className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg transition flex items-center gap-2 justify-center ${
                       generatedDocuments.schedule 
                         ? 'bg-yellow-600 text-white hover:bg-yellow-700' 
-                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                        : 'bg-gray-200 text-gray-600 cursor-not-allowed'
                     }`}
                   >
                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -936,13 +936,13 @@ Any modifications to this scope of work must be documented in writing and approv
                 </div>
                 {generatedDocuments.schedule && (
                   <div className="mt-4 p-3 bg-white rounded border text-xs overflow-auto max-h-32">
-                    <pre className="whitespace-pre-wrap">{generatedDocuments.schedule.substring(0, 200)}...</pre>
+                    <pre className="whitespace-pre-wrap text-gray-800">{generatedDocuments.schedule.substring(0, 200)}...</pre>
                   </div>
                 )}
               </div>
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6">
                 <h4 className="text-base sm:text-lg font-semibold text-red-900 mb-2 sm:mb-3">Cost Estimation</h4>
-                <p className="text-sm text-gray-700">A detailed breakdown of materials, labor, and overhead costs for the project.</p>
+                <p className="text-sm text-gray-700 mb-4">A detailed breakdown of materials, labor, and overhead costs for the project.</p>
                 <div className="mt-4 flex items-center gap-2">
                   <PrimaryButton
                     onClick={handleGenerateDocuments}
@@ -979,7 +979,7 @@ Any modifications to this scope of work must be documented in writing and approv
                     className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg transition flex items-center gap-2 justify-center ${
                       generatedDocuments.costEstimation 
                         ? 'bg-red-600 text-white hover:bg-red-700' 
-                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                        : 'bg-gray-200 text-gray-600 cursor-not-allowed'
                     }`}
                   >
                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -990,7 +990,7 @@ Any modifications to this scope of work must be documented in writing and approv
                 </div>
                 {generatedDocuments.costEstimation && (
                   <div className="mt-4 p-3 bg-white rounded border text-xs overflow-auto max-h-32">
-                    <pre className="whitespace-pre-wrap">{generatedDocuments.costEstimation.substring(0, 200)}...</pre>
+                    <pre className="whitespace-pre-wrap text-gray-800">{generatedDocuments.costEstimation.substring(0, 200)}...</pre>
                   </div>
                 )}
               </div>
