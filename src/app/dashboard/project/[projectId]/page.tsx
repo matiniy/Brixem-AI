@@ -232,7 +232,7 @@ export default function ProjectDetailPage() {
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              Kanban Board
+              Kanban + Chat
             </button>
             <button
               onClick={() => setActiveTab('chat')}
@@ -262,15 +262,103 @@ export default function ProjectDetailPage() {
       {activeTab === 'kanban' ? (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Project Kanban Board</h2>
-            <p className="text-gray-600">Manage tasks and track progress for {project.name}</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Project Kanban Board + AI Chat</h2>
+            <p className="text-gray-600">Manage tasks and chat with AI about {project.name} - all in one view</p>
           </div>
-          <KanbanBoard
-            tasks={tasks}
-            onTaskUpdate={handleTaskUpdate}
-            onAddTask={handleAddTask}
-            onDeleteTask={handleDeleteTask}
-          />
+          
+          {/* Integrated Kanban + Chat Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Kanban Board - Takes up 2/3 of the space */}
+            <div className="lg:col-span-2">
+              <KanbanBoard
+                tasks={tasks}
+                onTaskUpdate={handleTaskUpdate}
+                onAddTask={handleAddTask}
+                onDeleteTask={handleDeleteTask}
+              />
+            </div>
+            
+            {/* Chat Interface - Takes up 1/3 of the space */}
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-lg border border-gray-200 h-[600px] flex flex-col">
+                {/* Chat Header */}
+                <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-t-lg">
+                  <h3 className="text-lg font-semibold">Brixem AI Assistant</h3>
+                  <p className="text-sm text-blue-100">How can I help you with {project.name} today?</p>
+                </div>
+                
+                {/* Chat Messages Area */}
+                <div className="flex-1 p-4 bg-gray-50 overflow-y-auto">
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0">
+                        <span className="text-white font-bold text-xs">B</span>
+                      </div>
+                      <div className="bg-white text-gray-900 px-3 py-2 rounded-xl shadow-sm border border-gray-100 max-w-full">
+                        <p className="text-sm leading-relaxed">Hi! I&apos;m here to help you with {project.name}. I can help you manage tasks, track progress, and answer questions about your project.</p>
+                        <p className="text-xs mt-1 text-gray-400">Just now</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-3 justify-end">
+                      <div className="bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white px-3 py-2 rounded-xl max-w-full">
+                        <p className="text-sm leading-relaxed">Can you show me the current project status?</p>
+                        <p className="text-xs mt-1 text-blue-100">Just now</p>
+                      </div>
+                      <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
+                        <span className="text-gray-600 font-medium text-xs">U</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0">
+                        <span className="text-white font-bold text-xs">B</span>
+                      </div>
+                      <div className="bg-white text-gray-900 px-3 py-2 rounded-xl shadow-sm border border-gray-100 max-w-full">
+                        <p className="text-sm leading-relaxed">Of course! {project.name} is currently in <strong>{project.status}</strong> status. Here&apos;s what I can tell you:</p>
+                        <ul className="text-sm mt-2 space-y-1 text-gray-700">
+                          <li>• Location: {project.location}</li>
+                          {project.size_sqft && <li>• Size: {project.size_sqft} sq ft</li>}
+                          {project.description && <li>• Description: {project.description}</li>}
+                        </ul>
+                        <p className="text-xs mt-2 text-gray-400">Just now</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0">
+                        <span className="text-white font-bold text-xs">B</span>
+                      </div>
+                      <div className="bg-white text-gray-900 px-3 py-2 rounded-xl shadow-sm border border-gray-100 max-w-full">
+                        <p className="text-sm leading-relaxed">I can also help you with:</p>
+                        <ul className="text-sm mt-2 space-y-1 text-gray-700">
+                          <li>• Adding new tasks to your Kanban board</li>
+                          <li>• Updating task priorities and status</li>
+                          <li>• Generating project documents</li>
+                          <li>• Tracking project progress</li>
+                        </ul>
+                        <p className="text-xs mt-2 text-gray-400">Just now</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Chat Input */}
+                <div className="p-4 border-t border-gray-200">
+                  <div className="flex space-x-2">
+                    <input
+                      type="text"
+                      placeholder="Ask me about your project..."
+                      className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                    />
+                    <button className="px-4 py-2 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-lg text-sm font-medium hover:opacity-90 transition">
+                      Send
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       ) : activeTab === 'chat' ? (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -431,7 +519,7 @@ export default function ProjectDetailPage() {
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2 2" />
                     </svg>
-                    View Kanban Board
+                    View Kanban + Chat
                   </button>
 
                   <button
