@@ -99,7 +99,92 @@ export default function ProjectDetailPage() {
   const [generatedDocuments, setGeneratedDocuments] = useState<{
     sow?: string;
     estimate?: string;
+    wbs?: string;
+    schedule?: string;
+    costEstimation?: string;
   }>({});
+
+  // Mock vendors data for B2B opportunities
+  const mockVendors = [
+    {
+      id: 1,
+      name: "Elite Construction Co.",
+      specialty: "General Contracting",
+      rating: 4.8,
+      projects: 127,
+      location: "San Francisco, CA",
+      image: "🏗️",
+      contact: "+1 (415) 555-0123",
+      email: "info@eliteconstruction.com",
+      services: ["Residential", "Commercial", "Renovation"],
+      availability: "Available in 2 weeks"
+    },
+    {
+      id: 2,
+      name: "Precision Electrical",
+      specialty: "Electrical Services",
+      rating: 4.9,
+      projects: 89,
+      location: "Oakland, CA",
+      image: "⚡",
+      contact: "+1 (510) 555-0456",
+      email: "service@precisionelectrical.com",
+      services: ["Wiring", "Installation", "Maintenance"],
+      availability: "Available next week"
+    },
+    {
+      id: 3,
+      name: "AquaFlow Plumbing",
+      specialty: "Plumbing & HVAC",
+      rating: 4.7,
+      projects: 156,
+      location: "San Jose, CA",
+      image: "🔧",
+      contact: "+1 (408) 555-0789",
+      email: "hello@aquaflow.com",
+      services: ["Plumbing", "HVAC", "Repairs"],
+      availability: "Available in 3 weeks"
+    },
+    {
+      id: 4,
+      name: "Craft Cabinetry",
+      specialty: "Custom Woodwork",
+      rating: 4.9,
+      projects: 73,
+      location: "Berkeley, CA",
+      image: "🪑",
+      contact: "+1 (510) 555-0321",
+      email: "craft@cabinetry.com",
+      services: ["Cabinets", "Furniture", "Custom Work"],
+      availability: "Available in 4 weeks"
+    },
+    {
+      id: 5,
+      name: "GreenScape Landscaping",
+      specialty: "Landscape Design",
+      rating: 4.6,
+      projects: 94,
+      location: "Palo Alto, CA",
+      image: "🌿",
+      contact: "+1 (650) 555-0654",
+      email: "design@greenscape.com",
+      services: ["Design", "Installation", "Maintenance"],
+      availability: "Available in 1 week"
+    },
+    {
+      id: 6,
+      name: "Modern Paint & Finish",
+      specialty: "Painting & Finishing",
+      rating: 4.8,
+      projects: 112,
+      location: "Mountain View, CA",
+      image: "🎨",
+      contact: "+1 (650) 555-0987",
+      email: "paint@modernfinish.com",
+      services: ["Interior", "Exterior", "Specialty Finishes"],
+      availability: "Available next week"
+    }
+  ];
 
   const generateMockSOW = (projectData: Project) => {
     const projectType = projectData.type || 'renovation';
@@ -170,12 +255,119 @@ Any modifications to this scope of work must be documented in writing and approv
     return sowContent;
   };
 
-  const generateMockEstimate = (projectData: Project) => {
-    const size = projectData.size_sqft || 1000;
-    const baseCostPerSqFt = 150; // Base cost per square foot
+  const generateWorkBreakdownStructure = (projectData: Project) => {
     const projectType = projectData.type || 'renovation';
     
-    // Adjust cost based on project type
+    const wbsContent = `# WORK BREAKDOWN STRUCTURE
+## ${projectData.name.toUpperCase()}
+
+**Project Type:** ${projectType}
+**Date:** ${new Date().toLocaleDateString()}
+
+### 1. PROJECT INITIATION (Week 1-2)
+- 1.1 Project planning and scope definition
+- 1.2 Site survey and assessment
+- 1.3 Permit applications and approvals
+- 1.4 Contractor selection and contracts
+
+### 2. SITE PREPARATION (Week 3-4)
+- 2.1 Site clearing and preparation
+- 2.2 Utility marking and protection
+- 2.3 Safety barriers and signage
+- 2.4 Material staging area setup
+
+### 3. DEMOLITION & EXCAVATION (Week 5-6)
+- 3.1 Existing structure removal
+- 3.2 Site excavation and grading
+- 3.3 Foundation preparation
+- 3.4 Debris removal and disposal
+
+### 4. FOUNDATION & STRUCTURE (Week 7-10)
+- 4.1 Foundation construction
+- 4.2 Structural framing
+- 4.3 Roof structure
+- 4.4 Exterior walls and sheathing
+
+### 5. MECHANICAL SYSTEMS (Week 11-14)
+- 5.1 Electrical rough-in
+- 5.2 Plumbing rough-in
+- 5.3 HVAC installation
+- 5.4 Insulation and vapor barriers
+
+### 6. INTERIOR & EXTERIOR FINISHES (Week 15-20)
+- 6.1 Drywall and plastering
+- 6.2 Flooring installation
+- 6.3 Cabinetry and fixtures
+- 6.4 Painting and finishing
+
+### 7. FINAL INSPECTION & PUNCH LIST (Week 21-22)
+- 7.1 Quality control inspection
+- 7.2 Punch list completion
+- 7.3 Final cleanup
+- 7.4 Project handover
+
+---
+**Prepared by:** Brixem AI Construction Assistant
+**Date:** ${new Date().toLocaleDateString()}`;
+
+    return wbsContent;
+  };
+
+  const generateProjectSchedule = (projectData: Project) => {
+    const startDate = new Date();
+    const endDate = new Date(startDate.getTime() + 22 * 7 * 24 * 60 * 60 * 1000); // 22 weeks
+    
+    const scheduleContent = `# PROJECT SCHEDULE
+## ${projectData.name.toUpperCase()}
+
+**Project Start Date:** ${startDate.toLocaleDateString()}
+**Project End Date:** ${endDate.toLocaleDateString()}
+**Total Duration:** 22 weeks
+
+### PHASE 1: PLANNING & PREPARATION (Weeks 1-4)
+- **Week 1-2:** Project planning, permits, contractor selection
+- **Week 3-4:** Site preparation, utility marking, safety setup
+
+### PHASE 2: DEMOLITION & EXCAVATION (Weeks 5-6)
+- **Week 5:** Site clearing and demolition
+- **Week 6:** Excavation and foundation preparation
+
+### PHASE 3: STRUCTURE & FRAMING (Weeks 7-10)
+- **Week 7-8:** Foundation construction
+- **Week 9-10:** Structural framing and roof
+
+### PHASE 4: MECHANICAL SYSTEMS (Weeks 11-14)
+- **Week 11-12:** Electrical and plumbing rough-in
+- **Week 13-14:** HVAC installation and insulation
+
+### PHASE 5: FINISHES (Weeks 15-20)
+- **Week 15-16:** Drywall and basic finishes
+- **Week 17-18:** Flooring and cabinetry
+- **Week 19-20:** Final finishes and painting
+
+### PHASE 6: COMPLETION (Weeks 21-22)
+- **Week 21:** Final inspection and punch list
+- **Week 22:** Cleanup and project handover
+
+### MILESTONES
+- **Week 4:** Site ready for construction
+- **Week 10:** Structure complete
+- **Week 14:** Mechanical systems complete
+- **Week 20:** Finishes complete
+- **Week 22:** Project complete
+
+---
+**Prepared by:** Brixem AI Construction Assistant
+**Date:** ${new Date().toLocaleDateString()}`;
+
+    return scheduleContent;
+  };
+
+  const generateCostEstimation = (projectData: Project) => {
+    const size = projectData.size_sqft || 1000;
+    const projectType = projectData.type || 'renovation';
+    
+    // Detailed cost breakdown
     let typeMultiplier = 1.0;
     switch (projectType.toLowerCase()) {
       case 'kitchen':
@@ -194,53 +386,78 @@ Any modifications to this scope of work must be documented in writing and approv
         typeMultiplier = 1.0;
     }
     
-    const baseCost = size * baseCostPerSqFt * typeMultiplier;
+    const baseCost = size * 150 * typeMultiplier;
     const materialsCost = baseCost * 0.4;
     const laborCost = baseCost * 0.5;
     const overheadCost = baseCost * 0.1;
-    const totalCost = baseCost;
     
-    const estimateContent = `# PROJECT ESTIMATE
+    const costContent = `# DETAILED COST ESTIMATION
 ## ${projectData.name.toUpperCase()}
 
-**Project Location:** ${projectData.location}
 **Project Type:** ${projectType}
 **Project Size:** ${size} sq ft
 **Date:** ${new Date().toLocaleDateString()}
 
-### COST BREAKDOWN
+### MATERIALS BREAKDOWN (40% - $${materialsCost.toLocaleString()})
 
-#### Materials & Supplies
-- Construction materials: $${materialsCost.toLocaleString()}
-- Fixtures and finishes: $${(materialsCost * 0.3).toLocaleString()}
-- Tools and equipment: $${(materialsCost * 0.1).toLocaleString()}
-**Subtotal Materials:** $${materialsCost.toLocaleString()}
+#### Construction Materials
+- Lumber and framing: $${(materialsCost * 0.25).toLocaleString()}
+- Concrete and masonry: $${(materialsCost * 0.20).toLocaleString()}
+- Roofing materials: $${(materialsCost * 0.15).toLocaleString()}
+- Insulation: $${(materialsCost * 0.10).toLocaleString()}
+- Drywall and plaster: $${(materialsCost * 0.10).toLocaleString()}
+- Paint and finishes: $${(materialsCost * 0.10).toLocaleString()}
+- Hardware and fasteners: $${(materialsCost * 0.10).toLocaleString()}
 
-#### Labor Costs
-- General contractor: $${(laborCost * 0.6).toLocaleString()}
-- Specialized trades: $${(laborCost * 0.3).toLocaleString()}
-- Project management: $${(laborCost * 0.1).toLocaleString()}
-**Subtotal Labor:** $${laborCost.toLocaleString()}
+#### Fixtures and Finishes
+- Plumbing fixtures: $${(materialsCost * 0.20).toLocaleString()}
+- Electrical fixtures: $${(materialsCost * 0.15).toLocaleString()}
+- Cabinetry: $${(materialsCost * 0.25).toLocaleString()}
+- Flooring: $${(materialsCost * 0.20).toLocaleString()}
+- Appliances: $${(materialsCost * 0.20).toLocaleString()}
 
-#### Overhead & Contingency
-- Project overhead: $${(overheadCost * 0.7).toLocaleString()}
-- Contingency (10%): $${(overheadCost * 0.3).toLocaleString()}
-**Subtotal Overhead:** $${overheadCost.toLocaleString()}
+### LABOR COSTS (50% - $${laborCost.toLocaleString()})
 
-### TOTAL PROJECT ESTIMATE
-**Grand Total:** $${totalCost.toLocaleString()}
+#### Skilled Trades
+- General contractor: $${(laborCost * 0.30).toLocaleString()}
+- Electricians: $${(laborCost * 0.15).toLocaleString()}
+- Plumbers: $${(laborCost * 0.15).toLocaleString()}
+- HVAC technicians: $${(laborCost * 0.10).toLocaleString()}
+- Carpenters: $${(laborCost * 0.15).toLocaleString()}
+- Painters: $${(laborCost * 0.10).toLocaleString()}
+- Landscapers: $${(laborCost * 0.05).toLocaleString()}
 
-### NOTES
-- This estimate is valid for 30 days
-- Prices subject to change based on material availability
-- Final cost may vary based on actual conditions discovered during construction
-- Payment schedule to be determined based on project milestones
+#### Project Management
+- Project manager: $${(laborCost * 0.15).toLocaleString()}
+- Site supervisor: $${(laborCost * 0.10).toLocaleString()}
+- Quality control: $${(laborCost * 0.05).toLocaleString()}
+
+### OVERHEAD & CONTINGENCY (10% - $${overheadCost.toLocaleString()})
+
+#### Project Overhead
+- Equipment rental: $${(overheadCost * 0.25).toLocaleString()}
+- Insurance and permits: $${(overheadCost * 0.20).toLocaleString()}
+- Utilities and site costs: $${(overheadCost * 0.15).toLocaleString()}
+- Safety equipment: $${(overheadCost * 0.10).toLocaleString()}
+
+#### Contingency
+- Material price fluctuations: $${(overheadCost * 0.15).toLocaleString()}
+- Unforeseen conditions: $${(overheadCost * 0.15).toLocaleString()}
+
+### TOTAL PROJECT COST
+**Grand Total:** $${baseCost.toLocaleString()}
+
+### PAYMENT SCHEDULE
+- **30%** upon contract signing: $${(baseCost * 0.3).toLocaleString()}
+- **30%** at 50% completion: $${(baseCost * 0.3).toLocaleString()}
+- **30%** at 90% completion: $${(baseCost * 0.3).toLocaleString()}
+- **10%** upon final completion: $${(overheadCost).toLocaleString()}
 
 ---
 **Prepared by:** Brixem AI Construction Assistant
 **Date:** ${new Date().toLocaleDateString()}`;
 
-    return estimateContent;
+    return costContent;
   };
 
   useEffect(() => {
@@ -255,16 +472,22 @@ Any modifications to this scope of work must be documented in writing and approv
       
       // Generate mock documents
       const sowContent = generateMockSOW(project!);
-      const estimateContent = generateMockEstimate(project!);
+      const estimateContent = generateCostEstimation(project!);
+      const wbsContent = generateWorkBreakdownStructure(project!);
+      const scheduleContent = generateProjectSchedule(project!);
+      const costEstimationContent = generateCostEstimation(project!);
       
       // Store generated documents
       setGeneratedDocuments({
         sow: sowContent,
-        estimate: estimateContent
+        estimate: estimateContent,
+        wbs: wbsContent,
+        schedule: scheduleContent,
+        costEstimation: costEstimationContent
       });
       
       // Show success message
-      alert('Documents generated successfully! You can now view and download your Scope of Work and Estimate.');
+      alert('Documents generated successfully! You can now view and download your Scope of Work, Estimate, Work Breakdown Structure, Schedule, and Cost Estimation.');
       
     } catch (error) {
       console.error('Error generating documents:', error);
@@ -609,6 +832,240 @@ Any modifications to this scope of work must be documented in writing and approv
                   </div>
                 )}
               </div>
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 sm:p-6">
+                <h4 className="text-base sm:text-lg font-semibold text-purple-900 mb-2 sm:mb-3">Work Breakdown Structure (WBS)</h4>
+                <p className="text-sm text-gray-700">A detailed breakdown of the project tasks and their dependencies.</p>
+                <div className="mt-4 flex items-center gap-2">
+                  <PrimaryButton
+                    onClick={handleGenerateDocuments}
+                    disabled={isGenerating}
+                    className="w-full"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span className="text-sm sm:text-base">Generate WBS</span>
+                      </>
+                    )}
+                  </PrimaryButton>
+                  <button 
+                    onClick={() => {
+                      if (generatedDocuments.wbs) {
+                        const blob = new Blob([generatedDocuments.wbs], { type: 'text/plain' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${project.name}-WBS.txt`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                      }
+                    }}
+                    disabled={!generatedDocuments.wbs}
+                    className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg transition flex items-center gap-2 justify-center ${
+                      generatedDocuments.wbs 
+                        ? 'bg-purple-600 text-white hover:bg-purple-700' 
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span className="text-sm sm:text-base">Download WBS</span>
+                  </button>
+                </div>
+                {generatedDocuments.wbs && (
+                  <div className="mt-4 p-3 bg-white rounded border text-xs overflow-auto max-h-32">
+                    <pre className="whitespace-pre-wrap">{generatedDocuments.wbs.substring(0, 200)}...</pre>
+                  </div>
+                )}
+              </div>
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 sm:p-6">
+                <h4 className="text-base sm:text-lg font-semibold text-yellow-900 mb-2 sm:mb-3">Project Schedule</h4>
+                <p className="text-sm text-gray-700">A detailed timeline for the project, including key milestones and phases.</p>
+                <div className="mt-4 flex items-center gap-2">
+                  <PrimaryButton
+                    onClick={handleGenerateDocuments}
+                    disabled={isGenerating}
+                    className="w-full"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span className="text-sm sm:text-base">Generate Schedule</span>
+                      </>
+                    )}
+                  </PrimaryButton>
+                  <button 
+                    onClick={() => {
+                      if (generatedDocuments.schedule) {
+                        const blob = new Blob([generatedDocuments.schedule], { type: 'text/plain' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${project.name}-Schedule.txt`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                      }
+                    }}
+                    disabled={!generatedDocuments.schedule}
+                    className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg transition flex items-center gap-2 justify-center ${
+                      generatedDocuments.schedule 
+                        ? 'bg-yellow-600 text-white hover:bg-yellow-700' 
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span className="text-sm sm:text-base">Download Schedule</span>
+                  </button>
+                </div>
+                {generatedDocuments.schedule && (
+                  <div className="mt-4 p-3 bg-white rounded border text-xs overflow-auto max-h-32">
+                    <pre className="whitespace-pre-wrap">{generatedDocuments.schedule.substring(0, 200)}...</pre>
+                  </div>
+                )}
+              </div>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6">
+                <h4 className="text-base sm:text-lg font-semibold text-red-900 mb-2 sm:mb-3">Cost Estimation</h4>
+                <p className="text-sm text-gray-700">A detailed breakdown of materials, labor, and overhead costs for the project.</p>
+                <div className="mt-4 flex items-center gap-2">
+                  <PrimaryButton
+                    onClick={handleGenerateDocuments}
+                    disabled={isGenerating}
+                    className="w-full"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span className="text-sm sm:text-base">Generate Cost Estimation</span>
+                      </>
+                    )}
+                  </PrimaryButton>
+                  <button 
+                    onClick={() => {
+                      if (generatedDocuments.costEstimation) {
+                        const blob = new Blob([generatedDocuments.costEstimation], { type: 'text/plain' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${project.name}-CostEstimation.txt`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                      }
+                    }}
+                    disabled={!generatedDocuments.costEstimation}
+                    className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg transition flex items-center gap-2 justify-center ${
+                      generatedDocuments.costEstimation 
+                        ? 'bg-red-600 text-white hover:bg-red-700' 
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span className="text-sm sm:text-base">Download Cost Estimation</span>
+                  </button>
+                </div>
+                {generatedDocuments.costEstimation && (
+                  <div className="mt-4 p-3 bg-white rounded border text-xs overflow-auto max-h-32">
+                    <pre className="whitespace-pre-wrap">{generatedDocuments.costEstimation.substring(0, 200)}...</pre>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Verified Local Vendors - B2B Opportunities */}
+          <div className="mt-8 bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">Verified Local Vendors & Contractors</h3>
+            <p className="text-sm text-gray-600 mb-4">Connect with pre-vetted local contractors and consultants for your project</p>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {mockVendors.map((vendor) => (
+                <div key={vendor.id} className="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="text-2xl sm:text-3xl">{vendor.image}</div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-gray-900 text-sm sm:text-base truncate">{vendor.name}</h4>
+                      <p className="text-xs sm:text-sm text-gray-600">{vendor.specialty}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2 mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <svg key={i} className={`w-3 h-3 ${i < Math.floor(vendor.rating) ? 'text-yellow-400' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                        ))}
+                      </div>
+                      <span className="text-xs text-gray-600">{vendor.rating}</span>
+                    </div>
+                    
+                    <div className="text-xs text-gray-600">
+                      <span className="font-medium">{vendor.projects}</span> projects completed
+                    </div>
+                    
+                    <div className="text-xs text-gray-600">
+                      📍 {vendor.location}
+                    </div>
+                    
+                    <div className="text-xs text-green-600 font-medium">
+                      {vendor.availability}
+                    </div>
+                  </div>
+                  
+                  <div className="mb-3">
+                    <div className="flex flex-wrap gap-1">
+                      {vendor.services.slice(0, 3).map((service, index) => (
+                        <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                          {service}
+                        </span>
+                      ))}
+                      {vendor.services.length > 3 && (
+                        <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                          +{vendor.services.length - 3} more
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <button className="w-full px-3 py-2 bg-blue-600 text-white text-xs sm:text-sm rounded-lg hover:bg-blue-700 transition">
+                      📞 {vendor.contact}
+                    </button>
+                    <button className="w-full px-3 py-2 bg-green-600 text-white text-xs sm:text-sm rounded-lg hover:bg-green-700 transition">
+                      ✉️ {vendor.email}
+                    </button>
+                    <button className="w-full px-3 py-2 bg-purple-600 text-white text-xs sm:text-sm rounded-lg hover:bg-purple-700 transition">
+                      💼 Request Quote
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
