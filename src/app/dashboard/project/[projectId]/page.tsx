@@ -430,14 +430,14 @@ Any modifications to this scope of work must be documented in writing and approv
           </div>
           
           {/* Chat Interface */}
-          <div className="bg-white rounded-lg border border-gray-200 h-[500px] sm:h-[600px]">
-            <div className="p-4 sm:p-6 border-b border-gray-200">
+          <div className="bg-white rounded-lg border border-gray-200 h-[500px] sm:h-[600px] flex flex-col">
+            <div className="p-4 sm:p-6 border-b border-gray-200 flex-shrink-0">
               <h3 className="text-base sm:text-lg font-semibold text-gray-900">Brixem AI Assistant</h3>
               <p className="text-xs sm:text-sm text-gray-600">How can I help you with {project.name} today?</p>
             </div>
             
             {/* Chat Messages Area */}
-            <div className="flex-1 p-4 sm:p-6 bg-gray-50 h-[400px] sm:h-[500px] overflow-y-auto">
+            <div className="flex-1 p-4 sm:p-6 bg-gray-50 overflow-y-auto min-h-0">
               <div className="space-y-3 sm:space-y-4">
                 <div className="flex items-start gap-2 sm:gap-3">
                   <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0">
@@ -477,7 +477,7 @@ Any modifications to this scope of work must be documented in writing and approv
             </div>
             
             {/* Chat Input */}
-            <div className="p-4 sm:p-6 border-t border-gray-200">
+            <div className="p-4 sm:p-6 border-t border-gray-200 flex-shrink-0">
               <div className="flex space-x-2 sm:space-x-3">
                 <input
                   type="text"
