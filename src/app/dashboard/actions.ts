@@ -13,14 +13,18 @@ export interface CreateProjectData {
 
 export async function createProject(formData: CreateProjectData) {
   try {
+    console.log('createProject: Starting project creation...');
     const supabase = await createUserClient();
+    console.log('createProject: Supabase client created');
     
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
+      console.error('createProject: Auth error:', authError);
       throw new Error('Unauthorized');
     }
-
+    console.log('createProject: User authenticated:', user.id);
+    
     // Get user's workspace
     const { data: member, error: memberError } = await supabase
       .from('workspace_members')
@@ -30,30 +34,39 @@ export async function createProject(formData: CreateProjectData) {
       .single();
 
     if (memberError || !member) {
+      console.error('createProject: Workspace member error:', memberError);
+      console.error('createProject: Member data:', member);
       throw new Error('No workspace found. Please contact support.');
     }
-
+    console.log('createProject: Workspace found:', member.workspace_id);
+    
     // Create project
+    const projectData = {
+      workspace_id: member.workspace_id,
+      name: formData.name,
+      location: formData.location,
+      size_sqft: formData.size_sqft,
+      description: formData.description,
+      type: formData.type,
+      created_by: user.id,
+      status: 'draft'
+    };
+    console.log('createProject: Inserting project data:', projectData);
+    
     const { data: project, error: projectError } = await supabase
       .from('projects_new')
-      .insert({
-        workspace_id: member.workspace_id,
-        name: formData.name,
-        location: formData.location,
-        size_sqft: formData.size_sqft,
-        description: formData.description,
-        type: formData.type,
-        created_by: user.id,
-        status: 'draft'
-      })
+      .insert(projectData)
       .select()
       .single();
 
     if (projectError) {
-      console.error('Error creating project:', projectError);
+      console.error('createProject: Project insert error:', projectError);
+      console.error('createProject: Project data attempted:', projectData);
       throw new Error('Failed to create project');
     }
-
+    
+    console.log('createProject: Project created successfully:', project);
+    
     // Revalidate dashboard to show new project
     revalidatePath('/dashboard');
     
@@ -61,7 +74,7 @@ export async function createProject(formData: CreateProjectData) {
     return project;
     
   } catch (error) {
-    console.error('Error in createProject action:', error);
+    console.error('createProject: Error in createProject action:', error);
     throw error;
   }
 }
