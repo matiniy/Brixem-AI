@@ -189,25 +189,25 @@ export default function ProjectDetailPage() {
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
               <button
                 onClick={() => router.push('/dashboard/homeowner')}
-                className="p-2 rounded-lg hover:bg-gray-100 transition"
+                className="p-2 rounded-lg hover:bg-gray-100 transition flex-shrink-0"
               >
                 <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center">
+               
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0">
                 <span className="text-white font-bold text-sm">B</span>
               </div>
-              
-              <h1 className="text-xl font-semibold text-gray-900">{project.name}</h1>
+               
+              <h1 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">{project.name}</h1>
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className={`px-3 py-1 text-sm rounded-full ${
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              <span className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-full ${
                 project.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
                 project.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
                 project.status === 'completed' ? 'bg-green-100 text-green-800' :
@@ -221,22 +221,22 @@ export default function ProjectDetailPage() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="bg-white border-b">
+      <div className="bg-white border-b overflow-x-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex space-x-8">
+          <nav className="flex space-x-4 sm:space-x-8 min-w-max">
             <button
               onClick={() => setActiveTab('kanban')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              className={`py-3 sm:py-4 px-2 sm:px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                 activeTab === 'kanban'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              Kanban + Chat
+              Kanban Board
             </button>
             <button
               onClick={() => setActiveTab('chat')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              className={`py-3 sm:py-4 px-2 sm:px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                 activeTab === 'chat'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -246,7 +246,7 @@ export default function ProjectDetailPage() {
             </button>
             <button
               onClick={() => setActiveTab('overview')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              className={`py-3 sm:py-4 px-2 sm:px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                 activeTab === 'overview'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -260,169 +260,84 @@ export default function ProjectDetailPage() {
 
       {/* Main Content */}
       {activeTab === 'kanban' ? (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Project Kanban Board + AI Chat</h2>
-            <p className="text-gray-600">Manage tasks and chat with AI about {project.name} - all in one view</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+          <div className="mb-4 sm:mb-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Project Kanban Board</h2>
+            <p className="text-sm sm:text-base text-gray-600">Manage tasks and track progress for {project.name}</p>
           </div>
           
-          {/* Integrated Kanban + Chat Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Kanban Board - Takes up 2/3 of the space */}
-            <div className="lg:col-span-2">
-              <KanbanBoard
-                tasks={tasks}
-                onTaskUpdate={handleTaskUpdate}
-                onAddTask={handleAddTask}
-                onDeleteTask={handleDeleteTask}
-              />
-            </div>
-            
-            {/* Chat Interface - Takes up 1/3 of the space */}
-            <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg border border-gray-200 h-[600px] flex flex-col">
-                {/* Chat Header */}
-                <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-t-lg">
-                  <h3 className="text-lg font-semibold">Brixem AI Assistant</h3>
-                  <p className="text-sm text-blue-100">How can I help you with {project.name} today?</p>
-                </div>
-                
-                {/* Chat Messages Area */}
-                <div className="flex-1 p-4 bg-gray-50 overflow-y-auto">
-                  <div className="space-y-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0">
-                        <span className="text-white font-bold text-xs">B</span>
-                      </div>
-                      <div className="bg-white text-gray-900 px-3 py-2 rounded-xl shadow-sm border border-gray-100 max-w-full">
-                        <p className="text-sm leading-relaxed">Hi! I&apos;m here to help you with {project.name}. I can help you manage tasks, track progress, and answer questions about your project.</p>
-                        <p className="text-xs mt-1 text-gray-400">Just now</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start gap-3 justify-end">
-                      <div className="bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white px-3 py-2 rounded-xl max-w-full">
-                        <p className="text-sm leading-relaxed">Can you show me the current project status?</p>
-                        <p className="text-xs mt-1 text-blue-100">Just now</p>
-                      </div>
-                      <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
-                        <span className="text-gray-600 font-medium text-xs">U</span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0">
-                        <span className="text-white font-bold text-xs">B</span>
-                      </div>
-                      <div className="bg-white text-gray-900 px-3 py-2 rounded-xl shadow-sm border border-gray-100 max-w-full">
-                        <p className="text-sm leading-relaxed">Of course! {project.name} is currently in <strong>{project.status}</strong> status. Here&apos;s what I can tell you:</p>
-                        <ul className="text-sm mt-2 space-y-1 text-gray-700">
-                          <li>• Location: {project.location}</li>
-                          {project.size_sqft && <li>• Size: {project.size_sqft} sq ft</li>}
-                          {project.description && <li>• Description: {project.description}</li>}
-                        </ul>
-                        <p className="text-xs mt-2 text-gray-400">Just now</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0">
-                        <span className="text-white font-bold text-xs">B</span>
-                      </div>
-                      <div className="bg-white text-gray-900 px-3 py-2 rounded-xl shadow-sm border border-gray-100 max-w-full">
-                        <p className="text-sm leading-relaxed">I can also help you with:</p>
-                        <ul className="text-sm mt-2 space-y-1 text-gray-700">
-                          <li>• Adding new tasks to your Kanban board</li>
-                          <li>• Updating task priorities and status</li>
-                          <li>• Generating project documents</li>
-                          <li>• Tracking project progress</li>
-                        </ul>
-                        <p className="text-xs mt-2 text-gray-400">Just now</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Chat Input */}
-                <div className="p-4 border-t border-gray-200">
-                  <div className="flex space-x-2">
-                    <input
-                      type="text"
-                      placeholder="Ask me about your project..."
-                      className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                    />
-                    <button className="px-4 py-2 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-lg text-sm font-medium hover:opacity-90 transition">
-                      Send
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="overflow-x-auto">
+            <KanbanBoard
+              tasks={tasks}
+              onTaskUpdate={handleTaskUpdate}
+              onAddTask={handleAddTask}
+              onDeleteTask={handleDeleteTask}
+            />
           </div>
         </div>
       ) : activeTab === 'chat' ? (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Project Chat</h2>
-            <p className="text-gray-600">Chat with AI about {project.name} - ask questions, get updates, and manage your project</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+          <div className="mb-4 sm:mb-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Project Chat</h2>
+            <p className="text-sm sm:text-base text-gray-600">Chat with AI about {project.name} - ask questions, get updates, and manage your project</p>
           </div>
           
           {/* Chat Interface */}
-          <div className="bg-white rounded-lg border border-gray-200 h-[600px]">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Brixem AI Assistant</h3>
-              <p className="text-sm text-gray-600">How can I help you with {project.name} today?</p>
+          <div className="bg-white rounded-lg border border-gray-200 h-[500px] sm:h-[600px]">
+            <div className="p-4 sm:p-6 border-b border-gray-200">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900">Brixem AI Assistant</h3>
+              <p className="text-xs sm:text-sm text-gray-600">How can I help you with {project.name} today?</p>
             </div>
             
             {/* Chat Messages Area */}
-            <div className="flex-1 p-6 bg-gray-50 h-[500px] overflow-y-auto">
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0">
+            <div className="flex-1 p-4 sm:p-6 bg-gray-50 h-[400px] sm:h-[500px] overflow-y-auto">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0">
                     <span className="text-white font-bold text-xs">B</span>
                   </div>
-                  <div className="bg-white text-gray-900 px-4 py-3 rounded-2xl shadow-sm border border-gray-100 max-w-2xl">
-                    <p className="text-sm leading-relaxed">Hi! I&apos;m here to help you with {project.name}. I can answer questions about your project, help you track progress, generate documents, and more. What would you like to know?</p>
-                    <p className="text-xs mt-2 text-gray-400">Just now</p>
+                  <div className="bg-white text-gray-900 px-3 sm:px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 max-w-[calc(100%-3rem)] sm:max-w-2xl">
+                    <p className="text-xs sm:text-sm leading-relaxed">Hi! I&apos;m here to help you with {project.name}. I can answer questions about your project, help you track progress, generate documents, and more. What would you like to know?</p>
+                    <p className="text-xs mt-1 sm:mt-2 text-gray-400">Just now</p>
                   </div>
                 </div>
                 
-                <div className="flex items-start gap-3 justify-end">
-                  <div className="bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white px-4 py-3 rounded-2xl max-w-2xl">
-                    <p className="text-sm leading-relaxed">Can you show me the current project status?</p>
-                    <p className="text-xs mt-2 text-blue-100">Just now</p>
+                <div className="flex items-start gap-2 sm:gap-3 justify-end">
+                  <div className="bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white px-3 sm:px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl max-w-[calc(100%-3rem)] sm:max-w-2xl">
+                    <p className="text-xs sm:text-sm leading-relaxed">Can you show me the current project status?</p>
+                    <p className="text-xs mt-1 sm:mt-2 text-blue-100">Just now</p>
                   </div>
-                  <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
                     <span className="text-gray-600 font-medium text-xs">U</span>
                   </div>
                 </div>
                 
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0">
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center flex-shrink-0">
                     <span className="text-white font-bold text-xs">B</span>
                   </div>
-                  <div className="bg-white text-gray-900 px-4 py-3 rounded-2xl shadow-sm border border-gray-100 max-w-2xl">
-                    <p className="text-sm leading-relaxed">Of course! {project.name} is currently in <strong>{project.status}</strong> status. Here&apos;s what I can tell you:</p>
-                    <ul className="text-sm mt-2 space-y-1 text-gray-700">
+                  <div className="bg-white text-gray-900 px-3 sm:px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 max-w-[calc(100%-3rem)] sm:max-w-2xl">
+                    <p className="text-xs sm:text-sm leading-relaxed">Of course! {project.name} is currently in <strong>{project.status}</strong> status. Here&apos;s what I can tell you:</p>
+                    <ul className="text-xs sm:text-sm mt-2 space-y-1 text-gray-700">
                       <li>• Location: {project.location}</li>
                       {project.size_sqft && <li>• Size: {project.size_sqft} sq ft</li>}
                       {project.description && <li>• Description: {project.description}</li>}
                     </ul>
-                    <p className="text-xs mt-2 text-gray-400">Just now</p>
+                    <p className="text-xs mt-1 sm:mt-2 text-gray-400">Just now</p>
                   </div>
                 </div>
               </div>
             </div>
             
             {/* Chat Input */}
-            <div className="p-6 border-t border-gray-200">
-              <div className="flex space-x-3">
+            <div className="p-4 sm:p-6 border-t border-gray-200">
+              <div className="flex space-x-2 sm:space-x-3">
                 <input
                   type="text"
                   placeholder="Ask me about your project..."
-                  className="flex-1 border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  className="flex-1 border border-gray-300 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                 />
-                <button className="px-6 py-3 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-xl text-sm font-medium hover:opacity-90 transition">
+                <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-lg sm:rounded-xl text-sm font-medium hover:opacity-90 transition flex-shrink-0">
                   Send
                 </button>
               </div>
@@ -430,55 +345,55 @@ export default function ProjectDetailPage() {
           </div>
         </div>
       ) : (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {/* Project Details */}
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Project Overview</h2>
+              <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Project Overview</h2>
                 
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Basic Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">Basic Information</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Project Name</label>
-                        <p className="text-gray-900">{project.name}</p>
+                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Project Name</label>
+                        <p className="text-sm sm:text-base text-gray-900">{project.name}</p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                        <p className="text-gray-900">{project.location}</p>
+                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Location</label>
+                        <p className="text-sm sm:text-base text-gray-900">{project.location}</p>
                       </div>
                       {project.size_sqft && (
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Size</label>
-                          <p className="text-gray-900">{project.size_sqft} sq ft</p>
+                          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Size</label>
+                          <p className="text-sm sm:text-base text-gray-900">{project.size_sqft} sq ft</p>
                         </div>
                       )}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                        <p className="text-gray-900 capitalize">{project.status}</p>
+                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <p className="text-sm sm:text-base text-gray-900 capitalize">{project.status}</p>
                       </div>
                     </div>
                   </div>
 
                   {project.description && (
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3">Description</h3>
-                      <p className="text-gray-700">{project.description}</p>
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">Description</h3>
+                      <p className="text-sm sm:text-base text-gray-700">{project.description}</p>
                     </div>
                   )}
 
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Timeline</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">Timeline</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Created</label>
-                        <p className="text-gray-900">{new Date(project.created_at).toLocaleDateString()}</p>
+                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Created</label>
+                        <p className="text-sm sm:text-base text-gray-900">{new Date(project.created_at).toLocaleDateString()}</p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Last Updated</label>
-                        <p className="text-gray-900">{new Date(project.updated_at).toLocaleDateString()}</p>
+                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Last Updated</label>
+                        <p className="text-sm sm:text-base text-gray-900">{new Date(project.updated_at).toLocaleDateString()}</p>
                       </div>
                     </div>
                   </div>
@@ -488,10 +403,10 @@ export default function ProjectDetailPage() {
 
             {/* Actions Sidebar */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+              <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Quick Actions</h3>
                 
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <PrimaryButton
                     onClick={handleGenerateDocuments}
                     disabled={isGenerating}
@@ -504,77 +419,77 @@ export default function ProjectDetailPage() {
                       </>
                     ) : (
                       <>
-                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        Generate Scope & Estimate
+                        <span className="text-sm sm:text-base">Generate Scope & Estimate</span>
                       </>
                     )}
                   </PrimaryButton>
 
                   <button
                     onClick={() => setActiveTab('kanban')}
-                    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2 justify-center"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2 2" />
                     </svg>
-                    View Kanban + Chat
+                    <span className="text-sm sm:text-base">View Kanban Board</span>
                   </button>
 
                   <button
                     onClick={() => setActiveTab('chat')}
-                    className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2 justify-center"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
-                    View Chat
+                    <span className="text-sm sm:text-base">View Chat</span>
                   </button>
 
                   <button
                     onClick={() => router.push('/dashboard/homeowner')}
-                    className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition flex items-center gap-2 justify-center"
                   >
-                    <svg className="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    Edit Project
+                    <span className="text-sm sm:text-base">Edit Project</span>
                   </button>
 
                   <button
                     onClick={() => router.push('/dashboard/homeowner')}
-                    className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition flex items-center gap-2 justify-center"
                   >
-                    <svg className="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    View Timeline
+                    <span className="text-sm sm:text-base">View Timeline</span>
                   </button>
                 </div>
 
                 {/* Workspace Info */}
-                <div className="mt-8 pt-6 border-t border-gray-200">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Workspace</h4>
-                  <p className="text-sm text-gray-900">{project.workspaces[0]?.name || 'Unknown'}</p>
+                <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-gray-200">
+                  <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-2">Workspace</h4>
+                  <p className="text-xs sm:text-sm text-gray-900">{project.workspaces[0]?.name || 'Unknown'}</p>
                 </div>
               </div>
 
               {/* Next Steps */}
-              <div className="mt-6 bg-blue-50 rounded-lg border border-blue-200 p-6">
-                <h3 className="text-lg font-semibold text-blue-900 mb-3">Next Steps</h3>
-                <ol className="space-y-3 text-sm text-blue-800">
+              <div className="mt-4 sm:mt-6 bg-blue-50 rounded-lg border border-blue-200 p-4 sm:p-6">
+                <h3 className="text-base sm:text-lg font-semibold text-blue-900 mb-2 sm:mb-3">Next Steps</h3>
+                <ol className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-blue-800">
                   <li className="flex items-start gap-2">
-                    <span className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-medium mt-0.5">1</span>
+                    <span className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-medium mt-0.5 flex-shrink-0">1</span>
                     <span>Generate your Scope of Work and Estimate</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-medium mt-0.5">2</span>
+                    <span className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-medium mt-0.5 flex-shrink-0">2</span>
                     <span>Review and customize the generated documents</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-medium mt-0.5">3</span>
+                    <span className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-medium mt-0.5 flex-shrink-0">3</span>
                     <span>Download PDFs and share with contractors</span>
                   </li>
                 </ol>
