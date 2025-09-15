@@ -350,27 +350,7 @@ CREATE POLICY "Users can create file attachments in their projects" ON file_atta
     )
 );
 
--- Insert sample data (replace with your actual data)
-INSERT INTO profiles (id, email, full_name, role, company) VALUES 
-    ('00000000-0000-0000-0000-000000000001', 'demo@example.com', 'Demo Homeowner', 'homeowner', 'Demo Company'),
-    ('00000000-0000-0000-0000-000000000002', 'contractor@example.com', 'Demo Contractor', 'contractor', 'Demo Construction');
-
--- Insert sample project
-INSERT INTO projects (id, name, type, location, description, budget, status, created_by) VALUES 
-    ('11111111-1111-1111-1111-111111111111', 'Kitchen Renovation', 'Renovation', '123 Main St, City', 'Complete kitchen renovation with modern appliances', 50000.00, 'planning', '00000000-0000-0000-0000-000000000001');
-
--- Insert sample milestone
-INSERT INTO milestones (id, project_id, title, description, due_date, status, created_by) VALUES 
-    ('22222222-2222-2222-2222-222222222222', '11111111-1111-1111-1111-111111111111', 'Planning Phase', 'Complete design and planning', '2024-02-01', 'in_progress', '00000000-0000-0000-0000-000000000001');
-
--- Insert sample tasks
-INSERT INTO tasks (id, project_id, milestone_id, title, description, status, priority, assigned_to, created_by) VALUES 
-    ('33333333-3333-3333-3333-333333333333', '11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222222', 'Design Kitchen Layout', 'Create detailed kitchen layout with measurements', 'in_progress', 'high', '00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001'),
-    ('44444444-4444-4444-4444-444444444444', '11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222222', 'Select Appliances', 'Choose and order kitchen appliances', 'todo', 'medium', '00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001');
-
--- Insert sample project member
-INSERT INTO project_members (project_id, user_id, role) VALUES 
-    ('11111111-1111-1111-1111-111111111111', '00000000-0000-0000-0000-000000000001', 'owner'),
-    ('11111111-1111-1111-1111-111111111111', '00000000-0000-0000-0000-000000000002', 'member');
+-- Sample data will be created automatically when users sign up and create projects
+-- No need to insert hardcoded data that violates foreign key constraints
 
 COMMIT;
