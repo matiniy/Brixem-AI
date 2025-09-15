@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 export default function TestSupabaseDirectPage() {
   const [status, setStatus] = useState('Testing direct connection...');
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<Record<string, unknown> | null>(null);
 
   useEffect(() => {
     async function testDirectConnection() {
@@ -69,12 +70,12 @@ export default function TestSupabaseDirectPage() {
         </div>
 
         <div className="mt-6">
-          <a 
+          <Link 
             href="/" 
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
             Back to Home
-          </a>
+          </Link>
         </div>
       </div>
     </div>
