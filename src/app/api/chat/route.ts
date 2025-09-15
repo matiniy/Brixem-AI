@@ -71,7 +71,7 @@ Always be helpful, professional, and construction-focused. When users ask to cre
 
     // Call Groq API
     const completion = await groq.chat.completions.create({
-      model: process.env.GROQ_MODEL || 'llama-3.1-70b-versatile',
+      model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
       messages: groqMessages,
       max_tokens: parseInt(process.env.GROQ_MAX_TOKENS || '1000'),
       temperature: parseFloat(process.env.GROQ_TEMPERATURE || '0.7'),
