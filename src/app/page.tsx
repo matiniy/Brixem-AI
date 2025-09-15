@@ -10,6 +10,7 @@ import FeatureSection from "@/components/FeatureSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import Footer from "@/components/Footer";
 import AnimatedStats from "@/components/AnimatedStats";
+import DebugAuth from "@/components/DebugAuth";
 
 // Add Message type locally
 interface Message {
@@ -576,6 +577,9 @@ export default function Home() {
       <Suspense fallback={null}>
         <EmailConfirmationHandler />
       </Suspense>
+      
+      {/* Debug component - remove in production */}
+      <DebugAuth />
       
       <Suspense fallback={null}>
         <LandingPageContent />
