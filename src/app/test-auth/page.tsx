@@ -20,7 +20,7 @@ export default function TestAuthPage() {
       setResult(result);
     } catch (error) {
       console.error('Test error:', error);
-      setResult({ error: error.message });
+      setResult({ error: error instanceof Error ? error.message : 'Unknown error' });
     } finally {
       setLoading(false);
     }
