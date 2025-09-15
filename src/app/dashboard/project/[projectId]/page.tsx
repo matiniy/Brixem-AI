@@ -47,6 +47,11 @@ interface ChatMessage {
 }
 
 export default function ProjectDetailPage() {
+  // Use floating chat layout by default
+  if (CHAT_FIRST) {
+    return <FloatingChatProjectPage />;
+  }
+
   const params = useParams();
   const router = useRouter();
   const projectId = params.projectId as string;
@@ -572,11 +577,6 @@ Any modifications to this scope of work must be documented in writing and approv
       loadProject();
     }
   }, [projectId, loadProject]);
-
-  // Use floating chat layout by default
-  if (CHAT_FIRST) {
-    return <FloatingChatProjectPage />;
-  }
 
   const handleGenerateDocuments = async () => {
     try {

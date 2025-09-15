@@ -22,6 +22,11 @@ interface Project {
 }
 
 export default function HomeownerDashboard() {
+  // Use floating chat dashboard by default
+  if (CHAT_FIRST) {
+    return <FloatingChatDashboard />;
+  }
+
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showChatInterface, setShowChatInterface] = useState(false);
@@ -31,11 +36,6 @@ export default function HomeownerDashboard() {
   useEffect(() => {
     loadProjects();
   }, []);
-
-  // Use floating chat dashboard by default
-  if (CHAT_FIRST) {
-    return <FloatingChatDashboard />;
-  }
 
   const loadProjects = async () => {
     try {
