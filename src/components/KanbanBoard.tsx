@@ -21,6 +21,7 @@ interface KanbanBoardProps {
   onTaskUpdate: (taskId: string, updates: Partial<Task>) => void;
   onAddTask: (task: Omit<Task, "id">) => void;
   onDeleteTask: (taskId: string) => void;
+  interactive?: boolean;
 }
 
 const priorityColors = {
@@ -35,7 +36,7 @@ const priorityLabels = {
   low: "Low Priority"
 };
 
-export default function KanbanBoard({ tasks, onTaskUpdate, onAddTask, onDeleteTask }: KanbanBoardProps) {
+export default function KanbanBoard({ tasks, onTaskUpdate, onAddTask, onDeleteTask, interactive = true }: KanbanBoardProps) {
   const [draggedTask, setDraggedTask] = useState<string | null>(null);
   const [showAddTask, setShowAddTask] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState("");
@@ -53,14 +54,26 @@ export default function KanbanBoard({ tasks, onTaskUpdate, onAddTask, onDeleteTa
   };
 
   const handleDragStart = (e: React.DragEvent, taskId: string) => {
+    if (!interactive) {
+      e.preventDefault();
+      return;
+    }
     setDraggedTask(taskId);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
+    if (!interactive) {
+      e.preventDefault();
+      return;
+    }
     e.preventDefault();
   };
 
   const handleDrop = (e: React.DragEvent, status: string) => {
+    if (!interactive) {
+      e.preventDefault();
+      return;
+    }
     e.preventDefault();
     if (draggedTask) {
       onTaskUpdate(draggedTask, { status: status as Task["status"] });
@@ -69,6 +82,7 @@ export default function KanbanBoard({ tasks, onTaskUpdate, onAddTask, onDeleteTa
   };
 
   const handleAddTask = (status: string) => {
+    if (!interactive) return;
     if (newTaskTitle.trim()) {
       onAddTask({
         title: newTaskTitle,
@@ -85,6 +99,7 @@ export default function KanbanBoard({ tasks, onTaskUpdate, onAddTask, onDeleteTa
   };
 
   const handleCardClick = (task: Task) => {
+    if (!interactive) return;
     setSelectedTask(task);
     setIsModalOpen(true);
   };
@@ -108,7 +123,7 @@ export default function KanbanBoard({ tasks, onTaskUpdate, onAddTask, onDeleteTa
 
   return (
     <>
-      <div className="flex flex-col md:flex-row gap-3 sm:gap-4 lg:gap-6 h-full overflow-x-auto p-2 sm:p-3 lg:p-6 w-full">
+      <div className={`flex flex-col md:flex-row gap-3 sm:gap-4 lg:gap-6 h-full overflow-x-auto p-2 sm:p-3 lg:p-6 w-full ${!interactive ? "select-none pointer-events-none" : ""}`}>
         {columns.map((column) => (
           <div
             key={column.id}
@@ -127,26 +142,32 @@ export default function KanbanBoard({ tasks, onTaskUpdate, onAddTask, onDeleteTa
               {getTasksByStatus(column.id).map((task) => (
                 <div
                   key={task.id}
-                  draggable
+                  draggable={interactive}
                   onDragStart={(e) => handleDragStart(e, task.id)}
                   onClick={() => handleCardClick(task)}
-                  className="bg-white rounded-lg p-2 sm:p-3 lg:p-4 shadow-sm border border-gray-200 cursor-pointer hover:shadow-md transition-all duration-200 touch-manipulation hover:scale-[1.02] active:scale-[0.98]"
+                  className={`bg-white rounded-lg p-2 sm:p-3 lg:p-4 shadow-sm border border-gray-200 transition-all duration-200 touch-manipulation ${
+                    interactive 
+                      ? "cursor-pointer hover:shadow-md hover:scale-[1.02] active:scale-[0.98]" 
+                      : "cursor-default"
+                  }`}
                 >
                   <div className="flex items-start justify-between mb-2">
                     <span className={`text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full ${priorityColors[task.priority]}`}>
                       {priorityLabels[task.priority]}
                     </span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onTaskUpdate(task.id, { progress: task.progress === 100 ? 0 : 100 });
-                      }}
-                      className="text-gray-400 hover:text-gray-600 p-1 touch-manipulation"
-                    >
-                      <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </button>
+                    {interactive && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onTaskUpdate(task.id, { progress: task.progress === 100 ? 0 : 100 });
+                        }}
+                        className="text-gray-400 hover:text-gray-600 p-1 touch-manipulation"
+                      >
+                        <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </button>
+                    )}
                   </div>
 
                   <h4 className="font-medium text-gray-900 mb-2 text-sm sm:text-base leading-tight">{task.title}</h4>
@@ -208,51 +229,55 @@ export default function KanbanBoard({ tasks, onTaskUpdate, onAddTask, onDeleteTa
               ))}
 
               {/* Add Task Button */}
-              {showAddTask === column.id ? (
-                <div className="bg-white rounded-lg p-2 sm:p-3 border border-gray-200">
-                  <input
-                    type="text"
-                    value={newTaskTitle}
-                    onChange={(e) => setNewTaskTitle(e.target.value)}
-                    placeholder="Enter task title..."
-                    className="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-md text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30"
-                    autoFocus
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter") {
-                        handleAddTask(column.id);
-                      }
-                    }}
-                  />
-                  <div className="flex gap-2 mt-2">
+              {interactive && (
+                <>
+                  {showAddTask === column.id ? (
+                    <div className="bg-white rounded-lg p-2 sm:p-3 border border-gray-200">
+                      <input
+                        type="text"
+                        value={newTaskTitle}
+                        onChange={(e) => setNewTaskTitle(e.target.value)}
+                        placeholder="Enter task title..."
+                        className="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-md text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30"
+                        autoFocus
+                        onKeyPress={(e) => {
+                          if (e.key === "Enter") {
+                            handleAddTask(column.id);
+                          }
+                        }}
+                      />
+                      <div className="flex gap-2 mt-2">
+                        <button
+                          onClick={() => handleAddTask(column.id)}
+                          className="px-2 sm:px-3 py-1 text-xs bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-md hover:opacity-90 transition touch-manipulation"
+                        >
+                          Add
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowAddTask(null);
+                            setNewTaskTitle("");
+                          }}
+                          className="px-2 sm:px-3 py-1 text-xs bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition touch-manipulation"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
                     <button
-                      onClick={() => handleAddTask(column.id)}
-                      className="px-2 sm:px-3 py-1 text-xs bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-md hover:opacity-90 transition touch-manipulation"
+                      onClick={() => setShowAddTask(column.id)}
+                      className="w-full p-2 sm:p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
                     >
-                      Add
+                      <div className="flex items-center justify-center gap-1 sm:gap-2">
+                        <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        <span className="text-xs sm:text-sm">Add Task</span>
+                      </div>
                     </button>
-                    <button
-                      onClick={() => {
-                        setShowAddTask(null);
-                        setNewTaskTitle("");
-                      }}
-                      className="px-2 sm:px-3 py-1 text-xs bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition touch-manipulation"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setShowAddTask(column.id)}
-                  className="w-full p-2 sm:p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-gray-400 hover:text-gray-600 transition-colors touch-manipulation"
-                >
-                  <div className="flex items-center justify-center gap-1 sm:gap-2">
-                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    <span className="text-xs sm:text-sm">Add Task</span>
-                  </div>
-                </button>
+                  )}
+                </>
               )}
             </div>
           </div>

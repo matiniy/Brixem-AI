@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import LoginModal from "./LoginModal";
 import ContactModal from "./ContactModal";
 import SignupModal from "./SignupModal";
+import DevLoginModal from "./DevLoginModal";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -12,6 +13,7 @@ export default function Navbar() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
+  const [showDevLoginModal, setShowDevLoginModal] = useState(false);
   const [contactModalType, setContactModalType] = useState<"sales" | "demo">("sales");
 
   return (
@@ -52,6 +54,15 @@ export default function Navbar() {
         >
           Log in
         </button>
+        {process.env.NODE_ENV === 'development' && (
+          <button 
+            onClick={() => setShowDevLoginModal(true)}
+            className="px-3 xl:px-4 py-2 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700 transition text-sm xl:text-base"
+            title="Development Login - Test Users"
+          >
+            🚀 Dev Login
+          </button>
+        )}
         <button 
           onClick={() => {
             setContactModalType("demo");
@@ -149,6 +160,17 @@ export default function Navbar() {
               >
                 Log in
               </button>
+              {process.env.NODE_ENV === 'development' && (
+                <button 
+                  onClick={() => {
+                    setShowDevLoginModal(true);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full px-6 py-4 rounded-xl bg-green-600 text-white font-medium hover:bg-green-700 transition text-lg touch-manipulation min-h-[48px]"
+                >
+                  🚀 Dev Login
+                </button>
+              )}
               <button 
                 onClick={() => {
                   setContactModalType("demo");
@@ -199,6 +221,15 @@ export default function Navbar() {
         isOpen={showContactModal}
         onClose={() => setShowContactModal(false)}
         type={contactModalType}
+      />
+      
+      <DevLoginModal 
+        isOpen={showDevLoginModal}
+        onClose={() => setShowDevLoginModal(false)}
+        onSuccess={() => {
+          setShowDevLoginModal(false);
+          // The modal will handle the redirect via magic link
+        }}
       />
     </header>
   );

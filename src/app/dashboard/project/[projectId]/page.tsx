@@ -5,6 +5,9 @@ import { useParams, useRouter } from 'next/navigation';
 import { getProject } from '../../actions';
 import PrimaryButton from '@/components/PrimaryButton';
 import KanbanBoard from '@/components/KanbanBoard';
+import { CHAT_FIRST } from '@/lib/flags';
+import ChatFirstProjectPage from './chat-first-page';
+import FloatingChatProjectPage from './floating-chat-page';
 
 interface Project {
   id: string;
@@ -44,6 +47,11 @@ interface ChatMessage {
 }
 
 export default function ProjectDetailPage() {
+  // Use floating chat layout by default
+  if (CHAT_FIRST !== false) {
+    return <FloatingChatProjectPage />;
+  }
+
   const params = useParams();
   const router = useRouter();
   const projectId = params.projectId as string;
