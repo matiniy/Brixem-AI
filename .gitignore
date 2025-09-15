@@ -8,3 +8,4 @@ dist/
 .env.development
 .DS_Store
 *.log
+.vercel
