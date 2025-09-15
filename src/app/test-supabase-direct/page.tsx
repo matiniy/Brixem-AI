@@ -12,12 +12,21 @@ export default function TestSupabaseDirectPage() {
       try {
         setStatus('Testing direct fetch to Supabase...');
         
-        // Test direct fetch to the Supabase API
-        const response = await fetch('https://npclviylnwigldpfvscw.supabase.co/rest/v1/', {
+        // Test direct fetch to the Supabase API using environment variables
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+        
+        if (!supabaseUrl || !supabaseKey) {
+          setStatus('❌ Missing Supabase environment variables');
+          setResult({ error: 'Environment variables not configured' });
+          return;
+        }
+        
+        const response = await fetch(`${supabaseUrl}/rest/v1/`, {
           method: 'GET',
           headers: {
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wY2x2aXlsbndpZ2xkcGZ2c2N3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwNDI4NTEsImV4cCI6MjA2OTYxODg1MX0.xnb9Kd8fl2PJSTZOLj6ry9I1jNGFy-RdNd5uL4B5c5A',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5wY2x2aXlsbndpZ2xkcGZ2c2N3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwNDI4NTEsImV4cCI6MjA2OTYxODg1MX0.xnb9Kd8fl2PJSTZOLj6ry9I1jNGFy-RdNd5uL4B5c5A',
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`,
             'Content-Type': 'application/json'
           }
         });
