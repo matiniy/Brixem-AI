@@ -8,7 +8,7 @@ const getGroqClient = () => {
   return {
     chat: {
       completions: {
-        create: async (params: { model: string; messages: any[]; max_tokens: number; temperature: number }) => {
+        create: async (params: { model: string; messages: { role: string; content: string }[]; max_tokens: number; temperature: number }) => {
           const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
             headers: {

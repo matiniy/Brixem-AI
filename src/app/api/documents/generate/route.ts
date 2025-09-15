@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { createUserClient } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase-server';
 import { generateDocumentContent } from '@/lib/ai-documents';
 import { assertWithinCap, recordUsageEvent } from '@/lib/usage';
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createUserClient();
+    const supabase = await createClient();
     
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser();

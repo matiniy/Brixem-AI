@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 // Server-side Supabase client with service role key for privileged operations
 export function createServerClient() {
@@ -9,7 +9,7 @@ export function createServerClient() {
     throw new Error('Missing Supabase environment variables for server client');
   }
 
-  return createClient(supabaseUrl, supabaseServiceKey, {
+  return createSupabaseClient(supabaseUrl, supabaseServiceKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false
@@ -26,7 +26,7 @@ export async function createUserClient() {
     throw new Error('Missing Supabase environment variables for user client');
   }
 
-  return createClient(supabaseUrl, supabaseAnonKey, {
+  return createSupabaseClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       autoRefreshToken: true,
       persistSession: true,
@@ -78,4 +78,9 @@ export async function getUserWorkspace(userId: string) {
   }
 
   return member;
+}
+
+// Export createClient as default for API routes
+export async function createClient() {
+  return await createUserClient();
 }
