@@ -22,10 +22,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 export interface User {
   id: string;
   email: string;
-  first_name: string;
-  last_name: string;
+  full_name?: string;
   company?: string;
-  role: 'homeowner' | 'contractor';
+  role?: 'homeowner' | 'contractor';
   phone?: string;
   created_at: string;
   updated_at: string;
@@ -33,15 +32,17 @@ export interface User {
 
 export interface Project {
   id: string;
+  workspace_id: string;
   name: string;
-  type: string;
-  location: string;
-  description: string;
-  start_date: string;
+  type?: string;
+  location?: string;
+  description?: string;
+  size_sqft?: number;
+  start_date?: string;
   end_date?: string;
   budget?: number;
-  status: 'planning' | 'in-progress' | 'completed' | 'on-hold';
-  user_id: string;
+  status: string;
+  created_by: string;
   created_at: string;
   updated_at: string;
 }
@@ -78,7 +79,7 @@ export async function getUserProfile(userId: string): Promise<User | null> {
     if (cached) return cached;
 
     const { data, error } = await supabase
-      .from('users')
+      .from('profiles')
       .select('*')
       .eq('id', userId)
       .single();
@@ -100,7 +101,7 @@ export async function getUserProfile(userId: string): Promise<User | null> {
 export async function createUserProfile(userData: Omit<User, 'id' | 'created_at' | 'updated_at'>): Promise<User | null> {
   try {
     const { data, error } = await supabase
-      .from('users')
+      .from('profiles')
       .insert([userData])
       .select()
       .single();
@@ -127,9 +128,9 @@ export async function getUserProjects(userId: string): Promise<Project[]> {
     if (cached) return cached;
 
     const { data, error } = await supabase
-      .from('projects')
+      .from('projects_new')
       .select('*')
-      .eq('user_id', userId)
+      .eq('created_by', userId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -149,7 +150,7 @@ export async function getUserProjects(userId: string): Promise<Project[]> {
 export async function createProject(projectData: Omit<Project, 'id' | 'created_at' | 'updated_at'>): Promise<Project | null> {
   try {
     const { data, error } = await supabase
-      .from('projects')
+      .from('projects_new')
       .insert([projectData])
       .select()
       .single();
@@ -171,7 +172,7 @@ export async function createProject(projectData: Omit<Project, 'id' | 'created_a
 export async function updateProject(projectId: string, updates: Partial<Project>): Promise<Project | null> {
   try {
     const { data, error } = await supabase
-      .from('projects')
+      .from('projects_new')
       .update(updates)
       .eq('id', projectId)
       .select()
@@ -358,8 +359,8 @@ export function subscribeToUserProjects(userId: string, callback: (payload: unkn
     .on('postgres_changes', {
       event: '*',
       schema: 'public',
-      table: 'projects',
-      filter: `user_id=eq.${userId}`
+      table: 'projects_new',
+      filter: `created_by=eq.${userId}`
     }, callback)
     .subscribe();
 } 
