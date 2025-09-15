@@ -1,20 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
 
-// Initialize OpenAI client only when API key is available
-const getOpenAIClient = () => {
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error('OpenAI API key not configured');
+// Initialize Groq client
+const getGroqClient = () => {
+  if (!process.env.GROQ_API_KEY) {
+    throw new Error('Groq API key not configured');
   }
-  return new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
+  return {
+    chat: {
+      completions: {
+        create: async (params: { model: string; messages: any[]; max_tokens: number; temperature: number }) => {
+          const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(params),
+          });
+          
+          if (!response.ok) {
+            const error = await response.text();
+            throw new Error(`Groq API error: ${response.status} ${error}`);
+          }
+          
+          return response.json();
+        }
+      }
+    }
+  };
 };
 
 export async function POST(request: NextRequest) {
   try {
-    // Get OpenAI client (this will throw if API key is not configured)
-    const openai = getOpenAIClient();
+    // Get Groq client (this will throw if API key is not configured)
+    const groq = getGroqClient();
 
     // Parse request body
     const body = await request.json();
@@ -41,8 +60,8 @@ Current project context: ${projectContext || 'General construction project manag
 
 Always be helpful, professional, and construction-focused. When users ask to create tasks, extract the task details and confirm before creating. Keep responses concise but informative.`;
 
-    // Prepare messages for OpenAI
-    const openaiMessages = [
+    // Prepare messages for Groq
+    const groqMessages = [
       { role: 'system' as const, content: systemPrompt },
       ...messages.map((msg: { role: string; text: string }) => ({
         role: msg.role === 'user' ? 'user' as const : 'assistant' as const,
@@ -50,12 +69,12 @@ Always be helpful, professional, and construction-focused. When users ask to cre
       }))
     ];
 
-    // Call OpenAI API
-    const completion = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
-      messages: openaiMessages,
-      max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS || '1000'),
-      temperature: parseFloat(process.env.OPENAI_TEMPERATURE || '0.7'),
+    // Call Groq API
+    const completion = await groq.chat.completions.create({
+      model: process.env.GROQ_MODEL || 'llama-3.1-70b-versatile',
+      messages: groqMessages,
+      max_tokens: parseInt(process.env.GROQ_MAX_TOKENS || '1000'),
+      temperature: parseFloat(process.env.GROQ_TEMPERATURE || '0.7'),
     });
 
     const aiResponse = completion.choices[0]?.message?.content;
@@ -73,25 +92,25 @@ Always be helpful, professional, and construction-focused. When users ask to cre
     });
 
   } catch (error) {
-    console.error('OpenAI API error:', error);
+    console.error('Groq API error:', error);
     
-    // Handle specific OpenAI errors
+    // Handle specific Groq errors
     if (error instanceof Error) {
       if (error.message.includes('API key not configured')) {
         return NextResponse.json(
-          { error: 'OpenAI API key not configured' },
+          { error: 'Groq API key not configured' },
           { status: 500 }
         );
       }
       if (error.message.includes('API key')) {
         return NextResponse.json(
-          { error: 'Invalid OpenAI API key' },
+          { error: 'Invalid Groq API key' },
           { status: 401 }
         );
       }
-      if (error.message.includes('quota')) {
+      if (error.message.includes('quota') || error.message.includes('rate limit')) {
         return NextResponse.json(
-          { error: 'OpenAI API quota exceeded' },
+          { error: 'Groq API rate limit exceeded' },
           { status: 429 }
         );
       }

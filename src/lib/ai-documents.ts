@@ -44,9 +44,9 @@ ${type === 'sow'
 Format the response in clean markdown with proper headings, bullet points, and tables where appropriate.`;
 
   try {
-    // Try OpenAI first if available
-    if (process.env.OPENAI_API_KEY) {
-      return await generateWithOpenAI(systemPrompt, userPrompt);
+    // Try Groq first if available
+    if (process.env.GROQ_API_KEY) {
+      return await generateWithGroq(systemPrompt, userPrompt);
     }
     
     // Fallback to Ollama if configured
@@ -64,25 +64,33 @@ Format the response in clean markdown with proper headings, bullet points, and t
   }
 }
 
-async function generateWithOpenAI(systemPrompt: string, userPrompt: string): Promise<string> {
-  // Dynamic import to avoid bundling issues
-  const { default: OpenAI } = await import('openai');
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+async function generateWithGroq(systemPrompt: string, userPrompt: string): Promise<string> {
+  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: process.env.GROQ_MODEL || 'llama-3.1-70b-versatile',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ],
+      max_tokens: parseInt(process.env.GROQ_MAX_TOKENS || '2000'),
+      temperature: parseFloat(process.env.GROQ_TEMPERATURE || '0.7'),
+    }),
   });
 
-  const response = await openai.chat.completions.create({
-    model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: userPrompt }
-    ],
-    max_tokens: parseInt(process.env.OPENAI_MAX_TOKENS || '2000'),
-    temperature: parseFloat(process.env.OPENAI_TEMPERATURE || '0.7'),
-  });
+  if (!response.ok) {
+    throw new Error(`Groq API error: ${response.status} ${response.statusText}`);
+  }
 
-  return response.choices[0]?.message?.content || 'Failed to generate content';
+  const data = await response.json();
+  return data.choices[0]?.message?.content || 'Unable to generate content.';
 }
+
+// OpenAI integration removed - using Groq as primary AI provider
 
 async function generateWithOllama(systemPrompt: string, userPrompt: string): Promise<string> {
   const ollamaUrl = process.env.OLLAMA_BASE_URL;
