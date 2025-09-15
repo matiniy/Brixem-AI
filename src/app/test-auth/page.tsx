@@ -6,7 +6,7 @@ import { signIn } from '@/lib/supabase';
 export default function TestAuthPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleTest = async () => {

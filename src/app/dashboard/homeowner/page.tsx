@@ -27,6 +27,10 @@ export default function HomeownerDashboard() {
     return <FloatingChatDashboard />;
   }
 
+  return <LegacyHomeownerDashboard />;
+}
+
+function LegacyHomeownerDashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showChatInterface, setShowChatInterface] = useState(false);

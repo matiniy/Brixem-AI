@@ -52,6 +52,10 @@ export default function ProjectDetailPage() {
     return <FloatingChatProjectPage />;
   }
 
+  return <LegacyProjectDetailPage />;
+}
+
+function LegacyProjectDetailPage() {
   const params = useParams();
   const router = useRouter();
   const projectId = params.projectId as string;
