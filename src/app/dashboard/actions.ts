@@ -1,8 +1,7 @@
 'use server';
 
-// Mock data functions - API not ready yet
-// import { createUserClient } from '@/lib/supabase-server';
-// import { revalidatePath } from 'next/cache';
+import { createUserClient } from '@/lib/supabase-server';
+import { revalidatePath } from 'next/cache';
 
 export interface CreateProjectData {
   name: string;
@@ -14,78 +13,106 @@ export interface CreateProjectData {
 
 export async function createProject(formData: CreateProjectData) {
   try {
-    console.log('createProject: Using mock data for now (API not ready)');
+    console.log('createProject: Connecting to Supabase...');
     
-    // Return mock project data instead of database connection
-    const mockProject = {
-      id: `mock-${Date.now()}`,
-      workspace_id: 'mock-workspace-123',
-      name: formData.name,
-      type: formData.type,
-      location: formData.location,
-      description: formData.description,
-      size_sqft: formData.size_sqft,
-      start_date: null,
-      end_date: null,
-      budget: null,
-      status: 'draft',
-      created_by: 'mock-user-123',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
+    const supabase = await createUserClient();
     
-    console.log('createProject: Mock project created:', mockProject);
+    // Get current user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
     
-    // Simulate a small delay to mimic real API call
-    await new Promise(resolve => setTimeout(resolve, 500));
+    if (authError || !user) {
+      throw new Error('User not authenticated');
+    }
     
-    return mockProject;
+    // Get user's workspace
+    const { data: workspaceMember } = await supabase
+      .from('workspace_members')
+      .select('workspace_id')
+      .eq('user_id', user.id)
+      .single();
+    
+    if (!workspaceMember) {
+      throw new Error('No workspace found for user');
+    }
+    
+    // Create project in Supabase
+    const { data: project, error } = await supabase
+      .from('projects_new')
+      .insert({
+        workspace_id: workspaceMember.workspace_id,
+        name: formData.name,
+        type: formData.type,
+        location: formData.location,
+        description: formData.description,
+        size_sqft: formData.size_sqft,
+        status: 'draft',
+        created_by: user.id
+      })
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('createProject: Supabase error:', error);
+      throw error;
+    }
+    
+    console.log('createProject: Real project created:', project);
+    
+    // Revalidate the projects page
+    revalidatePath('/dashboard/homeowner');
+    
+    return project;
     
   } catch (error) {
-    console.error('createProject: Error in mock createProject:', error);
+    console.error('createProject: Error creating project:', error);
     throw error;
   }
 }
 
 export async function getProjects() {
   try {
-    console.log('getProjects: Using mock data for now (API not ready)');
+    console.log('getProjects: Connecting to Supabase...');
     
-    // Return mock projects instead of database connection
-    const mockProjects = [
-      {
-        id: 'mock-project-1',
-        name: 'Kitchen Remodel',
-        location: 'San Francisco, CA',
-        description: 'Complete kitchen renovation with modern appliances',
-        size_sqft: 250,
-        type: 'kitchen remodel',
-        status: 'draft',
-        created_at: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-        updated_at: new Date(Date.now() - 86400000).toISOString()
-      },
-      {
-        id: 'mock-project-2',
-        name: 'Bathroom Addition',
-        location: 'Los Angeles, CA',
-        description: 'New bathroom addition to master bedroom',
-        size_sqft: 120,
-        type: 'bathroom addition',
-        status: 'in-progress',
-        created_at: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
-        updated_at: new Date(Date.now() - 86400000).toISOString()
-      }
-    ];
+    const supabase = await createUserClient();
     
-    console.log('getProjects: Mock projects returned:', mockProjects);
+    // Get current user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
     
-    // Simulate a small delay to mimic real API call
-    await new Promise(resolve => setTimeout(resolve, 300));
+    if (authError || !user) {
+      console.log('getProjects: No authenticated user, returning empty array');
+      return [];
+    }
     
-    return mockProjects;
+    // Get user's workspace
+    const { data: workspaceMember } = await supabase
+      .from('workspace_members')
+      .select('workspace_id')
+      .eq('user_id', user.id)
+      .single();
+    
+    if (!workspaceMember) {
+      console.log('getProjects: No workspace found for user');
+      return [];
+    }
+    
+    // Get projects from the user's workspace
+    const { data: projects, error } = await supabase
+      .from('projects_new')
+      .select('*')
+      .eq('workspace_id', workspaceMember.workspace_id)
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('getProjects: Supabase error:', error);
+      return [];
+    }
+    
+    console.log('getProjects: Real projects returned:', projects);
+    return projects || [];
     
   } catch (error) {
-    console.error('getProjects: Error in mock getProjects:', error);
+    console.error('getProjects: Error connecting to Supabase:', error);
+    // Fallback to empty array if Supabase fails
     return [];
   }
 }
