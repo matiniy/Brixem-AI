@@ -212,11 +212,11 @@ export default function FloatingChatProjectPage() {
     }
   };
 
-  const handleTaskUpdate = (taskId: string, updates: any) => {
+  const handleTaskUpdate = (taskId: string, updates: Partial<Task>) => {
     updateTask(taskId, updates);
   };
 
-  const handleAddTask = (task: any) => {
+  const handleAddTask = (task: Omit<Task, "id">) => {
     addTask(task);
   };
 
@@ -430,7 +430,7 @@ Any modifications to this scope of work must be documented in writing and approv
       <div className="flex h-screen items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Project Not Found</h2>
-          <p className="text-gray-600 mb-4">The project you're looking for doesn't exist.</p>
+          <p className="text-gray-600 mb-4">The project you&apos;re looking for doesn&apos;t exist.</p>
           <button
             onClick={() => router.push('/dashboard/homeowner')}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"

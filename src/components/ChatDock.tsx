@@ -34,11 +34,11 @@ export default function ChatDock({ onSend, messages, placeholder = "Ask about yo
     return () => window.removeEventListener("keydown", onKey);
   }, [toggle]);
 
-  const handleTaskUpdate = (taskId: string, updates: any) => {
+  const handleTaskUpdate = (taskId: string, updates: Partial<{ id: string; title: string; description?: string; status: "todo" | "in-progress" | "completed"; priority: "high" | "medium" | "low"; progress: number; assignedUsers: string[]; comments: number; likes: number; dueDate?: string; estimatedHours?: number; }>) => {
     updateTask(taskId, updates);
   };
 
-  const handleAddTask = (task: any) => {
+  const handleAddTask = (task: Omit<{ id: string; title: string; description?: string; status: "todo" | "in-progress" | "completed"; priority: "high" | "medium" | "low"; progress: number; assignedUsers: string[]; comments: number; likes: number; dueDate?: string; estimatedHours?: number; }, "id">) => {
     addTask(task);
   };
 

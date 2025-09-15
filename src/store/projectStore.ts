@@ -13,13 +13,13 @@ export type Task = {
   id: string;
   title: string;
   status: "todo" | "in-progress" | "completed";
-  priority?: "low" | "medium" | "high";
-  progress?: number;
+  priority: "low" | "medium" | "high";
+  progress: number;
   milestoneId?: string;
   description?: string;
-  assignedUsers?: string[];
-  comments?: number;
-  likes?: number;
+  assignedUsers: string[];
+  comments: number;
+  likes: number;
   dueDate?: string;
   estimatedHours?: number;
 };

@@ -5,7 +5,7 @@ import Sidebar from '@/components/Sidebar';
 import { ZeroState } from '@/components/ZeroState';
 import { createProject, getProjects } from '../actions';
 import { CHAT_FIRST } from '@/lib/flags';
-import ChatFirstHomeownerDashboard from './chat-first-dashboard';
+// import ChatFirstHomeownerDashboard from './chat-first-dashboard'; // Removed unused import
 import FloatingChatDashboard from './floating-chat-dashboard';
 
 interface Project {
@@ -22,11 +22,6 @@ interface Project {
 }
 
 export default function HomeownerDashboard() {
-  // Use floating chat dashboard by default
-  if (CHAT_FIRST !== false) {
-    return <FloatingChatDashboard />;
-  }
-
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showChatInterface, setShowChatInterface] = useState(false);
@@ -36,6 +31,11 @@ export default function HomeownerDashboard() {
   useEffect(() => {
     loadProjects();
   }, []);
+
+  // Use floating chat dashboard by default
+  if (CHAT_FIRST) {
+    return <FloatingChatDashboard />;
+  }
 
   const loadProjects = async () => {
     try {

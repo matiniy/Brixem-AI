@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import { createProject, getProjects } from '../actions';
 import { sendChatMessage } from '@/lib/ai';
-import { useProjectStore } from '@/store/projectStore';
+// import { useProjectStore } from '@/store/projectStore'; // Removed unused import
 
 interface Project {
   id: string;
@@ -39,7 +39,7 @@ export default function ChatFirstHomeownerDashboard() {
   ]);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const { setAll } = useProjectStore();
+  // const { setAll } = useProjectStore(); // Removed unused variable
 
   // Load projects on component mount
   useEffect(() => {
@@ -98,7 +98,7 @@ export default function ChatFirstHomeownerDashboard() {
           };
           
           try {
-            const newProject = await createProject(projectData);
+            await createProject(projectData);
             await loadProjects();
             
             const successMessage: ChatMessage = {
@@ -107,7 +107,7 @@ export default function ChatFirstHomeownerDashboard() {
               type: "system"
             };
             setMessages(prev => [...prev, successMessage]);
-          } catch (error) {
+          } catch {
             const errorMessage: ChatMessage = {
               role: "ai",
               text: "I encountered an error creating your project. Please try again or provide more specific details.",

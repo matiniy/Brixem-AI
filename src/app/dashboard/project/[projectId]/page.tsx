@@ -6,7 +6,7 @@ import { getProject } from '../../actions';
 import PrimaryButton from '@/components/PrimaryButton';
 import KanbanBoard from '@/components/KanbanBoard';
 import { CHAT_FIRST } from '@/lib/flags';
-import ChatFirstProjectPage from './chat-first-page';
+// import ChatFirstProjectPage from './chat-first-page'; // Removed unused import
 import FloatingChatProjectPage from './floating-chat-page';
 
 interface Project {
@@ -47,11 +47,6 @@ interface ChatMessage {
 }
 
 export default function ProjectDetailPage() {
-  // Use floating chat layout by default
-  if (CHAT_FIRST !== false) {
-    return <FloatingChatProjectPage />;
-  }
-
   const params = useParams();
   const router = useRouter();
   const projectId = params.projectId as string;
@@ -577,6 +572,11 @@ Any modifications to this scope of work must be documented in writing and approv
       loadProject();
     }
   }, [projectId, loadProject]);
+
+  // Use floating chat layout by default
+  if (CHAT_FIRST) {
+    return <FloatingChatProjectPage />;
+  }
 
   const handleGenerateDocuments = async () => {
     try {

@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { getProject } from '../../actions';
 import ProjectShell from '@/components/ProjectShell';
 import { ProjectHydrator } from '@/components/ProjectHydrator';
-import { CHAT_FIRST } from '@/lib/flags';
+// import { CHAT_FIRST } from '@/lib/flags'; // Removed unused import
 import { useProjectStore } from '@/store/projectStore';
 import { sendChatMessage } from '@/lib/ai';
 
@@ -60,9 +60,9 @@ export default function ChatFirstProjectPage() {
       type: "normal"
     }
   ]);
-  const [isGenerating, setIsGenerating] = useState(false);
+  // const [isGenerating, setIsGenerating] = useState(false); // Removed unused variable
 
-  const { tasks, addTask, updateTask, deleteTask } = useProjectStore();
+  const { tasks, addTask } = useProjectStore(); // Removed unused variables
 
   const loadProject = useCallback(async () => {
     try {
@@ -165,7 +165,7 @@ export default function ChatFirstProjectPage() {
     };
 
     setMessages(prev => [...prev, userMessage]);
-    setIsGenerating(true);
+    // setIsGenerating(true); // Removed unused variable
 
     try {
       const response = await sendChatMessage([userMessage], `Project: ${project?.name || 'Unknown'}`);
@@ -202,7 +202,7 @@ export default function ChatFirstProjectPage() {
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
-      setIsGenerating(false);
+      // setIsGenerating(false); // Removed unused variable
     }
   };
 
@@ -222,7 +222,7 @@ export default function ChatFirstProjectPage() {
       <div className="flex h-screen items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Project Not Found</h2>
-          <p className="text-gray-600 mb-4">The project you're looking for doesn't exist.</p>
+          <p className="text-gray-600 mb-4">The project you&apos;re looking for doesn&apos;t exist.</p>
           <button
             onClick={() => router.push('/dashboard/homeowner')}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"

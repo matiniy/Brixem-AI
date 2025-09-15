@@ -53,7 +53,7 @@ export default function FloatingChatDashboard() {
       type: "normal"
     }
   ]);
-  const [isGenerating, setIsGenerating] = useState(false);
+  // const [isGenerating, setIsGenerating] = useState(false); // Removed unused variable
   const [isChatExpanded, setIsChatExpanded] = useState(false);
 
   const { tasks, addTask, updateTask, deleteTask, setAll } = useProjectStore();
@@ -170,7 +170,7 @@ export default function FloatingChatDashboard() {
     };
 
     setMessages(prev => [...prev, userMessage]);
-    setIsGenerating(true);
+    // setIsGenerating(true); // Removed unused variable
 
     try {
       const response = await sendChatMessage([userMessage], 'Homeowner Dashboard - Project Management');
@@ -211,7 +211,7 @@ export default function FloatingChatDashboard() {
           };
           
           try {
-            const newProject = await createProject(projectData);
+            await createProject(projectData);
             await loadProjects();
             
             const successMessage: ChatMessage = {
@@ -220,7 +220,7 @@ export default function FloatingChatDashboard() {
               type: "system"
             };
             setMessages(prev => [...prev, successMessage]);
-          } catch (error) {
+          } catch {
             const errorMessage: ChatMessage = {
               role: "ai",
               text: "I encountered an error creating your project. Please try again or provide more specific details.",
@@ -239,7 +239,7 @@ export default function FloatingChatDashboard() {
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
-      setIsGenerating(false);
+      // setIsGenerating(false); // Removed unused variable
     }
   };
 
@@ -267,11 +267,11 @@ export default function FloatingChatDashboard() {
     window.location.href = `/dashboard/project/${projectId}`;
   };
 
-  const handleTaskUpdate = (taskId: string, updates: any) => {
+  const handleTaskUpdate = (taskId: string, updates: Partial<Task>) => {
     updateTask(taskId, updates);
   };
 
-  const handleAddTask = (task: any) => {
+  const handleAddTask = (task: Omit<Task, "id">) => {
     addTask(task);
   };
 
