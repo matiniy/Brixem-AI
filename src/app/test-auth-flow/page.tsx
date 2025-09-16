@@ -5,9 +5,9 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 
 export default function TestAuthFlowPage() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
-  const [testResults, setTestResults] = useState<Record<string, any>>({});
+  const [testResults, setTestResults] = useState<Record<string, unknown>>({});
 
   useEffect(() => {
     async function testAuthFlow() {
