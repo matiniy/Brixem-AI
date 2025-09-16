@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 
 export default function TestAuthFlowPage() {
-  const [user, setUser] = useState<unknown>(null);
+  const [user, setUser] = useState<{ email?: string; id?: string; email_confirmed_at?: string; last_sign_in_at?: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [testResults, setTestResults] = useState<Record<string, unknown>>({});
 
