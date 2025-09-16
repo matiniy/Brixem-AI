@@ -33,26 +33,9 @@ export async function GET(request: NextRequest) {
       if (data.user) {
         console.log('Email confirmed successfully for user:', data.user.email);
         
-        // Go directly to dashboard after email verification
-        // Check if user has any projects to determine which dashboard to show
-        const { data: projectsData, error: projectsError } = await supabase
-          .from('projects')
-          .select('id')
-          .eq('user_id', data.user.id)
-          .limit(1);
-
-        if (projectsError) {
-          console.error('Projects fetch error:', projectsError);
-        }
-
-        // If user has projects, go to regular dashboard, otherwise go to empty dashboard
-        if (projectsData && projectsData.length > 0) {
-          console.log('User has projects, redirecting to regular dashboard');
-          return NextResponse.redirect(new URL('/dashboard/homeowner', request.url));
-        } else {
-          console.log('User has no projects, redirecting to empty dashboard');
-          return NextResponse.redirect(new URL('/dashboard/homeowner/empty', request.url));
-        }
+        // For new signups, always go to empty dashboard first
+        console.log('New user signup, redirecting to empty dashboard');
+        return NextResponse.redirect(new URL('/dashboard/homeowner/empty', request.url));
       }
     } catch (error) {
       console.error('Email confirmation error:', error);
@@ -60,7 +43,7 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Fallback redirect to dashboard
-  console.log('No valid token_hash or type, redirecting to dashboard');
-  return NextResponse.redirect(new URL('/dashboard/homeowner', request.url));
+  // Fallback redirect to empty dashboard
+  console.log('No valid token_hash or type, redirecting to empty dashboard');
+  return NextResponse.redirect(new URL('/dashboard/homeowner/empty', request.url));
 } 
