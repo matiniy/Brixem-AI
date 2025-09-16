@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { sendChatMessage } from "@/lib/ai";
 
 interface Message {
@@ -9,7 +8,6 @@ interface Message {
 }
 
 export default function EmptyDashboard() {
-  const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "ai",
