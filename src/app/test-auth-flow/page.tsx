@@ -143,7 +143,7 @@ export default function TestAuthFlowPage() {
               <div key={testName} className="border rounded p-4">
                 <h3 className="font-medium capitalize mb-2">{testName.replace(/([A-Z])/g, ' $1')}</h3>
                 <div className="space-y-1 text-sm">
-                  {typeof result === 'object' ? (
+                  {typeof result === 'object' && result !== null ? (
                     Object.entries(result).map(([key, value]) => (
                       <div key={key} className="flex justify-between">
                         <span className="text-gray-600">{key}:</span>
