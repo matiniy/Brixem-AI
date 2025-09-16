@@ -300,7 +300,8 @@ export async function signUp(email: string, password: string, userData: Partial<
       email,
       password,
       options: {
-        data: userData
+        data: userData,
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || 'http://localhost:3000'}/auth/confirm`
       }
     });
 

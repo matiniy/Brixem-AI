@@ -26,6 +26,7 @@
      - `https://www.brixem.com/auth/callback`
      - `https://www.brixem.com/auth/confirm`
      - `https://www.brixem.com/dashboard/homeowner`
+     - `https://www.brixem.com/onboarding/homeowner`
 
 ### 4. **Configure User Management**
 1. Go to **Authentication** → **Users**

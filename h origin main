@@ -1,0 +1,10 @@
+[33mcbf91b6[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Cleanup: Remove temporary files and unused documentation
+[33me494292[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Fix SQL schema: Remove sample data that violates foreign key constraints
+[33m0cd0a63[m Security: Clean up all secrets and use environment variables only
+[33mb6fe080[m Fix TypeScript errors in test-supabase-direct page
+[33mbc36ca2[m Add direct Supabase connection test page
+[33m8e7ef16[m Fix TypeScript errors in test-supabase page
+[33mec75a9a[m Add Supabase connection test page
+[33mb1c6fbd[m Fix TypeScript error in DebugAuth component - properly handle unknown error type
+[33m063c13a[m Fix Supabase client initialization and add debug page
+[33mf887304[m Fix TypeScript error in test-auth page

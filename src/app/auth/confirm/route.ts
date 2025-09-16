@@ -33,22 +33,42 @@ export async function GET(request: NextRequest) {
       if (data.user) {
         console.log('Email confirmed successfully for user:', data.user.email);
         
-        // Check if user has any projects
-        const { data: projectsData, error: projectsError } = await supabase
-          .from('projects')
-          .select('id')
-          .eq('user_id', data.user.id)
-          .limit(1);
+        // Check if user has completed onboarding by looking at their profile
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
 
-        if (projectsError) {
-          console.error('Projects fetch error:', projectsError);
+        if (profileError && profileError.code !== 'PGRST116') {
+          console.error('Profile fetch error:', profileError);
         }
 
-        // If user has projects, go to regular dashboard, otherwise go to empty dashboard
-        if (projectsData && projectsData.length > 0) {
-          return NextResponse.redirect(new URL('/dashboard/homeowner', request.url));
+        // Check if user has completed onboarding (has role and basic info)
+        const hasCompletedOnboarding = profileData && profileData.role && profileData.first_name;
+        
+        if (hasCompletedOnboarding) {
+          // User has completed onboarding, check if they have projects
+          const { data: projectsData, error: projectsError } = await supabase
+            .from('projects')
+            .select('id')
+            .eq('user_id', data.user.id)
+            .limit(1);
+
+          if (projectsError) {
+            console.error('Projects fetch error:', projectsError);
+          }
+
+          // If user has projects, go to regular dashboard, otherwise go to empty dashboard
+          if (projectsData && projectsData.length > 0) {
+            return NextResponse.redirect(new URL('/dashboard/homeowner', request.url));
+          } else {
+            return NextResponse.redirect(new URL('/dashboard/homeowner/empty', request.url));
+          }
         } else {
-          return NextResponse.redirect(new URL('/dashboard/homeowner/empty', request.url));
+          // User hasn't completed onboarding, go to onboarding flow
+          console.log('User needs to complete onboarding, redirecting to onboarding');
+          return NextResponse.redirect(new URL('/onboarding/homeowner', request.url));
         }
       }
     } catch (error) {
@@ -57,7 +77,7 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Fallback redirect to homeowner dashboard
-  console.log('No valid token_hash or type, redirecting to dashboard');
-  return NextResponse.redirect(new URL('/dashboard/homeowner', request.url));
+  // Fallback redirect to onboarding (new users should complete onboarding first)
+  console.log('No valid token_hash or type, redirecting to onboarding');
+  return NextResponse.redirect(new URL('/onboarding/homeowner', request.url));
 } 
