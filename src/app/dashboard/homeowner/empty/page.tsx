@@ -11,11 +11,37 @@ export default function EmptyDashboard() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "ai",
-      text: "Welcome to Brixem! 🎉 I'm your AI construction assistant. I can help you create your first project, manage tasks, and guide you through your construction journey. What would you like to work on today?"
+      text: "Welcome to Brixem! 🎉 I'm your AI construction assistant. Let's get to know you and your project goals better. I'll ask you 5 quick questions to personalize your experience.\n\n**Question 1 of 5:** What type of renovation or construction project are you planning?\n\n*Examples: Kitchen renovation, Bathroom remodel, Living room update, Home office, Basement finishing, etc.*"
     }
   ]);
   const [currentInput, setCurrentInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [currentQuestion, setCurrentQuestion] = useState(1);
+  const [userAnswers, setUserAnswers] = useState<string[]>([]);
+  const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
+
+  const onboardingQuestions = [
+    {
+      question: "What type of renovation or construction project are you planning?",
+      examples: "Kitchen renovation, Bathroom remodel, Living room update, Home office, Basement finishing, etc."
+    },
+    {
+      question: "Where is your project located? (City, State)",
+      examples: "New York, NY or Los Angeles, CA"
+    },
+    {
+      question: "What's your budget range for this project?",
+      examples: "$10,000 - $25,000 or $50,000+"
+    },
+    {
+      question: "What's your ideal timeline for completion?",
+      examples: "2-3 months, 6-8 weeks, ASAP"
+    },
+    {
+      question: "Can you describe your project in detail? What are you looking to achieve?",
+      examples: "Complete kitchen renovation with new cabinets, countertops, and modern appliances"
+    }
+  ];
 
   const handleSend = async (message: string) => {
     if (!message.trim() || isLoading) return;
@@ -27,10 +53,43 @@ export default function EmptyDashboard() {
     setIsLoading(true);
 
     try {
-      // Send message to Groq API
-      const response = await sendChatMessage([{ role: "user", text: message }]);
-      const aiResponse: Message = { role: "ai", text: response.message };
-      setMessages(prev => [...prev, aiResponse]);
+      // If we're still in onboarding mode
+      if (currentQuestion <= onboardingQuestions.length) {
+        // Store the user's answer
+        const updatedAnswers = [...userAnswers, message];
+        setUserAnswers(updatedAnswers);
+
+        // Check if this was the last question
+        if (currentQuestion === onboardingQuestions.length) {
+          // Onboarding complete - generate summary and redirect
+          const summary = generateProjectSummary(updatedAnswers);
+          const completionMessage: Message = {
+            role: "ai",
+            text: `Perfect! Thank you for answering all the questions. Here's a summary of your project:\n\n${summary}\n\n🎉 **Onboarding Complete!** Redirecting you to your dashboard in 3 seconds...`
+          };
+          setMessages(prev => [...prev, completionMessage]);
+          setIsOnboardingComplete(true);
+          
+          // Redirect to main dashboard after 3 seconds
+          setTimeout(() => {
+            window.location.href = '/dashboard/homeowner';
+          }, 3000);
+        } else {
+          // Ask next question
+          const nextQuestion = onboardingQuestions[currentQuestion];
+          const nextQuestionMessage: Message = {
+            role: "ai",
+            text: `Great! Thanks for that information.\n\n**Question ${currentQuestion + 1} of 5:** ${nextQuestion.question}\n\n*Examples: ${nextQuestion.examples}*`
+          };
+          setMessages(prev => [...prev, nextQuestionMessage]);
+          setCurrentQuestion(currentQuestion + 1);
+        }
+      } else {
+        // Regular chat mode (after onboarding)
+        const response = await sendChatMessage([{ role: "user", text: message }]);
+        const aiResponse: Message = { role: "ai", text: response.message };
+        setMessages(prev => [...prev, aiResponse]);
+      }
     } catch (error) {
       console.error("Error processing message:", error);
       const errorMessage: Message = {
@@ -41,6 +100,16 @@ export default function EmptyDashboard() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const generateProjectSummary = (answers: string[]) => {
+    return `**Project Type:** ${answers[0] || 'Not specified'}
+**Location:** ${answers[1] || 'Not specified'}
+**Budget:** ${answers[2] || 'Not specified'}
+**Timeline:** ${answers[3] || 'Not specified'}
+**Description:** ${answers[4] || 'Not specified'}
+
+Based on your answers, I can help you create a detailed project plan, find contractors, and manage your construction journey.`;
   };
 
 
@@ -81,9 +150,22 @@ export default function EmptyDashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
               </div>
-              <div>
+              <div className="flex-1">
                 <h2 className="text-xl font-semibold text-gray-900">AI Construction Assistant</h2>
-                <p className="text-sm text-gray-500">Ready to help you create your first project</p>
+                <p className="text-sm text-gray-500">
+                  {isOnboardingComplete 
+                    ? "Ready to help you create your first project" 
+                    : `Getting to know you (${currentQuestion}/5 questions)`
+                  }
+                </p>
+                {!isOnboardingComplete && (
+                  <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${(currentQuestion / onboardingQuestions.length) * 100}%` }}
+                    ></div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -126,7 +208,11 @@ export default function EmptyDashboard() {
                 value={currentInput}
                 onChange={(e) => setCurrentInput(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask me anything about your construction project..."
+                placeholder={
+                  isOnboardingComplete 
+                    ? "Ask me anything about your construction project..." 
+                    : `Answer: ${onboardingQuestions[currentQuestion - 1]?.question || "..."}`
+                }
                 className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 disabled={isLoading}
               />
