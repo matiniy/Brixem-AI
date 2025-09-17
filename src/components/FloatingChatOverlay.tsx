@@ -106,18 +106,18 @@ export default function FloatingChatOverlay({
     setPendingTask(null);
   };
 
-  // Collapsed state - floating chat bubble
+  // Collapsed state - centered compact chat
   if (!isExpanded) {
     return (
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
         <div 
-          className="bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] rounded-full shadow-2xl cursor-pointer transition-all duration-300 hover:shadow-3xl hover:scale-105 active:scale-95 min-w-[280px] max-w-[400px] touch-manipulation"
+          className="bg-white rounded-2xl shadow-2xl border border-gray-200 cursor-pointer transition-all duration-300 hover:shadow-3xl hover:scale-105 active:scale-95 w-80 touch-manipulation"
           onClick={handleChatClick}
         >
-          <div className="flex items-center gap-3 px-6 py-4">
+          <div className="flex items-center gap-3 px-4 py-3">
             {/* AI Icon */}
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-lg">AI</span>
+            <div className="w-8 h-8 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-sm">AI</span>
             </div>
             
             {/* Input Field */}
@@ -130,7 +130,7 @@ export default function FloatingChatOverlay({
                 onKeyPress={handleKeyPress}
                 onFocus={handleChatClick}
                 placeholder={placeholder}
-                className="w-full bg-transparent text-gray-900 placeholder-white/80 text-sm focus:outline-none cursor-pointer"
+                className="w-full bg-transparent text-gray-900 placeholder-gray-500 text-sm focus:outline-none cursor-pointer"
               />
             </div>
 
@@ -139,9 +139,9 @@ export default function FloatingChatOverlay({
               type="button"
               onClick={handleSubmit}
               disabled={!inputValue.trim()}
-              className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
+              className="w-7 h-7 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] rounded-full flex items-center justify-center hover:opacity-90 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation"
             >
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
               </svg>
             </button>
@@ -151,44 +151,44 @@ export default function FloatingChatOverlay({
     );
   }
 
-  // Expanded state - full chat overlay
+  // Expanded state - centered compact chat
   return (
-    <div className="fixed inset-0 z-50 bg-black/20">
-      <div className="absolute bottom-6 right-6 w-96 h-[600px] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden animate-in slide-in-from-bottom-2 duration-300">
+    <div className="fixed inset-0 z-50 bg-black/20 flex items-center justify-center p-4">
+      <div className="w-full max-w-md h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden animate-in zoom-in-95 duration-300">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">AI</span>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-xs">AI</span>
             </div>
             <div>
-              <h3 className="font-semibold text-lg">Brixem Assistant</h3>
+              <h3 className="font-semibold text-sm">Brixem Assistant</h3>
               <p className="text-xs text-white/80">Ask me about your project</p>
             </div>
           </div>
           <button
             onClick={() => onToggleExpanded?.(false)}
-            className="text-white/80 hover:text-white transition-colors duration-200 p-2 rounded-lg hover:bg-white/20 active:scale-95 touch-manipulation"
+            className="text-white/80 hover:text-white transition-colors duration-200 p-1 rounded-lg hover:bg-white/20 active:scale-95 touch-manipulation"
             title="Minimize chat"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 h-[400px]">
+        <div className="flex-1 overflow-y-auto px-4 py-3 h-[320px]">
           <div className="space-y-4">
             {localMessages.length === 0 ? (
-              <div className="text-center text-gray-500 py-8">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="text-center text-gray-500 py-6">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-100 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                 </div>
-                <h4 className="text-lg font-medium text-gray-700 mb-2">Welcome to Brixem Assistant</h4>
-                <p className="text-sm text-gray-500 max-w-xs mx-auto leading-relaxed">
+                <h4 className="text-base font-medium text-gray-700 mb-2">Welcome to Brixem Assistant</h4>
+                <p className="text-xs text-gray-500 max-w-xs mx-auto leading-relaxed">
                   I can help you manage tasks, track progress, and answer questions about your project. 
                   Try asking me to create a task or show your progress!
                 </p>
@@ -236,8 +236,8 @@ export default function FloatingChatOverlay({
         </div>
 
         {/* Input */}
-        <div className="p-6 border-t border-gray-200 bg-gray-50">
-          <form onSubmit={handleSubmit} className="flex gap-3">
+        <div className="p-4 border-t border-gray-200 bg-gray-50">
+          <form onSubmit={handleSubmit} className="flex gap-2">
             <div className="flex-1 relative">
               <input
                 ref={inputRef}
@@ -246,13 +246,13 @@ export default function FloatingChatOverlay({
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder={placeholder}
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30 focus:border-[#23c6e6] text-sm text-gray-900"
+                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30 focus:border-[#23c6e6] text-sm text-gray-900"
               />
             </div>
             <button
               type="submit"
               disabled={!inputValue.trim()}
-              className="px-6 py-3 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold rounded-lg hover:opacity-90 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation text-sm"
+              className="px-4 py-2 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold rounded-lg hover:opacity-90 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation text-sm"
             >
               Send
             </button>
