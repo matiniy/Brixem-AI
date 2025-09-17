@@ -106,10 +106,10 @@ export default function FloatingChatOverlay({
     setPendingTask(null);
   };
 
-  // Collapsed state - centered compact chat
+  // Collapsed state - centered at bottom
   if (!isExpanded) {
     return (
-      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
         <div 
           className="bg-white rounded-2xl shadow-2xl border border-gray-200 cursor-pointer transition-all duration-300 hover:shadow-3xl hover:scale-105 active:scale-95 w-80 touch-manipulation"
           onClick={handleChatClick}
@@ -151,9 +151,9 @@ export default function FloatingChatOverlay({
     );
   }
 
-  // Expanded state - centered compact chat
+  // Expanded state - centered at bottom
   return (
-    <div className="fixed inset-0 z-50 bg-black/20 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-black/20 flex items-end justify-center p-4 pb-6">
       <div className="w-full max-w-md h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white">

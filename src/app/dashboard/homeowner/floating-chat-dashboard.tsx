@@ -213,7 +213,15 @@ export default function FloatingChatDashboard() {
           description: 'Set up site office and welfare facilities',
           status: 'completed' as const,
           estimatedDuration: '2 days',
-          assignedTo: 'Site Manager'
+          assignedTo: 'Site Manager',
+          notes: 'Site office setup completed successfully. All facilities are operational.',
+          materials: ['Portable office unit', 'Desks and chairs', 'Computer equipment', 'Safety signage'],
+          requirements: ['Site access permit', 'Utility connections', 'Safety equipment'],
+          deliverables: ['Fully functional site office', 'Welfare facilities', 'Safety documentation'],
+          documents: [
+            { id: '1', name: 'Site Office Setup Guide', type: 'PDF', url: '/docs/site-office-setup.pdf' },
+            { id: '2', name: 'Safety Checklist', type: 'PDF', url: '/docs/safety-checklist.pdf' }
+          ]
         },
         {
           id: '3.2',
@@ -221,7 +229,11 @@ export default function FloatingChatDashboard() {
           description: 'Install site hoarding and security measures',
           status: 'in-progress' as const,
           estimatedDuration: '1 day',
-          assignedTo: 'Construction Team'
+          assignedTo: 'Construction Team',
+          notes: 'Hoarding installation in progress. Security cameras to be installed tomorrow.',
+          materials: ['Hoarding panels', 'Steel posts', 'Security cameras', 'Warning signs'],
+          requirements: ['Planning permission', 'Safety equipment', 'Installation team'],
+          deliverables: ['Secured site perimeter', 'Security system', 'Safety signage']
         },
         {
           id: '3.3',
