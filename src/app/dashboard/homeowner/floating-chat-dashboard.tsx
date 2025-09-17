@@ -535,6 +535,7 @@ export default function FloatingChatDashboard() {
 
   // Handle sub-task status updates
   const handleSubTaskUpdate = (stepId: string, subTaskId: string, status: 'completed' | 'in-progress' | 'pending') => {
+    console.log('Updating sub-task:', subTaskId, 'in step:', stepId, 'to status:', status);
     setProjectSteps(prevSteps => 
       prevSteps.map(step => 
         step.id === stepId 
@@ -571,6 +572,7 @@ export default function FloatingChatDashboard() {
 
   // Handle step completion
   const handleStepComplete = (stepId: string) => {
+    console.log('Completing step:', stepId);
     setProjectSteps(prevSteps => 
       prevSteps.map(step => 
         step.id === stepId 
@@ -582,6 +584,7 @@ export default function FloatingChatDashboard() {
 
   // Handle step advancement
   const handleStepAdvance = (currentStepId: string, nextStepId: string) => {
+    console.log('Advancing from step:', currentStepId, 'to step:', nextStepId);
     setProjectSteps(prevSteps => 
       prevSteps.map(step => 
         step.id === nextStepId 
@@ -594,6 +597,8 @@ export default function FloatingChatDashboard() {
     const completedSteps = projectSteps.filter(step => step.status === 'completed').length + 1; // +1 for the step we just completed
     const totalSteps = projectSteps.length;
     const newProgress = Math.round((completedSteps / totalSteps) * 100);
+
+    console.log('Updating progress:', completedSteps, 'of', totalSteps, '=', newProgress + '%');
 
     // Update the project in the projects array
     setProjects(prevProjects => 

@@ -219,10 +219,18 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
   // Handle auto-advancement when all sub-tasks are completed
   const handleAutoAdvancement = (stepId: string) => {
     const step = steps.find(s => s.id === stepId);
-    if (!step) return;
+    if (!step) {
+      console.log('Step not found:', stepId);
+      return;
+    }
+
+    console.log('Checking auto-advancement for step:', step.title, 'Status:', step.status);
+    console.log('Sub-tasks:', step.subTasks?.map(st => ({ title: st.title, status: st.status })));
 
     // Check if all sub-tasks are completed
     if (areAllSubTasksCompleted(step)) {
+      console.log('All sub-tasks completed! Auto-advancing...');
+      
       // Mark current step as completed
       onStepComplete?.(stepId);
       
@@ -231,9 +239,14 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
       const nextStep = steps[currentIndex + 1];
       
       if (nextStep) {
+        console.log('Advancing to next step:', nextStep.title);
         // Advance to next step
         onStepAdvance?.(stepId, nextStep.id);
+      } else {
+        console.log('No next step found - this is the last step');
       }
+    } else {
+      console.log('Not all sub-tasks completed yet');
     }
   };
 
