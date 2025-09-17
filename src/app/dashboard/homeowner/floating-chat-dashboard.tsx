@@ -603,9 +603,33 @@ export default function FloatingChatDashboard() {
         step.id === stepId 
           ? {
               ...step,
-              subTasks: step.subTasks?.map(subTask =>
+              subTasks: step.subTasks?.map(subTask => 
                 subTask.id === subTaskId 
                   ? { ...subTask, notes }
+                  : subTask
+              )
+            }
+          : step
+      )
+    );
+  };
+
+  const handleDeliverableUpdate = (stepId: string, subTaskId: string, deliverableId: string, status: 'completed' | 'pending') => {
+    setProjectSteps(prevSteps => 
+      prevSteps.map(step => 
+        step.id === stepId 
+          ? {
+              ...step,
+              subTasks: step.subTasks?.map(subTask => 
+                subTask.id === subTaskId 
+                  ? {
+                      ...subTask,
+                      deliverables: subTask.deliverables?.map(deliverable => 
+                        deliverable.id === deliverableId 
+                          ? { ...deliverable, status }
+                          : deliverable
+                      )
+                    }
                   : subTask
               )
             }
@@ -1198,6 +1222,7 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
                 }}
                 onSubTaskUpdate={handleSubTaskUpdate}
                 onSubTaskNotesUpdate={handleSubTaskNotesUpdate}
+                onDeliverableUpdate={handleDeliverableUpdate}
                 onStepComplete={handleStepComplete}
                 onStepAdvance={handleStepAdvance}
               />

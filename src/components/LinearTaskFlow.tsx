@@ -48,6 +48,7 @@ interface LinearTaskFlowProps {
   onStepClick?: (stepId: string) => void;
   onSubTaskUpdate?: (stepId: string, subTaskId: string, status: 'completed' | 'in-progress' | 'pending') => void;
   onSubTaskNotesUpdate?: (stepId: string, subTaskId: string, notes: string) => void;
+  onDeliverableUpdate?: (stepId: string, subTaskId: string, deliverableId: string, status: 'completed' | 'pending') => void;
   onStepLock?: (stepId: string, locked: boolean) => void;
   onStepComplete?: (stepId: string) => void;
   onStepAdvance?: (currentStepId: string, nextStepId: string) => void;
@@ -59,6 +60,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
   onStepClick,
   onSubTaskUpdate,
   onSubTaskNotesUpdate,
+  onDeliverableUpdate,
   onStepLock,
   onStepComplete,
   onStepAdvance
@@ -502,15 +504,23 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                     <div className="space-y-2">
                                       {subTask.deliverables.map((deliverable) => (
                                         <div key={deliverable.id} className="flex items-center space-x-3">
-                                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                                            deliverable.status === 'completed' 
-                                              ? 'bg-green-500 border-green-500' 
-                                              : 'bg-white border-gray-300'
-                                          }`}>
+                                          <button
+                                            onClick={() => {
+                                              // Toggle deliverable status
+                                              const newStatus = deliverable.status === 'completed' ? 'pending' : 'completed';
+                                              // Call the deliverable update handler
+                                              onDeliverableUpdate?.(step.id, subTask.id, deliverable.id, newStatus);
+                                            }}
+                                            className={`w-4 h-4 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors hover:scale-110 ${
+                                              deliverable.status === 'completed' 
+                                                ? 'bg-green-500 border-green-500 hover:bg-green-600' 
+                                                : 'bg-white border-gray-300 hover:border-gray-400'
+                                            }`}
+                                          >
                                             {deliverable.status === 'completed' && (
                                               <div className="w-2 h-2 bg-white rounded-full"></div>
                                             )}
-                                          </div>
+                                          </button>
                                           <span className="text-sm text-gray-700 flex-1">{deliverable.title}</span>
                                           <span className={`text-xs italic ${
                                             deliverable.status === 'completed' ? 'text-green-600' : 'text-gray-500'
@@ -727,15 +737,23 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                     <div className="space-y-2">
                                       {subTask.deliverables.map((deliverable) => (
                                         <div key={deliverable.id} className="flex items-center space-x-3">
-                                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                                            deliverable.status === 'completed' 
-                                              ? 'bg-green-500 border-green-500' 
-                                              : 'bg-white border-gray-300'
-                                          }`}>
+                                          <button
+                                            onClick={() => {
+                                              // Toggle deliverable status
+                                              const newStatus = deliverable.status === 'completed' ? 'pending' : 'completed';
+                                              // Call the deliverable update handler
+                                              onDeliverableUpdate?.(step.id, subTask.id, deliverable.id, newStatus);
+                                            }}
+                                            className={`w-4 h-4 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors hover:scale-110 ${
+                                              deliverable.status === 'completed' 
+                                                ? 'bg-green-500 border-green-500 hover:bg-green-600' 
+                                                : 'bg-white border-gray-300 hover:border-gray-400'
+                                            }`}
+                                          >
                                             {deliverable.status === 'completed' && (
                                               <div className="w-2 h-2 bg-white rounded-full"></div>
                                             )}
-                                          </div>
+                                          </button>
                                           <span className="text-sm text-gray-700 flex-1">{deliverable.title}</span>
                                           <span className={`text-xs italic ${
                                             deliverable.status === 'completed' ? 'text-green-600' : 'text-gray-500'
