@@ -1167,7 +1167,7 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
                       <p className="text-2xl font-bold text-gray-900">{taskCounts.completedTasks}</p>
                     </div>
                   </div>
-                </div>
+            </div>
 
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
                   <div className="flex items-center">
@@ -1182,7 +1182,7 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
                     </div>
                   </div>
                 </div>
-              </div>
+            </div>
             </div>
 
 
