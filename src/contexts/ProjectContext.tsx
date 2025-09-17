@@ -34,19 +34,34 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
 
   // Load projects on mount
   useEffect(() => {
-    loadProjects();
-  }, []);
-
-  const loadProjects = async () => {
-    try {
-      const projectsData = await getProjects();
-      if (projectsData && projectsData.length > 0) {
-        setProjects(projectsData);
-        if (!activeProject) {
-          setActiveProject(projectsData[0].id);
+    const loadProjects = async () => {
+      try {
+        const projectsData = await getProjects();
+        if (projectsData && projectsData.length > 0) {
+          setProjects(projectsData);
+          if (!activeProject) {
+            setActiveProject(projectsData[0].id);
+          }
+        } else {
+          // Fallback to sample project if no projects exist
+          const sampleProject: Project = {
+            id: 'demo-project-1',
+            name: 'Kitchen Renovation',
+            location: 'San Francisco, CA',
+            description: 'Complete kitchen renovation with modern appliances',
+            size_sqft: 150,
+            type: 'renovation',
+            status: 'in-progress',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            progress: 35
+          };
+          setProjects([sampleProject]);
+          setActiveProject(sampleProject.id);
         }
-      } else {
-        // Fallback to sample project if no projects exist
+      } catch (error) {
+        console.error('Error loading projects:', error);
+        // Fallback to sample project on error
         const sampleProject: Project = {
           id: 'demo-project-1',
           name: 'Kitchen Renovation',
@@ -62,25 +77,10 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
         setProjects([sampleProject]);
         setActiveProject(sampleProject.id);
       }
-    } catch (error) {
-      console.error('Error loading projects:', error);
-      // Fallback to sample project on error
-      const sampleProject: Project = {
-        id: 'demo-project-1',
-        name: 'Kitchen Renovation',
-        location: 'San Francisco, CA',
-        description: 'Complete kitchen renovation with modern appliances',
-        size_sqft: 150,
-        type: 'renovation',
-        status: 'in-progress',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        progress: 35
-      };
-      setProjects([sampleProject]);
-      setActiveProject(sampleProject.id);
-    }
-  };
+    };
+
+    loadProjects();
+  }, [activeProject]);
 
   const addProject = async (projectData: Omit<Project, 'id' | 'created_at' | 'updated_at' | 'progress'>) => {
     try {

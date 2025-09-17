@@ -20,7 +20,7 @@ export default function PaymentPage() {
     setActiveProject(projectId);
   };
 
-  const handleProjectCreate = async (project: any) => {
+  const handleProjectCreate = async (project: { name: string; type: string; status: string; description: string; location: string; size_sqft?: number }) => {
     try {
       await addProject({
         name: project.name,

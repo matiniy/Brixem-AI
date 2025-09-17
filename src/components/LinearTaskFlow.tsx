@@ -66,6 +66,46 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
   const [notesValue, setNotesValue] = useState<string>('');
   const [lockedSteps, setLockedSteps] = useState<Set<string>>(new Set());
 
+  // Check if all sub-tasks in a step are completed
+  const areAllSubTasksCompleted = (step: TaskStep) => {
+    if (!step.subTasks || step.subTasks.length === 0) return false;
+    return step.subTasks.every(subTask => subTask.status === 'completed');
+  };
+
+  // Handle auto-advancement when all sub-tasks are completed
+  const handleAutoAdvancement = (stepId: string) => {
+    const step = steps.find(s => s.id === stepId);
+    if (!step) {
+      console.log('Step not found:', stepId);
+      return;
+    }
+
+    console.log('Checking auto-advancement for step:', step.title, 'Status:', step.status);
+    console.log('Sub-tasks:', step.subTasks?.map(st => ({ title: st.title, status: st.status })));
+
+    // Check if all sub-tasks are completed
+    if (areAllSubTasksCompleted(step)) {
+      console.log('All sub-tasks completed! Auto-advancing...');
+      
+      // Mark current step as completed
+      onStepComplete?.(stepId);
+      
+      // Find next step
+      const currentIndex = steps.findIndex(s => s.id === stepId);
+      const nextStep = steps[currentIndex + 1];
+      
+      if (nextStep) {
+        console.log('Advancing to next step:', nextStep.title);
+        // Advance to next step
+        onStepAdvance?.(stepId, nextStep.id);
+      } else {
+        console.log('No next step found - this is the last step');
+      }
+    } else {
+      console.log('Not all sub-tasks completed yet');
+    }
+  };
+
   // Check for auto-advancement on mount and when steps change
   useEffect(() => {
     console.log('Checking for auto-advancement on mount/update');
@@ -75,7 +115,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
         handleAutoAdvancement(step.id);
       }
     });
-  }, [steps]);
+  }, [steps, handleAutoAdvancement]);
 
   // Update expanded step when currentStep changes
   useEffect(() => {
@@ -238,45 +278,6 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
     return !lockedSteps.has(stepId);
   };
 
-  // Check if all sub-tasks in a step are completed
-  const areAllSubTasksCompleted = (step: TaskStep) => {
-    if (!step.subTasks || step.subTasks.length === 0) return false;
-    return step.subTasks.every(subTask => subTask.status === 'completed');
-  };
-
-  // Handle auto-advancement when all sub-tasks are completed
-  const handleAutoAdvancement = (stepId: string) => {
-    const step = steps.find(s => s.id === stepId);
-    if (!step) {
-      console.log('Step not found:', stepId);
-      return;
-    }
-
-    console.log('Checking auto-advancement for step:', step.title, 'Status:', step.status);
-    console.log('Sub-tasks:', step.subTasks?.map(st => ({ title: st.title, status: st.status })));
-
-    // Check if all sub-tasks are completed
-    if (areAllSubTasksCompleted(step)) {
-      console.log('All sub-tasks completed! Auto-advancing...');
-      
-      // Mark current step as completed
-      onStepComplete?.(stepId);
-      
-      // Find next step
-      const currentIndex = steps.findIndex(s => s.id === stepId);
-      const nextStep = steps[currentIndex + 1];
-      
-      if (nextStep) {
-        console.log('Advancing to next step:', nextStep.title);
-        // Advance to next step
-        onStepAdvance?.(stepId, nextStep.id);
-      } else {
-        console.log('No next step found - this is the last step');
-      }
-    } else {
-      console.log('Not all sub-tasks completed yet');
-    }
-  };
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
