@@ -45,22 +45,22 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
   const getStepIcon = (step: TaskStep) => {
     if (step.status === 'completed') {
       return (
-        <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-          <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+        <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
           </svg>
         </div>
       );
     } else if (step.status === 'in-progress') {
       return (
-        <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-          <div className="w-4 h-4 bg-white rounded-full"></div>
+        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+          <div className="w-3 h-3 bg-white rounded-full"></div>
         </div>
       );
     } else {
       return (
-        <div className="w-10 h-10 border-2 border-gray-300 rounded-full flex items-center justify-center">
-          <span className="text-gray-400 text-sm font-medium">{step.stepNumber}</span>
+        <div className="w-8 h-8 border-2 border-gray-300 rounded-full flex items-center justify-center">
+          <span className="text-gray-400 text-xs font-medium">{step.stepNumber}</span>
         </div>
       );
     }
@@ -88,8 +88,8 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+      <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900">Project Progress</h3>
         <div className="text-sm text-gray-500">
           {steps.filter(s => s.status === 'completed').length} of {steps.length} steps completed
@@ -97,16 +97,16 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
       </div>
 
       {/* Horizontal Progress Bar */}
-      <div className="relative mb-8">
-        <div className="flex items-center justify-between">
+      <div className="relative mb-6">
+        <div className="flex items-start justify-between">
           {steps.map((step, index) => {
             const isLast = index === steps.length - 1;
             const isExpanded = expandedStep === step.id;
             
             return (
-              <div key={step.id} className="flex items-center flex-1">
+              <div key={step.id} className="flex items-start flex-1">
                 {/* Step Circle and Content */}
-                <div className="flex flex-col items-center flex-1">
+                <div className="flex flex-col items-center flex-1 relative">
                   <div 
                     className={`cursor-pointer transition-all duration-200 ${isExpanded ? 'scale-110' : 'hover:scale-105'}`}
                     onClick={() => handleStepClick(step.id)}
@@ -115,8 +115,8 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                   </div>
                   
                   {/* Step Title */}
-                  <div className="mt-3 text-center">
-                    <h4 className={`text-sm font-medium ${getStepColor(step)}`}>
+                  <div className="mt-2 text-center max-w-24">
+                    <h4 className={`text-xs font-medium leading-tight ${getStepColor(step)}`}>
                       {step.title}
                     </h4>
                     <p className="text-xs text-gray-500 mt-1">
@@ -127,7 +127,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
 
                 {/* Connector Line */}
                 {!isLast && (
-                  <div className="flex-1 h-0.5 mx-4">
+                  <div className="flex-1 h-0.5 mx-2 mt-4">
                     <div className={`w-full h-full ${getConnectorColor(step)}`}></div>
                   </div>
                 )}
@@ -139,13 +139,13 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
 
       {/* Expanded Step Details */}
       {expandedStep && (
-        <div className="border-t border-gray-200 pt-6">
+        <div className="border-t border-gray-200 pt-4">
           {(() => {
             const step = steps.find(s => s.id === expandedStep);
             if (!step) return null;
 
             return (
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {/* Step Header */}
                 <div className="flex items-start justify-between">
                   <div>
@@ -187,7 +187,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                                 subTask.status === 'pending' ? 'in-progress' : 'completed';
                                 handleSubTaskUpdate(step.id, subTask.id, newStatus);
                               }}
-                              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
                                 subTask.status === 'completed' 
                                   ? 'bg-green-500 border-green-500' 
                                   : subTask.status === 'in-progress'
@@ -196,12 +196,12 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                               }`}
                             >
                               {subTask.status === 'completed' && (
-                                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                 </svg>
                               )}
                               {subTask.status === 'in-progress' && (
-                                <div className="w-2 h-2 bg-white rounded-full"></div>
+                                <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
                               )}
                             </button>
                             <div>
@@ -287,23 +287,6 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
         </div>
       )}
 
-      {/* Progress Summary */}
-      <div className="mt-6 pt-4 border-t border-gray-200">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-600">Overall Progress</span>
-          <span className="font-medium text-gray-900">
-            {Math.round((steps.filter(s => s.status === 'completed').length / steps.length) * 100)}%
-          </span>
-        </div>
-        <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-          <div 
-            className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-            style={{ 
-              width: `${(steps.filter(s => s.status === 'completed').length / steps.length) * 100}%` 
-            }}
-          ></div>
-        </div>
-      </div>
     </div>
   );
 };
