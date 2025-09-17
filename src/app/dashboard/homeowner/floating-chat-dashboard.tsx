@@ -569,6 +569,42 @@ export default function FloatingChatDashboard() {
     );
   };
 
+  // Handle step completion
+  const handleStepComplete = (stepId: string) => {
+    setProjectSteps(prevSteps => 
+      prevSteps.map(step => 
+        step.id === stepId 
+          ? { ...step, status: 'completed' as const }
+          : step
+      )
+    );
+  };
+
+  // Handle step advancement
+  const handleStepAdvance = (currentStepId: string, nextStepId: string) => {
+    setProjectSteps(prevSteps => 
+      prevSteps.map(step => 
+        step.id === nextStepId 
+          ? { ...step, status: 'in-progress' as const }
+          : step
+      )
+    );
+
+    // Update project progress
+    const completedSteps = projectSteps.filter(step => step.status === 'completed').length + 1; // +1 for the step we just completed
+    const totalSteps = projectSteps.length;
+    const newProgress = Math.round((completedSteps / totalSteps) * 100);
+
+    // Update the project in the projects array
+    setProjects(prevProjects => 
+      prevProjects.map(project => 
+        project.id === activeProject 
+          ? { ...project, progress: newProgress }
+          : project
+      )
+    );
+  };
+
   // Handle project name editing
   const handleProjectNameEdit = () => {
     const currentProject = projects.find(p => p.id === activeProject);
@@ -1106,13 +1142,15 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
             <div className="mb-8">
               <LinearTaskFlow 
                 steps={projectSteps}
-                currentStep="3"
+                currentStep={projectSteps.find(step => step.status === 'in-progress')?.id}
                 onStepClick={(stepId) => {
                   console.log('Step clicked:', stepId);
                   // TODO: Handle step click - could show details, update status, etc.
                 }}
                 onSubTaskUpdate={handleSubTaskUpdate}
                 onSubTaskNotesUpdate={handleSubTaskNotesUpdate}
+                onStepComplete={handleStepComplete}
+                onStepAdvance={handleStepAdvance}
               />
             </div>
 

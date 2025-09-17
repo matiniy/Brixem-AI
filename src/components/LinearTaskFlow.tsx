@@ -45,6 +45,8 @@ interface LinearTaskFlowProps {
   onSubTaskUpdate?: (stepId: string, subTaskId: string, status: 'completed' | 'in-progress' | 'pending') => void;
   onSubTaskNotesUpdate?: (stepId: string, subTaskId: string, notes: string) => void;
   onStepLock?: (stepId: string, locked: boolean) => void;
+  onStepComplete?: (stepId: string) => void;
+  onStepAdvance?: (currentStepId: string, nextStepId: string) => void;
 }
 
 const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({ 
@@ -52,7 +54,9 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
   onStepClick,
   onSubTaskUpdate,
   onSubTaskNotesUpdate,
-  onStepLock
+  onStepLock,
+  onStepComplete,
+  onStepAdvance
 }) => {
   const [expandedStep, setExpandedStep] = useState<string | null>(null);
   const [collapsedSteps, setCollapsedSteps] = useState<Set<string>>(new Set());
@@ -133,6 +137,11 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
 
   const handleSubTaskUpdate = (stepId: string, subTaskId: string, status: 'completed' | 'in-progress' | 'pending') => {
     onSubTaskUpdate?.(stepId, subTaskId, status);
+    
+    // Check for auto-advancement after a short delay to allow state updates
+    setTimeout(() => {
+      handleAutoAdvancement(stepId);
+    }, 100);
   };
 
   const toggleStepCollapse = (stepId: string) => {
@@ -199,6 +208,33 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
   // Check if sub-task can be toggled (step not locked)
   const canToggleSubTask = (stepId: string) => {
     return !lockedSteps.has(stepId);
+  };
+
+  // Check if all sub-tasks in a step are completed
+  const areAllSubTasksCompleted = (step: TaskStep) => {
+    if (!step.subTasks || step.subTasks.length === 0) return false;
+    return step.subTasks.every(subTask => subTask.status === 'completed');
+  };
+
+  // Handle auto-advancement when all sub-tasks are completed
+  const handleAutoAdvancement = (stepId: string) => {
+    const step = steps.find(s => s.id === stepId);
+    if (!step) return;
+
+    // Check if all sub-tasks are completed
+    if (areAllSubTasksCompleted(step)) {
+      // Mark current step as completed
+      onStepComplete?.(stepId);
+      
+      // Find next step
+      const currentIndex = steps.findIndex(s => s.id === stepId);
+      const nextStep = steps[currentIndex + 1];
+      
+      if (nextStep) {
+        // Advance to next step
+        onStepAdvance?.(stepId, nextStep.id);
+      }
+    }
   };
 
   return (
