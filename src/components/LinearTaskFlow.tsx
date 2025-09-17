@@ -56,6 +56,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
 }) => {
   const [expandedStep, setExpandedStep] = useState<string | null>(null);
   const [collapsedSteps, setCollapsedSteps] = useState<Set<string>>(new Set());
+  const [collapsedSubTasks, setCollapsedSubTasks] = useState<Set<string>>(new Set());
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
   const [notesValue, setNotesValue] = useState<string>('');
   const [lockedSteps, setLockedSteps] = useState<Set<string>>(new Set());
@@ -141,6 +142,18 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
         newSet.delete(stepId);
       } else {
         newSet.add(stepId);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleSubTaskCollapse = (subTaskId: string) => {
+    setCollapsedSubTasks(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(subTaskId)) {
+        newSet.delete(subTaskId);
+      } else {
+        newSet.add(subTaskId);
       }
       return newSet;
     });
@@ -327,62 +340,79 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                     {step.subTasks && step.subTasks.length > 0 && (
                       <div className="space-y-3">
                         <h5 className="text-sm font-semibold text-gray-900">Sub-tasks</h5>
-                        {step.subTasks.map((subTask) => (
-                          <div key={subTask.id}>
-                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                              <div className="flex items-center space-x-3">
-                                <button
-                                  onClick={() => {
-                                    if (canToggleSubTask(step.id)) {
-                                      const newStatus = subTask.status === 'completed' ? 'pending' : 'completed';
-                                      handleSubTaskUpdate(step.id, subTask.id, newStatus);
-                                    }
-                                  }}
-                                  disabled={!canToggleSubTask(step.id)}
-                                  className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
-                                    canToggleSubTask(step.id) ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
-                                  } ${
-                                    subTask.status === 'completed' 
-                                      ? 'bg-green-500' 
-                                      : 'bg-gray-300'
-                                  }`}
-                                >
-                                  <span
-                                    className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform shadow-sm ${
-                                      subTask.status === 'completed' ? 'translate-x-7' : 'translate-x-1'
+                        {step.subTasks.map((subTask) => {
+                          const isSubTaskCollapsed = collapsedSubTasks.has(subTask.id);
+                          return (
+                            <div key={subTask.id}>
+                              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div className="flex items-center space-x-3">
+                                  <button
+                                    onClick={() => {
+                                      if (canToggleSubTask(step.id)) {
+                                        const newStatus = subTask.status === 'completed' ? 'pending' : 'completed';
+                                        handleSubTaskUpdate(step.id, subTask.id, newStatus);
+                                      }
+                                    }}
+                                    disabled={!canToggleSubTask(step.id)}
+                                    className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+                                      canToggleSubTask(step.id) ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
+                                    } ${
+                                      subTask.status === 'completed' 
+                                        ? 'bg-green-500' 
+                                        : 'bg-gray-300'
                                     }`}
                                   >
-                                    {subTask.status === 'completed' && (
-                                      <svg className="h-4 w-4 text-green-500 m-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                      </svg>
-                                    )}
-                                    {subTask.status === 'pending' && (
-                                      <svg className="h-4 w-4 text-gray-400 m-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                                      </svg>
-                                    )}
+                                    <span
+                                      className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform shadow-sm ${
+                                        subTask.status === 'completed' ? 'translate-x-7' : 'translate-x-1'
+                                      }`}
+                                    >
+                                      {subTask.status === 'completed' && (
+                                        <svg className="h-4 w-4 text-green-500 m-1" fill="currentColor" viewBox="0 0 20 20">
+                                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                      )}
+                                      {subTask.status === 'pending' && (
+                                        <svg className="h-4 w-4 text-gray-400 m-1" fill="currentColor" viewBox="0 0 20 20">
+                                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                        </svg>
+                                      )}
+                                    </span>
+                                  </button>
+                                  <div className="flex-1">
+                                    <h6 className="text-sm font-medium text-gray-900">{subTask.title}</h6>
+                                    <p className="text-xs text-gray-600">{subTask.description}</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  {subTask.estimatedDuration && (
+                                    <span className="text-xs text-gray-500">{subTask.estimatedDuration}</span>
+                                  )}
+                                  <span className={`text-xs font-medium ${
+                                    subTask.status === 'completed' ? 'text-green-600' : 'text-gray-400'
+                                  }`}>
+                                    {subTask.status === 'completed' ? 'Complete' : 'Not Complete'}
                                   </span>
-                                </button>
-                                <div>
-                                  <h6 className="text-sm font-medium text-gray-900">{subTask.title}</h6>
-                                  <p className="text-xs text-gray-600">{subTask.description}</p>
+                                  <button
+                                    onClick={() => toggleSubTaskCollapse(subTask.id)}
+                                    className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                                    title={isSubTaskCollapsed ? 'Expand details' : 'Collapse details'}
+                                  >
+                                    <svg
+                                      className={`w-4 h-4 transition-transform ${isSubTaskCollapsed ? 'rotate-180' : ''}`}
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                  </button>
                                 </div>
                               </div>
-                              <div className="flex items-center space-x-2">
-                                {subTask.estimatedDuration && (
-                                  <span className="text-xs text-gray-500">{subTask.estimatedDuration}</span>
-                                )}
-                                <span className={`text-xs font-medium ${
-                                  subTask.status === 'completed' ? 'text-green-600' : 'text-gray-400'
-                                }`}>
-                                  {subTask.status === 'completed' ? 'Complete' : 'Not Complete'}
-                                </span>
-                              </div>
-                            </div>
                             
-                            {/* Sub-task Details */}
-                            <div className="mt-3 space-y-3">
+                            {/* Sub-task Details - Collapsible */}
+                            {!isSubTaskCollapsed && (
+                              <div className="mt-3 space-y-3">
                               {/* Sub-task Notes */}
                               <div>
                                 <div className="flex items-center justify-between mb-2">
@@ -527,9 +557,11 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                   )}
                                 </div>
                               )}
-                            </div>
+                              </div>
+                            )}
                           </div>
-                        ))}
+                        );
+                      })}
                       </div>
                     )}
                   </div>
@@ -581,210 +613,229 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                   <div>
                     <h5 className="text-md font-semibold text-gray-900 mb-4">Sub-tasks</h5>
                     <div className="space-y-3">
-                      {step.subTasks.map((subTask) => (
-                        <div key={subTask.id} className="bg-gray-50 rounded-lg p-4">
-                          {/* Sub-task Header */}
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center space-x-3">
-                              <button
-                                onClick={() => {
-                                  if (canToggleSubTask(step.id)) {
-                                    const newStatus = subTask.status === 'completed' ? 'pending' : 'completed';
-                                    handleSubTaskUpdate(step.id, subTask.id, newStatus);
-                                  }
-                                }}
-                                disabled={!canToggleSubTask(step.id)}
-                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
-                                  canToggleSubTask(step.id) ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
-                                } ${
-                                  subTask.status === 'completed' 
-                                    ? 'bg-green-500' 
-                                    : 'bg-gray-300'
-                                }`}
-                              >
-                                <span
-                                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                    subTask.status === 'completed' ? 'translate-x-6' : 'translate-x-1'
+                      {step.subTasks.map((subTask) => {
+                        const isCollapsed = collapsedSubTasks.has(subTask.id);
+                        return (
+                          <div key={subTask.id} className="bg-gray-50 rounded-lg p-4">
+                            {/* Sub-task Header */}
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center space-x-3">
+                                <button
+                                  onClick={() => {
+                                    if (canToggleSubTask(step.id)) {
+                                      const newStatus = subTask.status === 'completed' ? 'pending' : 'completed';
+                                      handleSubTaskUpdate(step.id, subTask.id, newStatus);
+                                    }
+                                  }}
+                                  disabled={!canToggleSubTask(step.id)}
+                                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+                                    canToggleSubTask(step.id) ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
+                                  } ${
+                                    subTask.status === 'completed' 
+                                      ? 'bg-green-500' 
+                                      : 'bg-gray-300'
                                   }`}
                                 >
-                                  {subTask.status === 'completed' && (
-                                    <svg className="h-3 w-3 text-green-500 m-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                  )}
-                                  {subTask.status === 'pending' && (
-                                    <svg className="h-3 w-3 text-gray-400 m-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                                    </svg>
-                                  )}
-                                </span>
-                              </button>
-                              <div>
-                                <h6 className="text-sm font-medium text-gray-900">{subTask.title}</h6>
-                                <p className="text-xs text-gray-600">{subTask.description}</p>
+                                  <span
+                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                      subTask.status === 'completed' ? 'translate-x-6' : 'translate-x-1'
+                                    }`}
+                                  >
+                                    {subTask.status === 'completed' && (
+                                      <svg className="h-3 w-3 text-green-500 m-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                      </svg>
+                                    )}
+                                    {subTask.status === 'pending' && (
+                                      <svg className="h-3 w-3 text-gray-400 m-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                      </svg>
+                                    )}
+                                  </span>
+                                </button>
+                                <div className="flex-1">
+                                  <h6 className="text-sm font-medium text-gray-900">{subTask.title}</h6>
+                                  <p className="text-xs text-gray-600">{subTask.description}</p>
+                                </div>
                               </div>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              {subTask.estimatedDuration && (
-                                <span className="text-xs text-gray-500">{subTask.estimatedDuration}</span>
-                              )}
-                              <span className={`text-xs font-medium ${
-                                subTask.status === 'completed' ? 'text-green-600' : 'text-gray-400'
-                              }`}>
-                                {subTask.status === 'completed' ? 'Complete' : 'Not Complete'}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Sub-task Details */}
-                          <div className="space-y-3">
-                            {/* Sub-task Notes */}
-                            <div>
-                              <div className="flex items-center justify-between mb-2">
-                                <h6 className="text-xs font-semibold text-gray-700">Notes</h6>
+                              <div className="flex items-center space-x-2">
+                                {subTask.estimatedDuration && (
+                                  <span className="text-xs text-gray-500">{subTask.estimatedDuration}</span>
+                                )}
+                                <span className={`text-xs font-medium ${
+                                  subTask.status === 'completed' ? 'text-green-600' : 'text-gray-400'
+                                }`}>
+                                  {subTask.status === 'completed' ? 'Complete' : 'Not Complete'}
+                                </span>
                                 <button
-                                  onClick={() => handleNotesEdit(step.id, subTask.id, subTask.notes || '')}
-                                  className="text-xs text-blue-600 hover:text-blue-800"
+                                  onClick={() => toggleSubTaskCollapse(subTask.id)}
+                                  className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                                  title={isCollapsed ? 'Expand details' : 'Collapse details'}
                                 >
-                                  {editingNotes === `${step.id}-${subTask.id}` ? 'Cancel' : 'Edit'}
+                                  <svg
+                                    className={`w-4 h-4 transition-transform ${isCollapsed ? 'rotate-180' : ''}`}
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                  </svg>
                                 </button>
                               </div>
-                              {editingNotes === `${step.id}-${subTask.id}` ? (
-                                <div className="space-y-2">
-                                  <textarea
-                                    value={notesValue}
-                                    onChange={(e) => setNotesValue(e.target.value)}
-                                    onKeyDown={(e) => handleNotesKeyPress(e, step.id, subTask.id)}
-                                    className="w-full text-xs text-gray-600 bg-white border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    rows={3}
-                                    placeholder="Add notes for this sub-task..."
-                                  />
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs text-gray-500">Ctrl+Enter to save, Esc to cancel</span>
-                                    <button
-                                      onClick={() => handleNotesSave(step.id, subTask.id)}
-                                      className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                                    >
-                                      Save
-                                    </button>
-                                  </div>
-                                </div>
-                              ) : (
-                                <p className="text-xs text-gray-600 bg-white p-2 rounded min-h-[2rem]">
-                                  {subTask.notes || 'No notes added yet. Click Edit to add notes.'}
-                                </p>
-                              )}
                             </div>
 
-                            {/* Sub-task Cards */}
-                            {(subTask.materials || subTask.requirements || subTask.deliverables) && (
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                {subTask.materials && subTask.materials.length > 0 && (
-                                  <div className="bg-white rounded-lg p-3 border border-gray-200">
-                                    <div className="flex items-center justify-between mb-2">
-                                      <h6 className="text-xs font-semibold text-gray-900">Materials</h6>
-                                      <div className="flex items-center space-x-1">
-                                        <button className="p-1 text-gray-400 hover:text-gray-600" title="Add attachment">
-                                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                          </svg>
-                                        </button>
-                                        <button className="p-1 text-gray-400 hover:text-gray-600" title="View documents">
-                                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                          </svg>
-                                        </button>
-                                        <button className="p-1 text-gray-400 hover:text-gray-600" title="Share">
-                                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                                          </svg>
-                                        </button>
-                                      </div>
-                                    </div>
-                                    <ul className="space-y-1">
-                                      {subTask.materials.map((material, index) => (
-                                        <li key={index} className="text-xs text-gray-600 flex items-center">
-                                          <span className="w-1 h-1 bg-gray-400 rounded-full mr-2"></span>
-                                          {material}
-                                        </li>
-                                      ))}
-                                    </ul>
+                            {/* Sub-task Details - Collapsible */}
+                            {!isCollapsed && (
+                              <div className="space-y-3">
+                                {/* Sub-task Notes */}
+                                <div>
+                                  <div className="flex items-center justify-between mb-2">
+                                    <h6 className="text-xs font-semibold text-gray-700">Notes</h6>
+                                    <button
+                                      onClick={() => handleNotesEdit(step.id, subTask.id, subTask.notes || '')}
+                                      className="text-xs text-blue-600 hover:text-blue-800"
+                                    >
+                                      {editingNotes === `${step.id}-${subTask.id}` ? 'Cancel' : 'Edit'}
+                                    </button>
                                   </div>
-                                )}
-
-                                {subTask.requirements && subTask.requirements.length > 0 && (
-                                  <div className="bg-white rounded-lg p-3 border border-gray-200">
-                                    <div className="flex items-center justify-between mb-2">
-                                      <h6 className="text-xs font-semibold text-gray-900">Requirements</h6>
-                                      <div className="flex items-center space-x-1">
-                                        <button className="p-1 text-gray-400 hover:text-gray-600" title="Add attachment">
-                                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                          </svg>
-                                        </button>
-                                        <button className="p-1 text-gray-400 hover:text-gray-600" title="View documents">
-                                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                          </svg>
-                                        </button>
-                                        <button className="p-1 text-gray-400 hover:text-gray-600" title="Share">
-                                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                                          </svg>
+                                  {editingNotes === `${step.id}-${subTask.id}` ? (
+                                    <div className="space-y-2">
+                                      <textarea
+                                        value={notesValue}
+                                        onChange={(e) => setNotesValue(e.target.value)}
+                                        onKeyDown={(e) => handleNotesKeyPress(e, step.id, subTask.id)}
+                                        className="w-full text-xs text-gray-600 bg-white border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        rows={3}
+                                        placeholder="Add notes for this sub-task..."
+                                      />
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-xs text-gray-500">Ctrl+Enter to save, Esc to cancel</span>
+                                        <button
+                                          onClick={() => handleNotesSave(step.id, subTask.id)}
+                                          className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                        >
+                                          Save
                                         </button>
                                       </div>
                                     </div>
-                                    <ul className="space-y-1">
-                                      {subTask.requirements.map((requirement, index) => (
-                                        <li key={index} className="text-xs text-gray-600 flex items-center">
-                                          <span className="w-1 h-1 bg-gray-400 rounded-full mr-2"></span>
-                                          {requirement}
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  </div>
-                                )}
+                                  ) : (
+                                    <p className="text-xs text-gray-600 bg-white p-2 rounded min-h-[2rem]">
+                                      {subTask.notes || 'No notes added yet. Click Edit to add notes.'}
+                                    </p>
+                                  )}
+                                </div>
 
-                                {subTask.deliverables && subTask.deliverables.length > 0 && (
-                                  <div className="bg-white rounded-lg p-3 border border-gray-200">
-                                    <div className="flex items-center justify-between mb-2">
-                                      <h6 className="text-xs font-semibold text-gray-900">Deliverables</h6>
-                                      <div className="flex items-center space-x-1">
-                                        <button className="p-1 text-gray-400 hover:text-gray-600" title="Add attachment">
-                                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                          </svg>
-                                        </button>
-                                        <button className="p-1 text-gray-400 hover:text-gray-600" title="View documents">
-                                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                          </svg>
-                                        </button>
-                                        <button className="p-1 text-gray-400 hover:text-gray-600" title="Share">
-                                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                                          </svg>
-                                        </button>
+                                {/* Sub-task Cards */}
+                                {(subTask.materials || subTask.requirements || subTask.deliverables) && (
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    {subTask.materials && subTask.materials.length > 0 && (
+                                      <div className="bg-white rounded-lg p-3 border border-gray-200">
+                                        <div className="flex items-center justify-between mb-2">
+                                          <h6 className="text-xs font-semibold text-gray-900">Materials</h6>
+                                          <div className="flex items-center space-x-1">
+                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="Add attachment">
+                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                              </svg>
+                                            </button>
+                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="View documents">
+                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                              </svg>
+                                            </button>
+                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="Share">
+                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                                              </svg>
+                                            </button>
+                                          </div>
+                                        </div>
+                                        <ul className="space-y-1">
+                                          {subTask.materials.map((material, index) => (
+                                            <li key={index} className="text-xs text-gray-600 flex items-center">
+                                              <span className="w-1 h-1 bg-gray-400 rounded-full mr-2"></span>
+                                              {material}
+                                            </li>
+                                          ))}
+                                        </ul>
                                       </div>
-                                    </div>
-                                    <ul className="space-y-1">
-                                      {subTask.deliverables.map((deliverable, index) => (
-                                        <li key={index} className="text-xs text-gray-600 flex items-center">
-                                          <span className="w-1 h-1 bg-gray-400 rounded-full mr-2"></span>
-                                          {deliverable}
-                                        </li>
-                                      ))}
-                                    </ul>
+                                    )}
+
+                                    {subTask.requirements && subTask.requirements.length > 0 && (
+                                      <div className="bg-white rounded-lg p-3 border border-gray-200">
+                                        <div className="flex items-center justify-between mb-2">
+                                          <h6 className="text-xs font-semibold text-gray-900">Requirements</h6>
+                                          <div className="flex items-center space-x-1">
+                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="Add attachment">
+                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                              </svg>
+                                            </button>
+                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="View documents">
+                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                              </svg>
+                                            </button>
+                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="Share">
+                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                                              </svg>
+                                            </button>
+                                          </div>
+                                        </div>
+                                        <ul className="space-y-1">
+                                          {subTask.requirements.map((requirement, index) => (
+                                            <li key={index} className="text-xs text-gray-600 flex items-center">
+                                              <span className="w-1 h-1 bg-gray-400 rounded-full mr-2"></span>
+                                              {requirement}
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      </div>
+                                    )}
+
+                                    {subTask.deliverables && subTask.deliverables.length > 0 && (
+                                      <div className="bg-white rounded-lg p-3 border border-gray-200">
+                                        <div className="flex items-center justify-between mb-2">
+                                          <h6 className="text-xs font-semibold text-gray-900">Deliverables</h6>
+                                          <div className="flex items-center space-x-1">
+                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="Add attachment">
+                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                              </svg>
+                                            </button>
+                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="View documents">
+                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                              </svg>
+                                            </button>
+                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="Share">
+                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                                              </svg>
+                                            </button>
+                                          </div>
+                                        </div>
+                                        <ul className="space-y-1">
+                                          {subTask.deliverables.map((deliverable, index) => (
+                                            <li key={index} className="text-xs text-gray-600 flex items-center">
+                                              <span className="w-1 h-1 bg-gray-400 rounded-full mr-2"></span>
+                                              {deliverable}
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      </div>
+                                    )}
                                   </div>
                                 )}
                               </div>
                             )}
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 )}
