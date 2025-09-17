@@ -49,6 +49,16 @@ interface SubTask {
   status: 'completed' | 'in-progress' | 'pending';
   estimatedDuration?: string;
   assignedTo?: string;
+  notes?: string;
+  materials?: string[];
+  requirements?: string[];
+  deliverables?: string[];
+  documents?: {
+    id: string;
+    name: string;
+    type: string;
+    url: string;
+  }[];
 }
 
 interface ProjectStep {
