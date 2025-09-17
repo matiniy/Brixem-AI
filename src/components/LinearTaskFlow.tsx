@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 interface SubTask {
   id: string;
@@ -73,7 +73,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
   };
 
   // Handle auto-advancement when all sub-tasks are completed
-  const handleAutoAdvancement = (stepId: string) => {
+  const handleAutoAdvancement = useCallback((stepId: string) => {
     const step = steps.find(s => s.id === stepId);
     if (!step) {
       console.log('Step not found:', stepId);
@@ -104,7 +104,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
     } else {
       console.log('Not all sub-tasks completed yet');
     }
-  };
+  }, [steps, onStepComplete, onStepAdvance]);
 
   // Check for auto-advancement on mount and when steps change
   useEffect(() => {

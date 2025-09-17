@@ -4,6 +4,19 @@ import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import { useProjects } from "@/contexts/ProjectContext";
 
+interface Project {
+  id: string;
+  name: string;
+  location: string;
+  description?: string;
+  size_sqft?: number;
+  type?: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  progress: number;
+}
+
 export default function SettingsPage() {
   const [settings, setSettings] = useState({
     emailNotifications: true,
@@ -21,7 +34,7 @@ export default function SettingsPage() {
     setActiveProject(projectId);
   };
 
-  const handleProjectCreate = async (project: { name: string; type: string; status: string; description: string; location: string; size_sqft?: number }) => {
+  const handleProjectCreate = async (project: Omit<Project, 'id' | 'created_at' | 'updated_at' | 'progress'>) => {
     try {
       await addProject({
         name: project.name,
