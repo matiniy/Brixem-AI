@@ -582,13 +582,15 @@ export default function FloatingChatDashboard() {
     if (editingProjectName.trim() && activeProject) {
       try {
         // Update project name in local state
-        setProjects(prevProjects => 
-          prevProjects.map(project => 
+        setProjects(prevProjects => {
+          const updatedProjects = prevProjects.map(project => 
             project.id === activeProject 
               ? { ...project, name: editingProjectName.trim() }
               : project
-          )
-        );
+          );
+          console.log('Updated projects:', updatedProjects);
+          return updatedProjects;
+        });
         
         // TODO: Update project name via API
         // await updateProjectName(activeProject, editingProjectName.trim());
@@ -999,9 +1001,7 @@ export default function FloatingChatDashboard() {
             <div className="mb-8">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-2xl font-bold text-gray-900">
-                  {activeProject && projects.length > 0 
-                    ? `${projects.find(p => p.id === activeProject)?.name || 'Project'} - Project Overview` 
-                    : 'Project Overview'}
+                  Project Overview
                 </h2>
                 <button
                   onClick={() => window.location.href = '/dashboard/documents'}
