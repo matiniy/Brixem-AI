@@ -7,14 +7,15 @@ import { useProjects } from "@/contexts/ProjectContext";
 interface Project {
   id: string;
   name: string;
-  location: string;
-  description?: string;
-  size_sqft?: number;
-  type?: string;
-  status: string;
-  created_at: string;
-  updated_at: string;
   progress: number;
+  type?: string;
+  status?: string;
+  budget?: string;
+  description?: string;
+  location?: string;
+  timeline?: string;
+  createdAt?: string;
+  contractors?: unknown[];
 }
 
 export default function PaymentPage() {
@@ -33,15 +34,14 @@ export default function PaymentPage() {
     setActiveProject(projectId);
   };
 
-  const handleProjectCreate = async (project: Omit<Project, 'id' | 'created_at' | 'updated_at' | 'progress'>) => {
+  const handleProjectCreate = async (project: Omit<Project, 'id'>) => {
     try {
       await addProject({
         name: project.name,
         type: project.type,
-        status: project.status,
+        status: project.status || 'planning',
         description: project.description,
-        location: project.location,
-        size_sqft: 0
+        location: project.location
       });
     } catch (error) {
       console.error('Error creating project:', error);
