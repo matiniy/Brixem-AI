@@ -339,7 +339,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                     }
                                   }}
                                   disabled={!canToggleSubTask(step.id)}
-                                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+                                  className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
                                     canToggleSubTask(step.id) ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
                                   } ${
                                     subTask.status === 'completed' 
@@ -348,17 +348,17 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                   }`}
                                 >
                                   <span
-                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                      subTask.status === 'completed' ? 'translate-x-6' : 'translate-x-1'
+                                    className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform shadow-sm ${
+                                      subTask.status === 'completed' ? 'translate-x-7' : 'translate-x-1'
                                     }`}
                                   >
                                     {subTask.status === 'completed' && (
-                                      <svg className="h-3 w-3 text-green-500 m-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                      <svg className="h-4 w-4 text-green-500 m-1" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                       </svg>
                                     )}
                                     {subTask.status === 'pending' && (
-                                      <svg className="h-3 w-3 text-gray-400 m-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                      <svg className="h-4 w-4 text-gray-400 m-1" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                                       </svg>
                                     )}
