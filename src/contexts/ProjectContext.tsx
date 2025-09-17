@@ -111,7 +111,48 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
   };
 
   const refreshProjects = async () => {
-    await loadProjects();
+    try {
+      const projectsData = await getProjects();
+      if (projectsData && projectsData.length > 0) {
+        setProjects(projectsData);
+        if (!activeProject) {
+          setActiveProject(projectsData[0].id);
+        }
+      } else {
+        // Fallback to sample project if no projects exist
+        const sampleProject: Project = {
+          id: 'demo-project-1',
+          name: 'Kitchen Renovation',
+          location: 'San Francisco, CA',
+          description: 'Complete kitchen renovation with modern appliances',
+          size_sqft: 150,
+          type: 'renovation',
+          status: 'in-progress',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          progress: 35
+        };
+        setProjects([sampleProject]);
+        setActiveProject(sampleProject.id);
+      }
+    } catch (error) {
+      console.error('Error loading projects:', error);
+      // Fallback to sample project on error
+      const sampleProject: Project = {
+        id: 'demo-project-1',
+        name: 'Kitchen Renovation',
+        location: 'San Francisco, CA',
+        description: 'Complete kitchen renovation with modern appliances',
+        size_sqft: 150,
+        type: 'renovation',
+        status: 'in-progress',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        progress: 35
+      };
+      setProjects([sampleProject]);
+      setActiveProject(sampleProject.id);
+    }
   };
 
   return (
