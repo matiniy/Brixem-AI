@@ -645,7 +645,7 @@ export default function FloatingChatDashboard() {
         setProjects([sampleProject]);
         setActiveProject(sampleProject.id);
       } else {
-        setProjects(projectsWithProgress);
+      setProjects(projectsWithProgress);
         // Set the first project as active if there are projects and no active project is set
         if (projectsWithProgress.length > 0 && !activeProject) {
           setActiveProject(projectsWithProgress[0].id);
@@ -772,7 +772,34 @@ export default function FloatingChatDashboard() {
     // setIsGenerating(true); // Removed unused variable
 
     try {
-      const response = await sendChatMessage([userMessage], 'Homeowner Dashboard - Project Management');
+      // Get current project context
+      const currentProject = projects.find(p => p.id === activeProject);
+      const projectContext = currentProject ? 
+        `Current Project: ${currentProject.name} (${currentProject.type || 'renovation'}) - ${currentProject.location || 'Location not specified'}
+Project Status: ${currentProject.status || 'in-progress'}
+Project Progress: ${currentProject.progress || 0}%
+
+Current Project Steps:
+${projectSteps.map(step => 
+  `- ${step.title} (${step.status}) - ${step.estimatedDuration}`
+).join('\n')}
+
+Current Sub-tasks:
+${projectSteps.flatMap(step => 
+  step.subTasks?.map(subTask => 
+    `- ${subTask.title} (${subTask.status}) - ${subTask.estimatedDuration} - Assigned to: ${subTask.assignedTo || 'Not assigned'}`
+  ) || []
+).join('\n')}
+
+Task Counts:
+- Total Tasks: ${taskCounts.totalTasks}
+- Completed Tasks: ${taskCounts.completedTasks}
+- To Do Tasks: ${taskCounts.toDoTasks}
+
+When user asks about tasks, current stage, or what needs to be done, provide specific actionable items based on the current project state.` : 
+        'No active project selected';
+
+      const response = await sendChatMessage([userMessage], projectContext);
       
       const aiMessage: ChatMessage = {
         role: "ai",
