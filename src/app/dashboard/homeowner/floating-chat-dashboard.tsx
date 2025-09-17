@@ -91,22 +91,27 @@ export default function FloatingChatDashboard() {
   const getTaskCounts = () => {
     let totalTasks = 0;
     let completedTasks = 0;
-    let inProgressTasks = 0;
+    let toDoTasks = 0;
 
-    projectSteps.forEach(step => {
+    // Find current step (first incomplete step)
+    const currentStepIndex = projectSteps.findIndex(step => step.status !== 'completed');
+    const currentStep = currentStepIndex >= 0 ? projectSteps[currentStepIndex] : null;
+
+    projectSteps.forEach((step, stepIndex) => {
       if (step.subTasks) {
         step.subTasks.forEach(subTask => {
           totalTasks++;
           if (subTask.status === 'completed') {
             completedTasks++;
-          } else if (subTask.status === 'in-progress') {
-            inProgressTasks++;
+          } else if (stepIndex === currentStepIndex || step.status === 'in-progress') {
+            // Count sub-tasks from current step as "To Do"
+            toDoTasks++;
           }
         });
       }
     });
 
-    return { totalTasks, completedTasks, inProgressTasks };
+    return { totalTasks, completedTasks, toDoTasks };
   };
 
   // Sample project steps data with sub-tasks and details
@@ -461,6 +466,24 @@ export default function FloatingChatDashboard() {
               subTasks: step.subTasks?.map(subTask =>
                 subTask.id === subTaskId 
                   ? { ...subTask, status }
+                  : subTask
+              )
+            }
+          : step
+      )
+    );
+  };
+
+  // Handle sub-task notes updates
+  const handleSubTaskNotesUpdate = (stepId: string, subTaskId: string, notes: string) => {
+    setProjectSteps(prevSteps => 
+      prevSteps.map(step => 
+        step.id === stepId 
+          ? {
+              ...step,
+              subTasks: step.subTasks?.map(subTask =>
+                subTask.id === subTaskId 
+                  ? { ...subTask, notes }
                   : subTask
               )
             }
@@ -897,19 +920,19 @@ export default function FloatingChatDashboard() {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <div className="flex items-center">
-                    <div className="p-2 bg-yellow-100 rounded-lg">
-                      <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600">In Progress</p>
-                      <p className="text-2xl font-bold text-gray-900">{taskCounts.inProgressTasks}</p>
-                    </div>
-                  </div>
-                </div>
+                       <div className="bg-white rounded-lg border border-gray-200 p-6">
+                         <div className="flex items-center">
+                           <div className="p-2 bg-yellow-100 rounded-lg">
+                             <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                             </svg>
+                           </div>
+                           <div className="ml-4">
+                             <p className="text-sm font-medium text-gray-600">To Do</p>
+                             <p className="text-2xl font-bold text-gray-900">{taskCounts.toDoTasks}</p>
+                           </div>
+                         </div>
+                       </div>
 
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
                   <div className="flex items-center">
@@ -953,6 +976,7 @@ export default function FloatingChatDashboard() {
                   // TODO: Handle step click - could show details, update status, etc.
                 }}
                 onSubTaskUpdate={handleSubTaskUpdate}
+                onSubTaskNotesUpdate={handleSubTaskNotesUpdate}
               />
             </div>
 
