@@ -95,7 +95,7 @@ export default function FloatingChatDashboard() {
 
     // Find current step (first incomplete step)
     const currentStepIndex = projectSteps.findIndex(step => step.status !== 'completed');
-    const currentStep = currentStepIndex >= 0 ? projectSteps[currentStepIndex] : null;
+    // const currentStep = currentStepIndex >= 0 ? projectSteps[currentStepIndex] : null;
 
     projectSteps.forEach((step, stepIndex) => {
       if (step.subTasks) {
