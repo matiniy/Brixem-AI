@@ -12,13 +12,17 @@ interface SubTask {
   notes?: string;
   materials?: string[];
   requirements?: string[];
-  deliverables?: string[];
-  documents?: {
+  deliverables?: Array<{
+    id: string;
+    title: string;
+    status: 'pending' | 'completed';
+  }>;
+  documents?: Array<{
     id: string;
     name: string;
     type: string;
-    url: string;
-  }[];
+    url?: string;
+  }>;
 }
 
 interface TaskStep {
@@ -490,151 +494,96 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                             
                             {/* Sub-task Details - Collapsible */}
                             {!isSubTaskCollapsed && (
-                              <div className="mt-3 space-y-3">
-                              {/* Sub-task Notes */}
-                              <div>
-                                <div className="flex items-center justify-between mb-2">
-                                  <h6 className="text-xs font-semibold text-gray-700">Notes</h6>
-                                  <button
-                                    onClick={() => handleNotesEdit(step.id, subTask.id, subTask.notes || '')}
-                                    className="text-xs text-blue-600 hover:text-blue-800"
-                                  >
-                                    {editingNotes === `${step.id}-${subTask.id}` ? 'Cancel' : 'Edit'}
-                                  </button>
-                                </div>
-                                {editingNotes === `${step.id}-${subTask.id}` ? (
-                                  <div className="space-y-2">
-                                    <textarea
-                                      value={notesValue}
-                                      onChange={(e) => setNotesValue(e.target.value)}
-                                      onKeyDown={(e) => handleNotesKeyPress(e, step.id, subTask.id)}
-                                      className="w-full text-xs text-gray-600 bg-white border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                      rows={3}
-                                      placeholder="Add notes for this sub-task..."
-                                    />
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-xs text-gray-500">Ctrl+Enter to save, Esc to cancel</span>
-                                      <button
-                                        onClick={() => handleNotesSave(step.id, subTask.id)}
-                                        className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                                      >
-                                        Save
-                                      </button>
+                              <div className="mt-3 space-y-4">
+                                {/* Deliverables Section */}
+                                {subTask.deliverables && subTask.deliverables.length > 0 && (
+                                  <div className="bg-white rounded-lg p-4 border border-gray-200">
+                                    <h6 className="text-sm font-semibold text-gray-900 mb-3">Deliverables</h6>
+                                    <div className="space-y-2">
+                                      {subTask.deliverables.map((deliverable) => (
+                                        <div key={deliverable.id} className="flex items-center space-x-3">
+                                          <div className={`w-3 h-3 rounded-full ${
+                                            deliverable.status === 'completed' ? 'bg-green-500' : 'bg-gray-300'
+                                          }`}></div>
+                                          <span className="text-sm text-gray-700 flex-1">{deliverable.title}</span>
+                                          <span className={`text-xs italic ${
+                                            deliverable.status === 'completed' ? 'text-green-600' : 'text-gray-500'
+                                          }`}>
+                                            {deliverable.status === 'completed' ? 'Completed' : 'To Do'}
+                                          </span>
+                                        </div>
+                                      ))}
                                     </div>
                                   </div>
-                                ) : (
-                                  <p className="text-xs text-gray-600 bg-gray-50 p-2 rounded min-h-[2rem]">
-                                    {subTask.notes || 'No notes added yet. Click Edit to add notes.'}
-                                  </p>
                                 )}
-                              </div>
 
-                              {/* Sub-task Cards */}
-                              {(subTask.materials || subTask.requirements || subTask.deliverables) && (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                  {subTask.materials && subTask.materials.length > 0 && (
-                                    <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                                      <div className="flex items-center justify-between mb-2">
-                                        <h6 className="text-xs font-semibold text-gray-900">Materials</h6>
-                                        <div className="flex items-center space-x-1">
-                                          <button className="p-1 text-gray-400 hover:text-gray-600" title="Add attachment">
-                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                            </svg>
-                                          </button>
-                                          <button className="p-1 text-gray-400 hover:text-gray-600" title="View documents">
-                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                            </svg>
-                                          </button>
-                                          <button className="p-1 text-gray-400 hover:text-gray-600" title="Share">
-                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                                            </svg>
-                                          </button>
+                                {/* Documents Section */}
+                                {subTask.documents && subTask.documents.length > 0 && (
+                                  <div className="bg-white rounded-lg p-4 border border-gray-200">
+                                    <h6 className="text-sm font-semibold text-gray-900 mb-3">Documents</h6>
+                                    <div className="space-y-2">
+                                      {subTask.documents.map((document) => (
+                                        <div key={document.id} className="flex items-center space-x-3">
+                                          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                          </svg>
+                                          <span className="text-sm text-gray-700 flex-1">{document.name}</span>
+                                          <div className="flex items-center space-x-2">
+                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="View document">
+                                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                              </svg>
+                                            </button>
+                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="Share document">
+                                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                                              </svg>
+                                            </button>
+                                          </div>
                                         </div>
-                                      </div>
-                                      <ul className="space-y-1">
-                                        {subTask.materials.map((material, index) => (
-                                          <li key={index} className="text-xs text-gray-600 flex items-center">
-                                            <span className="w-1 h-1 bg-gray-400 rounded-full mr-2"></span>
-                                            {material}
-                                          </li>
-                                        ))}
-                                      </ul>
+                                      ))}
                                     </div>
-                                  )}
+                                  </div>
+                                )}
 
-                                  {subTask.requirements && subTask.requirements.length > 0 && (
-                                    <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                                      <div className="flex items-center justify-between mb-2">
-                                        <h6 className="text-xs font-semibold text-gray-900">Requirements</h6>
-                                        <div className="flex items-center space-x-1">
-                                          <button className="p-1 text-gray-400 hover:text-gray-600" title="Add attachment">
-                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                            </svg>
-                                          </button>
-                                          <button className="p-1 text-gray-400 hover:text-gray-600" title="View documents">
-                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                            </svg>
-                                          </button>
-                                          <button className="p-1 text-gray-400 hover:text-gray-600" title="Share">
-                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                                            </svg>
-                                          </button>
-                                        </div>
+                                {/* Notes Section - Moved to bottom */}
+                                <div className="bg-white rounded-lg p-4 border border-gray-200">
+                                  <div className="flex items-center justify-between mb-3">
+                                    <h6 className="text-sm font-semibold text-gray-900">Notes</h6>
+                                    <button
+                                      onClick={() => handleNotesEdit(step.id, subTask.id, subTask.notes || '')}
+                                      className="text-sm text-blue-600 hover:text-blue-800"
+                                    >
+                                      {editingNotes === `${step.id}-${subTask.id}` ? 'Cancel' : 'Edit'}
+                                    </button>
+                                  </div>
+                                  {editingNotes === `${step.id}-${subTask.id}` ? (
+                                    <div className="space-y-2">
+                                      <textarea
+                                        value={notesValue}
+                                        onChange={(e) => setNotesValue(e.target.value)}
+                                        onKeyDown={(e) => handleNotesKeyPress(e, step.id, subTask.id)}
+                                        className="w-full text-sm text-gray-600 bg-gray-50 border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        rows={3}
+                                        placeholder="Add notes for this sub-task..."
+                                      />
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-xs text-gray-500">Ctrl+Enter to save, Esc to cancel</span>
+                                        <button
+                                          onClick={() => handleNotesSave(step.id, subTask.id)}
+                                          className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                                        >
+                                          Save
+                                        </button>
                                       </div>
-                                      <ul className="space-y-1">
-                                        {subTask.requirements.map((requirement, index) => (
-                                          <li key={index} className="text-xs text-gray-600 flex items-center">
-                                            <span className="w-1 h-1 bg-gray-400 rounded-full mr-2"></span>
-                                            {requirement}
-                                          </li>
-                                        ))}
-                                      </ul>
                                     </div>
-                                  )}
-
-                                  {subTask.deliverables && subTask.deliverables.length > 0 && (
-                                    <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                                      <div className="flex items-center justify-between mb-2">
-                                        <h6 className="text-xs font-semibold text-gray-900">Deliverables</h6>
-                                        <div className="flex items-center space-x-1">
-                                          <button className="p-1 text-gray-400 hover:text-gray-600" title="Add attachment">
-                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                            </svg>
-                                          </button>
-                                          <button className="p-1 text-gray-400 hover:text-gray-600" title="View documents">
-                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                            </svg>
-                                          </button>
-                                          <button className="p-1 text-gray-400 hover:text-gray-600" title="Share">
-                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                                            </svg>
-                                          </button>
-                                        </div>
-                                      </div>
-                                      <ul className="space-y-1">
-                                        {subTask.deliverables.map((deliverable, index) => (
-                                          <li key={index} className="text-xs text-gray-600 flex items-center">
-                                            <span className="w-1 h-1 bg-gray-400 rounded-full mr-2"></span>
-                                            {deliverable}
-                                          </li>
-                                        ))}
-                                      </ul>
-                                    </div>
+                                  ) : (
+                                    <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded min-h-[3rem]">
+                                      {subTask.notes || 'No notes added yet. Click Edit to add notes.'}
+                                    </p>
                                   )}
                                 </div>
-                              )}
                               </div>
                             )}
                           </div>
@@ -764,14 +713,66 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
 
                             {/* Sub-task Details - Collapsible */}
                             {!isCollapsed && (
-                              <div className="space-y-3">
-                                {/* Sub-task Notes */}
-                                <div>
-                                  <div className="flex items-center justify-between mb-2">
-                                    <h6 className="text-xs font-semibold text-gray-700">Notes</h6>
+                              <div className="space-y-4">
+                                {/* Deliverables Section */}
+                                {subTask.deliverables && subTask.deliverables.length > 0 && (
+                                  <div className="bg-white rounded-lg p-4 border border-gray-200">
+                                    <h6 className="text-sm font-semibold text-gray-900 mb-3">Deliverables</h6>
+                                    <div className="space-y-2">
+                                      {subTask.deliverables.map((deliverable) => (
+                                        <div key={deliverable.id} className="flex items-center space-x-3">
+                                          <div className={`w-3 h-3 rounded-full ${
+                                            deliverable.status === 'completed' ? 'bg-green-500' : 'bg-gray-300'
+                                          }`}></div>
+                                          <span className="text-sm text-gray-700 flex-1">{deliverable.title}</span>
+                                          <span className={`text-xs italic ${
+                                            deliverable.status === 'completed' ? 'text-green-600' : 'text-gray-500'
+                                          }`}>
+                                            {deliverable.status === 'completed' ? 'Completed' : 'To Do'}
+                                          </span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Documents Section */}
+                                {subTask.documents && subTask.documents.length > 0 && (
+                                  <div className="bg-white rounded-lg p-4 border border-gray-200">
+                                    <h6 className="text-sm font-semibold text-gray-900 mb-3">Documents</h6>
+                                    <div className="space-y-2">
+                                      {subTask.documents.map((document) => (
+                                        <div key={document.id} className="flex items-center space-x-3">
+                                          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                          </svg>
+                                          <span className="text-sm text-gray-700 flex-1">{document.name}</span>
+                                          <div className="flex items-center space-x-2">
+                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="View document">
+                                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                              </svg>
+                                            </button>
+                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="Share document">
+                                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                                              </svg>
+                                            </button>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Notes Section - Moved to bottom */}
+                                <div className="bg-white rounded-lg p-4 border border-gray-200">
+                                  <div className="flex items-center justify-between mb-3">
+                                    <h6 className="text-sm font-semibold text-gray-900">Notes</h6>
                                     <button
                                       onClick={() => handleNotesEdit(step.id, subTask.id, subTask.notes || '')}
-                                      className="text-xs text-blue-600 hover:text-blue-800"
+                                      className="text-sm text-blue-600 hover:text-blue-800"
                                     >
                                       {editingNotes === `${step.id}-${subTask.id}` ? 'Cancel' : 'Edit'}
                                     </button>
@@ -782,7 +783,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                         value={notesValue}
                                         onChange={(e) => setNotesValue(e.target.value)}
                                         onKeyDown={(e) => handleNotesKeyPress(e, step.id, subTask.id)}
-                                        className="w-full text-xs text-gray-600 bg-white border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full text-sm text-gray-600 bg-gray-50 border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         rows={3}
                                         placeholder="Add notes for this sub-task..."
                                       />
@@ -790,125 +791,18 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                         <span className="text-xs text-gray-500">Ctrl+Enter to save, Esc to cancel</span>
                                         <button
                                           onClick={() => handleNotesSave(step.id, subTask.id)}
-                                          className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                          className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                                         >
                                           Save
                                         </button>
                                       </div>
                                     </div>
                                   ) : (
-                                    <p className="text-xs text-gray-600 bg-white p-2 rounded min-h-[2rem]">
+                                    <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded min-h-[3rem]">
                                       {subTask.notes || 'No notes added yet. Click Edit to add notes.'}
                                     </p>
                                   )}
                                 </div>
-
-                                {/* Sub-task Cards */}
-                                {(subTask.materials || subTask.requirements || subTask.deliverables) && (
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                                    {subTask.materials && subTask.materials.length > 0 && (
-                                      <div className="bg-white rounded-lg p-3 border border-gray-200">
-                                        <div className="flex items-center justify-between mb-2">
-                                          <h6 className="text-xs font-semibold text-gray-900">Materials</h6>
-                                          <div className="flex items-center space-x-1">
-                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="Add attachment">
-                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                              </svg>
-                                            </button>
-                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="View documents">
-                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                              </svg>
-                                            </button>
-                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="Share">
-                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                                              </svg>
-                                            </button>
-                                          </div>
-                                        </div>
-                                        <ul className="space-y-1">
-                                          {subTask.materials.map((material, index) => (
-                                            <li key={index} className="text-xs text-gray-600 flex items-center">
-                                              <span className="w-1 h-1 bg-gray-400 rounded-full mr-2"></span>
-                                              {material}
-                                            </li>
-                                          ))}
-                                        </ul>
-                                      </div>
-                                    )}
-
-                                    {subTask.requirements && subTask.requirements.length > 0 && (
-                                      <div className="bg-white rounded-lg p-3 border border-gray-200">
-                                        <div className="flex items-center justify-between mb-2">
-                                          <h6 className="text-xs font-semibold text-gray-900">Requirements</h6>
-                                          <div className="flex items-center space-x-1">
-                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="Add attachment">
-                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                              </svg>
-                                            </button>
-                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="View documents">
-                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                              </svg>
-                                            </button>
-                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="Share">
-                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                                              </svg>
-                                            </button>
-                                          </div>
-                                        </div>
-                                        <ul className="space-y-1">
-                                          {subTask.requirements.map((requirement, index) => (
-                                            <li key={index} className="text-xs text-gray-600 flex items-center">
-                                              <span className="w-1 h-1 bg-gray-400 rounded-full mr-2"></span>
-                                              {requirement}
-                                            </li>
-                                          ))}
-                                        </ul>
-                                      </div>
-                                    )}
-
-                                    {subTask.deliverables && subTask.deliverables.length > 0 && (
-                                      <div className="bg-white rounded-lg p-3 border border-gray-200">
-                                        <div className="flex items-center justify-between mb-2">
-                                          <h6 className="text-xs font-semibold text-gray-900">Deliverables</h6>
-                                          <div className="flex items-center space-x-1">
-                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="Add attachment">
-                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                              </svg>
-                                            </button>
-                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="View documents">
-                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                              </svg>
-                                            </button>
-                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="Share">
-                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                                              </svg>
-                                            </button>
-                                          </div>
-                                        </div>
-                                        <ul className="space-y-1">
-                                          {subTask.deliverables.map((deliverable, index) => (
-                                            <li key={index} className="text-xs text-gray-600 flex items-center">
-                                              <span className="w-1 h-1 bg-gray-400 rounded-full mr-2"></span>
-                                              {deliverable}
-                                            </li>
-                                          ))}
-                                        </ul>
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
                               </div>
                             )}
                           </div>

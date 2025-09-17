@@ -52,13 +52,17 @@ interface SubTask {
   notes?: string;
   materials?: string[];
   requirements?: string[];
-  deliverables?: string[];
-  documents?: {
+  deliverables?: Array<{
+    id: string;
+    title: string;
+    status: 'pending' | 'completed';
+  }>;
+  documents?: Array<{
     id: string;
     name: string;
     type: string;
-    url: string;
-  }[];
+    url?: string;
+  }>;
 }
 
 interface ProjectStep {
@@ -145,7 +149,11 @@ export default function FloatingChatDashboard() {
           notes: 'Site survey completed successfully. All measurements and topographical data collected.',
           materials: ['Survey equipment', 'Measuring tools', 'GPS devices', 'Safety equipment'],
           requirements: ['Site access permission', 'Safety briefing', 'Survey team certification'],
-          deliverables: ['Topographical survey report', 'Site measurements', 'Digital site plan'],
+          deliverables: [
+            { id: 'd22', title: 'Topographical survey report', status: 'completed' as const },
+            { id: 'd23', title: 'Site measurements', status: 'completed' as const },
+            { id: 'd24', title: 'Digital site plan', status: 'completed' as const }
+          ],
           documents: [
             { id: '1', name: 'Site Survey Report', type: 'PDF', url: '/docs/site-survey.pdf' },
             { id: '2', name: 'Topographical Map', type: 'PDF', url: '/docs/topographical-map.pdf' }
@@ -161,7 +169,11 @@ export default function FloatingChatDashboard() {
           notes: 'Concept design approved by client. Ready for detailed planning application.',
           materials: ['Design software licenses', 'Drawing materials', 'Reference materials'],
           requirements: ['Client brief', 'Site survey data', 'Planning constraints'],
-          deliverables: ['Concept drawings', '3D visualizations', 'Design brief'],
+          deliverables: [
+            { id: 'd25', title: 'Concept drawings', status: 'completed' as const },
+            { id: 'd26', title: '3D visualizations', status: 'completed' as const },
+            { id: 'd27', title: 'Design brief', status: 'completed' as const }
+          ],
           documents: [
             { id: '3', name: 'Concept Drawings', type: 'PDF', url: '/docs/concept-drawings.pdf' },
             { id: '4', name: '3D Visualization', type: 'PDF', url: '/docs/3d-visualization.pdf' }
@@ -177,7 +189,11 @@ export default function FloatingChatDashboard() {
           notes: 'Feasibility study completed. Project is viable with minor adjustments to timeline.',
           materials: ['Feasibility templates', 'Cost estimation tools', 'Risk assessment forms'],
           requirements: ['Project scope', 'Budget constraints', 'Timeline requirements'],
-          deliverables: ['Feasibility report', 'Risk assessment', 'Cost estimates'],
+          deliverables: [
+            { id: 'd28', title: 'Feasibility report', status: 'completed' as const },
+            { id: 'd29', title: 'Risk assessment', status: 'completed' as const },
+            { id: 'd30', title: 'Cost estimates', status: 'completed' as const }
+          ],
           documents: [
             { id: '5', name: 'Feasibility Report', type: 'PDF', url: '/docs/feasibility-report.pdf' }
           ]
@@ -209,7 +225,11 @@ export default function FloatingChatDashboard() {
           notes: 'Planning application submitted successfully. No objections received from neighbors.',
           materials: ['Application forms', 'Technical drawings', 'Supporting documents', 'Fees'],
           requirements: ['Planning permission', 'Architectural drawings', 'Site plans'],
-          deliverables: ['Planning permission', 'Approved drawings', 'Planning conditions'],
+          deliverables: [
+            { id: 'd1', title: 'Planning permission', status: 'completed' as const },
+            { id: 'd2', title: 'Approved drawings', status: 'completed' as const },
+            { id: 'd3', title: 'Planning conditions', status: 'completed' as const }
+          ],
           documents: [
             { id: '6', name: 'Planning Application', type: 'PDF', url: '/docs/planning-application.pdf' },
             { id: '7', name: 'Planning Permission', type: 'PDF', url: '/docs/planning-permission.pdf' }
@@ -225,7 +245,11 @@ export default function FloatingChatDashboard() {
           notes: 'Building regulations approval obtained. All structural requirements met.',
           materials: ['Building regulations forms', 'Structural calculations', 'Compliance certificates'],
           requirements: ['Building regulations approval', 'Structural engineer report', 'Fire safety assessment'],
-          deliverables: ['Building regulations approval', 'Compliance certificates', 'Inspection schedule'],
+          deliverables: [
+            { id: 'd4', title: 'Building regulations approval', status: 'completed' as const },
+            { id: 'd5', title: 'Compliance certificates', status: 'completed' as const },
+            { id: 'd6', title: 'Inspection schedule', status: 'completed' as const }
+          ],
           documents: [
             { id: '8', name: 'Building Regulations Application', type: 'PDF', url: '/docs/building-regs.pdf' },
             { id: '9', name: 'Structural Calculations', type: 'PDF', url: '/docs/structural-calc.pdf' }
@@ -241,7 +265,11 @@ export default function FloatingChatDashboard() {
           notes: 'All utility connections approved. NOCs received from all utility companies.',
           materials: ['Utility application forms', 'Site plans', 'Connection specifications'],
           requirements: ['Utility NOCs', 'Connection agreements', 'Meter installations'],
-          deliverables: ['Utility agreements', 'Connection schedules', 'Meter locations'],
+          deliverables: [
+            { id: 'd7', title: 'Utility agreements', status: 'completed' as const },
+            { id: 'd8', title: 'Connection schedules', status: 'completed' as const },
+            { id: 'd9', title: 'Meter locations', status: 'completed' as const }
+          ],
           documents: [
             { id: '10', name: 'Utility Applications', type: 'PDF', url: '/docs/utility-applications.pdf' },
             { id: '11', name: 'Utility NOCs', type: 'PDF', url: '/docs/utility-nocs.pdf' }
@@ -274,7 +302,11 @@ export default function FloatingChatDashboard() {
           notes: 'Site office setup completed successfully. All facilities are operational.',
           materials: ['Portable office unit', 'Desks and chairs', 'Computer equipment', 'Safety signage'],
           requirements: ['Site access permit', 'Utility connections', 'Safety equipment'],
-          deliverables: ['Fully functional site office', 'Welfare facilities', 'Safety documentation'],
+          deliverables: [
+            { id: 'd10', title: 'Fully functional site office', status: 'completed' as const },
+            { id: 'd11', title: 'Welfare facilities', status: 'completed' as const },
+            { id: 'd12', title: 'Safety documentation', status: 'completed' as const }
+          ],
           documents: [
             { id: '1', name: 'Site Office Setup Guide', type: 'PDF', url: '/docs/site-office-setup.pdf' },
             { id: '2', name: 'Safety Checklist', type: 'PDF', url: '/docs/safety-checklist.pdf' }
@@ -290,7 +322,11 @@ export default function FloatingChatDashboard() {
           notes: 'Hoarding installation in progress. Security cameras to be installed tomorrow.',
           materials: ['Hoarding panels', 'Steel posts', 'Security cameras', 'Warning signs'],
           requirements: ['Planning permission', 'Safety equipment', 'Installation team'],
-          deliverables: ['Secured site perimeter', 'Security system', 'Safety signage']
+          deliverables: [
+            { id: 'd13', title: 'Secured site perimeter', status: 'completed' as const },
+            { id: 'd14', title: 'Security system', status: 'pending' as const },
+            { id: 'd15', title: 'Safety signage', status: 'completed' as const }
+          ]
         },
         {
           id: '3.3',
@@ -302,7 +338,11 @@ export default function FloatingChatDashboard() {
           notes: 'Temporary utility connections scheduled for next week.',
           materials: ['Temporary power cables', 'Water connections', 'Safety equipment'],
           requirements: ['Utility permits', 'Safety certificates', 'Connection agreements'],
-          deliverables: ['Temporary power supply', 'Water connection', 'Safety documentation']
+          deliverables: [
+            { id: 'd16', title: 'Temporary power supply', status: 'pending' as const },
+            { id: 'd17', title: 'Water connection', status: 'pending' as const },
+            { id: 'd18', title: 'Safety documentation', status: 'pending' as const }
+          ]
         },
         {
           id: '3.4',
@@ -314,7 +354,11 @@ export default function FloatingChatDashboard() {
           notes: 'Ground preparation will begin after hoarding installation is complete.',
           materials: ['Excavation equipment', 'Safety barriers', 'Ground protection'],
           requirements: ['Site clearance permit', 'Safety equipment', 'Groundworks team'],
-          deliverables: ['Cleared site', 'Prepared ground', 'Safety barriers']
+          deliverables: [
+            { id: 'd19', title: 'Cleared site', status: 'pending' as const },
+            { id: 'd20', title: 'Prepared ground', status: 'pending' as const },
+            { id: 'd21', title: 'Safety barriers', status: 'pending' as const }
+          ]
         }
       ],
       details: {
