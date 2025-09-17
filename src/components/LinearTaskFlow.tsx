@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface SubTask {
   id: string;
@@ -64,6 +64,17 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
   const [notesValue, setNotesValue] = useState<string>('');
   const [lockedSteps, setLockedSteps] = useState<Set<string>>(new Set());
+
+  // Check for auto-advancement on mount and when steps change
+  useEffect(() => {
+    console.log('Checking for auto-advancement on mount/update');
+    steps.forEach(step => {
+      if (step.status === 'in-progress' && areAllSubTasksCompleted(step)) {
+        console.log('Found completed step on mount:', step.title);
+        handleAutoAdvancement(step.id);
+      }
+    });
+  }, [steps]);
 
   // Check if a step has incomplete sub-tasks
   const hasIncompleteSubTasks = (step: TaskStep) => {
