@@ -183,25 +183,20 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                           <div className="flex items-center space-x-3">
                             <button
                               onClick={() => {
-                                const newStatus = subTask.status === 'completed' ? 'pending' : 
-                                                subTask.status === 'pending' ? 'in-progress' : 'completed';
+                                // Simple toggle: completed <-> pending
+                                const newStatus = subTask.status === 'completed' ? 'pending' : 'completed';
                                 handleSubTaskUpdate(step.id, subTask.id, newStatus);
                               }}
-                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors cursor-pointer ${
                                 subTask.status === 'completed' 
-                                  ? 'bg-green-500 border-green-500' 
-                                  : subTask.status === 'in-progress'
-                                  ? 'bg-blue-500 border-blue-500'
-                                  : 'border-gray-300 hover:border-gray-400'
+                                  ? 'bg-green-500 border-green-500 hover:bg-green-600' 
+                                  : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
                               }`}
                             >
                               {subTask.status === 'completed' && (
                                 <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                 </svg>
-                              )}
-                              {subTask.status === 'in-progress' && (
-                                <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
                               )}
                             </button>
                             <div>
@@ -214,11 +209,9 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                               <span className="text-xs text-gray-500">{subTask.estimatedDuration}</span>
                             )}
                             <span className={`text-xs font-medium ${
-                              subTask.status === 'completed' ? 'text-green-600' :
-                              subTask.status === 'in-progress' ? 'text-blue-600' : 'text-gray-400'
+                              subTask.status === 'completed' ? 'text-green-600' : 'text-gray-400'
                             }`}>
-                              {subTask.status === 'completed' ? 'Done' : 
-                               subTask.status === 'in-progress' ? 'Active' : 'Pending'}
+                              {subTask.status === 'completed' ? 'Done' : 'Pending'}
                             </span>
                           </div>
                         </div>

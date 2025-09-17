@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Sidebar from '@/components/Sidebar';
-import KanbanBoard from '@/components/KanbanBoard';
 import FloatingChatOverlay from '@/components/FloatingChatOverlay';
 import LinearTaskFlow from '@/components/LinearTaskFlow';
 import { createProject, getProjects } from '../actions';
@@ -43,6 +42,32 @@ interface ChatMessage {
   taskText?: string;
 }
 
+interface SubTask {
+  id: string;
+  title: string;
+  description: string;
+  status: 'completed' | 'in-progress' | 'pending';
+  estimatedDuration?: string;
+  assignedTo?: string;
+}
+
+interface ProjectStep {
+  id: string;
+  title: string;
+  description: string;
+  status: 'completed' | 'in-progress' | 'pending';
+  stepNumber: number;
+  estimatedDuration?: string;
+  dependencies?: string[];
+  subTasks?: SubTask[];
+  details?: {
+    materials?: string[];
+    requirements?: string[];
+    deliverables?: string[];
+    notes?: string;
+  };
+}
+
 export default function FloatingChatDashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeProject, setActiveProject] = useState<string>("");
@@ -58,10 +83,32 @@ export default function FloatingChatDashboard() {
   // const [isGenerating, setIsGenerating] = useState(false); // Removed unused variable
   const [isChatExpanded, setIsChatExpanded] = useState(false);
 
-  const { tasks, addTask, updateTask, deleteTask, setAll } = useProjectStore();
+  const { tasks, addTask, setAll } = useProjectStore();
+
+  // Calculate task counts from LinearTaskFlow sub-tasks
+  const getTaskCounts = () => {
+    let totalTasks = 0;
+    let completedTasks = 0;
+    let inProgressTasks = 0;
+
+    projectSteps.forEach(step => {
+      if (step.subTasks) {
+        step.subTasks.forEach(subTask => {
+          totalTasks++;
+          if (subTask.status === 'completed') {
+            completedTasks++;
+          } else if (subTask.status === 'in-progress') {
+            inProgressTasks++;
+          }
+        });
+      }
+    });
+
+    return { totalTasks, completedTasks, inProgressTasks };
+  };
 
   // Sample project steps data with sub-tasks and details
-  const projectSteps = [
+  const [projectSteps, setProjectSteps] = useState<ProjectStep[]>([
     {
       id: '1',
       title: 'Project Planning & Design',
@@ -398,14 +445,29 @@ export default function FloatingChatDashboard() {
         notes: 'Final phase - ensure everything is perfect for handover.'
       }
     }
-  ];
+  ]);
 
-  // Load projects on component mount
-  useEffect(() => {
-    loadProjects();
-  }, []);
+  const taskCounts = getTaskCounts();
 
-  const loadProjects = async () => {
+  // Handle sub-task status updates
+  const handleSubTaskUpdate = (stepId: string, subTaskId: string, status: 'completed' | 'in-progress' | 'pending') => {
+    setProjectSteps(prevSteps => 
+      prevSteps.map(step => 
+        step.id === stepId 
+          ? {
+              ...step,
+              subTasks: step.subTasks?.map(subTask =>
+                subTask.id === subTaskId 
+                  ? { ...subTask, status }
+                  : subTask
+              )
+            }
+          : step
+      )
+    );
+  };
+
+  const loadProjects = useCallback(async () => {
     try {
       setIsLoading(true);
       const projectsData = await getProjects();
@@ -428,7 +490,12 @@ export default function FloatingChatDashboard() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [activeProject]);
+
+  // Load projects on component mount
+  useEffect(() => {
+    loadProjects();
+  }, [loadProjects]);
 
   // Initialize with sample tasks for demo
   useEffect(() => {
@@ -642,17 +709,6 @@ export default function FloatingChatDashboard() {
     console.log('Selected project:', projectId);
   };
 
-  const handleTaskUpdate = (taskId: string, updates: Partial<Task>) => {
-    updateTask(taskId, updates);
-  };
-
-  const handleAddTask = (task: Omit<Task, "id">) => {
-    addTask(task);
-  };
-
-  const handleDeleteTask = (taskId: string) => {
-    deleteTask(taskId);
-  };
 
   if (isLoading) {
     return (
@@ -742,7 +798,7 @@ export default function FloatingChatDashboard() {
                     </div>
                     <div className="ml-4">
                       <p className="text-sm font-medium text-gray-600">Total Tasks</p>
-                      <p className="text-2xl font-bold text-gray-900">{tasks.length}</p>
+                      <p className="text-2xl font-bold text-gray-900">{taskCounts.totalTasks}</p>
                     </div>
                   </div>
                 </div>
@@ -756,7 +812,7 @@ export default function FloatingChatDashboard() {
                     </div>
                     <div className="ml-4">
                       <p className="text-sm font-medium text-gray-600">In Progress</p>
-                      <p className="text-2xl font-bold text-gray-900">{tasks.filter(t => t.status === 'in-progress').length}</p>
+                      <p className="text-2xl font-bold text-gray-900">{taskCounts.inProgressTasks}</p>
                     </div>
                   </div>
                 </div>
@@ -770,7 +826,7 @@ export default function FloatingChatDashboard() {
                     </div>
                     <div className="ml-4">
                       <p className="text-sm font-medium text-gray-600">Completed Tasks</p>
-                      <p className="text-2xl font-bold text-gray-900">{tasks.filter(t => t.status === 'completed').length}</p>
+                      <p className="text-2xl font-bold text-gray-900">{taskCounts.completedTasks}</p>
                     </div>
                   </div>
                 </div>
@@ -802,43 +858,10 @@ export default function FloatingChatDashboard() {
                   console.log('Step clicked:', stepId);
                   // TODO: Handle step click - could show details, update status, etc.
                 }}
-                onSubTaskUpdate={(stepId, subTaskId, status) => {
-                  console.log('Sub-task updated:', { stepId, subTaskId, status });
-                  // TODO: Handle sub-task status update - could update database, etc.
-                }}
+                onSubTaskUpdate={handleSubTaskUpdate}
               />
             </div>
 
-            {/* Task Management Section */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">Task Management</h2>
-                <button
-                  onClick={() => {
-                    // TODO: Implement add task
-                    alert('Add task feature coming soon!');
-                  }}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition flex items-center gap-2"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  Add Task
-                </button>
-              </div>
-              
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="h-96">
-              <KanbanBoard 
-                tasks={tasks}
-                onTaskUpdate={handleTaskUpdate}
-                onAddTask={handleAddTask}
-                onDeleteTask={handleDeleteTask}
-                interactive={true}
-              />
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Floating Chat Overlay */}
