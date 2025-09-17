@@ -141,7 +141,15 @@ export default function FloatingChatDashboard() {
           description: 'Conduct topographical survey and site analysis',
           status: 'completed' as const,
           estimatedDuration: '3 days',
-          assignedTo: 'Survey Team'
+          assignedTo: 'Survey Team',
+          notes: 'Site survey completed successfully. All measurements and topographical data collected.',
+          materials: ['Survey equipment', 'Measuring tools', 'GPS devices', 'Safety equipment'],
+          requirements: ['Site access permission', 'Safety briefing', 'Survey team certification'],
+          deliverables: ['Topographical survey report', 'Site measurements', 'Digital site plan'],
+          documents: [
+            { id: '1', name: 'Site Survey Report', type: 'PDF', url: '/docs/site-survey.pdf' },
+            { id: '2', name: 'Topographical Map', type: 'PDF', url: '/docs/topographical-map.pdf' }
+          ]
         },
         {
           id: '1.2',
@@ -149,7 +157,15 @@ export default function FloatingChatDashboard() {
           description: 'Develop initial concept designs and layouts',
           status: 'completed' as const,
           estimatedDuration: '1 week',
-          assignedTo: 'Architect'
+          assignedTo: 'Architect',
+          notes: 'Concept design approved by client. Ready for detailed planning application.',
+          materials: ['Design software licenses', 'Drawing materials', 'Reference materials'],
+          requirements: ['Client brief', 'Site survey data', 'Planning constraints'],
+          deliverables: ['Concept drawings', '3D visualizations', 'Design brief'],
+          documents: [
+            { id: '3', name: 'Concept Drawings', type: 'PDF', url: '/docs/concept-drawings.pdf' },
+            { id: '4', name: '3D Visualization', type: 'PDF', url: '/docs/3d-visualization.pdf' }
+          ]
         },
         {
           id: '1.3',
@@ -157,7 +173,14 @@ export default function FloatingChatDashboard() {
           description: 'Assess project feasibility and constraints',
           status: 'completed' as const,
           estimatedDuration: '2 days',
-          assignedTo: 'Project Manager'
+          assignedTo: 'Project Manager',
+          notes: 'Feasibility study completed. Project is viable with minor adjustments to timeline.',
+          materials: ['Feasibility templates', 'Cost estimation tools', 'Risk assessment forms'],
+          requirements: ['Project scope', 'Budget constraints', 'Timeline requirements'],
+          deliverables: ['Feasibility report', 'Risk assessment', 'Cost estimates'],
+          documents: [
+            { id: '5', name: 'Feasibility Report', type: 'PDF', url: '/docs/feasibility-report.pdf' }
+          ]
         }
       ],
       details: {
@@ -182,7 +205,15 @@ export default function FloatingChatDashboard() {
           description: 'Submit planning permission application',
           status: 'completed' as const,
           estimatedDuration: '2 weeks',
-          assignedTo: 'Planning Consultant'
+          assignedTo: 'Planning Consultant',
+          notes: 'Planning application submitted successfully. No objections received from neighbors.',
+          materials: ['Application forms', 'Technical drawings', 'Supporting documents', 'Fees'],
+          requirements: ['Planning permission', 'Architectural drawings', 'Site plans'],
+          deliverables: ['Planning permission', 'Approved drawings', 'Planning conditions'],
+          documents: [
+            { id: '6', name: 'Planning Application', type: 'PDF', url: '/docs/planning-application.pdf' },
+            { id: '7', name: 'Planning Permission', type: 'PDF', url: '/docs/planning-permission.pdf' }
+          ]
         },
         {
           id: '2.2',
@@ -190,7 +221,15 @@ export default function FloatingChatDashboard() {
           description: 'Submit building regulations application',
           status: 'completed' as const,
           estimatedDuration: '1 week',
-          assignedTo: 'Building Control'
+          assignedTo: 'Building Control',
+          notes: 'Building regulations approval obtained. All structural requirements met.',
+          materials: ['Building regulations forms', 'Structural calculations', 'Compliance certificates'],
+          requirements: ['Building regulations approval', 'Structural engineer report', 'Fire safety assessment'],
+          deliverables: ['Building regulations approval', 'Compliance certificates', 'Inspection schedule'],
+          documents: [
+            { id: '8', name: 'Building Regulations Application', type: 'PDF', url: '/docs/building-regs.pdf' },
+            { id: '9', name: 'Structural Calculations', type: 'PDF', url: '/docs/structural-calc.pdf' }
+          ]
         },
         {
           id: '2.3',
@@ -198,7 +237,15 @@ export default function FloatingChatDashboard() {
           description: 'Apply for utility connections and NOCs',
           status: 'completed' as const,
           estimatedDuration: '3 weeks',
-          assignedTo: 'Utility Coordinator'
+          assignedTo: 'Utility Coordinator',
+          notes: 'All utility connections approved. NOCs received from all utility companies.',
+          materials: ['Utility application forms', 'Site plans', 'Connection specifications'],
+          requirements: ['Utility NOCs', 'Connection agreements', 'Meter installations'],
+          deliverables: ['Utility agreements', 'Connection schedules', 'Meter locations'],
+          documents: [
+            { id: '10', name: 'Utility Applications', type: 'PDF', url: '/docs/utility-applications.pdf' },
+            { id: '11', name: 'Utility NOCs', type: 'PDF', url: '/docs/utility-nocs.pdf' }
+          ]
         }
       ],
       details: {
@@ -251,7 +298,11 @@ export default function FloatingChatDashboard() {
           description: 'Connect temporary utilities to site',
           status: 'pending' as const,
           estimatedDuration: '2 days',
-          assignedTo: 'Utility Team'
+          assignedTo: 'Utility Team',
+          notes: 'Temporary utility connections scheduled for next week.',
+          materials: ['Temporary power cables', 'Water connections', 'Safety equipment'],
+          requirements: ['Utility permits', 'Safety certificates', 'Connection agreements'],
+          deliverables: ['Temporary power supply', 'Water connection', 'Safety documentation']
         },
         {
           id: '3.4',
@@ -259,7 +310,11 @@ export default function FloatingChatDashboard() {
           description: 'Clear site and prepare ground for construction',
           status: 'pending' as const,
           estimatedDuration: '3 days',
-          assignedTo: 'Groundworks Team'
+          assignedTo: 'Groundworks Team',
+          notes: 'Ground preparation will begin after hoarding installation is complete.',
+          materials: ['Excavation equipment', 'Safety barriers', 'Ground protection'],
+          requirements: ['Site clearance permit', 'Safety equipment', 'Groundworks team'],
+          deliverables: ['Cleared site', 'Prepared ground', 'Safety barriers']
         }
       ],
       details: {
