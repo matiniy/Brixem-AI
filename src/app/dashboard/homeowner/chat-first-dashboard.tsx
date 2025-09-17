@@ -175,7 +175,6 @@ export default function ChatFirstHomeownerDashboard() {
         onProjectDelete={() => {}}
         isMobileOpen={isMobileSidebarOpen}
         onMobileToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-        onStartProjectChat={() => {}}
       />
 
       {/* Main Content - Chat-First Layout */}

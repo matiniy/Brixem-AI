@@ -25,7 +25,6 @@ interface SidebarProps {
   onProjectDelete?: (projectId: string) => void;
   isMobileOpen?: boolean;
   onMobileToggle?: () => void;
-  onStartProjectChat?: () => void;
 }
 
 export default function Sidebar({ 
@@ -35,8 +34,7 @@ export default function Sidebar({
   onProjectCreate,
   onProjectDelete,
   isMobileOpen = false,
-  onMobileToggle,
-  onStartProjectChat
+  onMobileToggle
 }: SidebarProps) {
   const router = useRouter();
   
@@ -153,7 +151,7 @@ export default function Sidebar({
             <div className="flex items-center justify-between mb-3 sm:mb-4">
               <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Projects</h2>
               <button
-                onClick={onStartProjectChat}
+                onClick={() => window.location.href = '/dashboard/homeowner/empty'}
                 className="w-6 h-6 rounded-full bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center text-white hover:opacity-80 transition touch-manipulation"
                 title="Add New Project"
               >
@@ -164,7 +162,13 @@ export default function Sidebar({
             </div>
             
             <nav className="flex flex-col gap-2 sm:gap-3">
-              {projects.map((project) => (
+              {projects.length === 0 ? (
+                <div className="text-center py-4">
+                  <div className="text-gray-400 text-sm mb-2">No projects yet</div>
+                  <div className="text-xs text-gray-500">Create your first project to get started</div>
+                </div>
+              ) : (
+                projects.map((project) => (
                 <div
                   key={project.id}
                   className="relative group"
@@ -218,7 +222,8 @@ export default function Sidebar({
                     )}
                   </button>
                 </div>
-              ))}
+                ))
+              )}
             </nav>
           </div>
         </div>

@@ -130,7 +130,7 @@ export default function FloatingChatOverlay({
                 onKeyPress={handleKeyPress}
                 onFocus={handleChatClick}
                 placeholder={placeholder}
-                className="w-full bg-transparent text-white placeholder-white/80 text-sm focus:outline-none cursor-pointer"
+                className="w-full bg-transparent text-gray-900 placeholder-white/80 text-sm focus:outline-none cursor-pointer"
               />
             </div>
 
@@ -246,7 +246,7 @@ export default function FloatingChatOverlay({
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder={placeholder}
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30 focus:border-[#23c6e6] text-sm"
+                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30 focus:border-[#23c6e6] text-sm text-gray-900"
               />
             </div>
             <button

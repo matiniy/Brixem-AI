@@ -132,7 +132,6 @@ function LegacyHomeownerDashboard() {
         onProjectDelete={() => {}}
         isMobileOpen={isMobileSidebarOpen}
         onMobileToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-        onStartProjectChat={() => {}}
       />
 
       {/* Main Content */}
