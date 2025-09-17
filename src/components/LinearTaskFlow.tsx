@@ -51,6 +51,7 @@ interface LinearTaskFlowProps {
 
 const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({ 
   steps, 
+  currentStep,
   onStepClick,
   onSubTaskUpdate,
   onSubTaskNotesUpdate,
@@ -75,6 +76,22 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
       }
     });
   }, [steps]);
+
+  // Update expanded step when currentStep changes
+  useEffect(() => {
+    if (currentStep && currentStep !== expandedStep) {
+      console.log('Updating expanded step from', expandedStep, 'to', currentStep);
+      setExpandedStep(currentStep);
+    }
+  }, [currentStep, expandedStep]);
+
+  // Initialize expanded step on mount
+  useEffect(() => {
+    if (currentStep && !expandedStep) {
+      console.log('Initializing expanded step to', currentStep);
+      setExpandedStep(currentStep);
+    }
+  }, [currentStep, expandedStep]);
 
   // Check if a step has incomplete sub-tasks
   const hasIncompleteSubTasks = (step: TaskStep) => {
@@ -274,7 +291,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
       <div className="relative mb-6">
         {/* Desktop: Horizontal Layout */}
         <div className="hidden md:block">
-          <div className="flex items-start justify-between">
+          <div className="flex items-start justify-between overflow-x-auto pb-4">
             {steps.map((step, index) => {
               const isLast = index === steps.length - 1;
               const isExpanded = expandedStep === step.id;
@@ -308,11 +325,11 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                     )}
 
                     {/* Step Title */}
-                    <div className="mt-2 text-center max-w-24">
-                      <h4 className={`text-xs font-medium leading-tight ${getStepColor(step)}`}>
+                    <div className="mt-2 text-center max-w-24 min-w-0">
+                      <h4 className={`text-xs font-medium leading-tight ${getStepColor(step)} truncate`}>
                         {step.title}
                       </h4>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-500 mt-1 truncate">
                         {step.estimatedDuration}
                       </p>
                     </div>
@@ -347,10 +364,10 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                       {getStepIcon(step, steps.findIndex(s => s.id === step.id))}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className={`text-sm font-medium ${getStepColor(step)}`}>
+                      <h4 className={`text-sm font-medium ${getStepColor(step)} truncate`}>
                         {step.title}
                       </h4>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-500 mt-1 truncate">
                         {step.estimatedDuration}
                       </p>
                     </div>
@@ -513,7 +530,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
 
                               {/* Sub-task Cards */}
                               {(subTask.materials || subTask.requirements || subTask.deliverables) && (
-                                <div className="grid grid-cols-1 gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                   {subTask.materials && subTask.materials.length > 0 && (
                                     <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
                                       <div className="flex items-center justify-between mb-2">
@@ -787,7 +804,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
 
                                 {/* Sub-task Cards */}
                                 {(subTask.materials || subTask.requirements || subTask.deliverables) && (
-                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                     {subTask.materials && subTask.materials.length > 0 && (
                                       <div className="bg-white rounded-lg p-3 border border-gray-200">
                                         <div className="flex items-center justify-between mb-2">
