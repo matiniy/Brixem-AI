@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
+import { useProjects } from "@/contexts/ProjectContext";
 
 export default function PaymentPage() {
   const [paymentMethod, setPaymentMethod] = useState("card");
@@ -12,74 +13,30 @@ export default function PaymentPage() {
     nextBilling: "March 15, 2024"
   });
 
-  // Mock projects data for the sidebar
-  const mockProjects = [
-    {
-      id: "1",
-      name: "Kitchen Renovation",
-      progress: 75,
-      type: "renovation",
-      status: "in-progress",
-      budget: "$25,000 - $35,000",
-      description: "Modern kitchen renovation with new cabinets and countertops",
-      location: "San Francisco, CA",
-      timeline: "8-12 weeks",
-      createdAt: "2024-01-15"
-    },
-    {
-      id: "2", 
-      name: "Bathroom Remodel",
-      progress: 45,
-      type: "renovation",
-      status: "planning",
-      budget: "$15,000 - $25,000",
-      description: "Complete bathroom remodel with new fixtures",
-      location: "San Francisco, CA",
-      timeline: "6-8 weeks",
-      createdAt: "2024-02-01"
-    }
-  ];
-
-  const [projects, setProjects] = useState(mockProjects);
-  const [activeProject, setActiveProject] = useState("1");
+  const { projects, activeProject, setActiveProject, addProject, deleteProject } = useProjects();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const handleProjectSelect = (projectId: string) => {
     setActiveProject(projectId);
   };
 
-  const handleProjectCreate = (project: unknown) => {
-    if (
-      typeof project === "object" && project !== null &&
-      "name" in project && typeof project.name === "string" &&
-      "type" in project && typeof project.type === "string" &&
-      "status" in project && typeof project.status === "string" &&
-      "budget" in project && typeof project.budget === "string" &&
-      "description" in project && typeof project.description === "string" &&
-      "location" in project && typeof project.location === "string" &&
-      "timeline" in project && typeof project.timeline === "string"
-    ) {
-      const newProject = {
-        id: Date.now().toString(),
+  const handleProjectCreate = async (project: any) => {
+    try {
+      await addProject({
         name: project.name,
         type: project.type,
         status: project.status,
-        budget: project.budget,
         description: project.description,
         location: project.location,
-        timeline: project.timeline,
-        progress: 0,
-        createdAt: new Date().toISOString()
-      };
-      setProjects(prev => [...prev, newProject]);
+        size_sqft: 0
+      });
+    } catch (error) {
+      console.error('Error creating project:', error);
     }
   };
 
   const handleProjectDelete = (projectId: string) => {
-    setProjects(prev => prev.filter(p => p.id !== projectId));
-    if (activeProject === projectId) {
-      setActiveProject(projects[0]?.id || "");
-    }
+    deleteProject(projectId);
   };
 
   return (

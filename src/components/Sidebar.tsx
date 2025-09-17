@@ -231,6 +231,18 @@ export default function Sidebar({
         {/* Navigation Links */}
         <div className="px-3 sm:px-4 lg:px-6">
           <nav className="flex flex-col gap-1 sm:gap-2 mb-4 sm:mb-6">
+            {/* Back to Main Website */}
+            <Link
+              href="/"
+              className="flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors touch-manipulation"
+              onClick={onMobileToggle}
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              <span className="text-xs sm:text-sm font-medium">Back to Main Website</span>
+            </Link>
+            
             <Link
               href="/dashboard/profile"
               className="flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-colors touch-manipulation"
