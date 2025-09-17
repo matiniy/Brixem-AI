@@ -42,7 +42,7 @@ export default function SettingsPage() {
         type: project.type,
         status: project.status || 'planning',
         description: project.description,
-        location: project.location
+        location: project.location || 'Not specified'
       });
     } catch (error) {
       console.error('Error creating project:', error);
