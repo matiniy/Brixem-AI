@@ -82,6 +82,8 @@ export default function FloatingChatDashboard() {
   ]);
   // const [isGenerating, setIsGenerating] = useState(false); // Removed unused variable
   const [isChatExpanded, setIsChatExpanded] = useState(false);
+  const [isEditingProjectName, setIsEditingProjectName] = useState(false);
+  const [editingProjectName, setEditingProjectName] = useState('');
 
   const { tasks, addTask, setAll } = useProjectStore();
 
@@ -467,6 +469,51 @@ export default function FloatingChatDashboard() {
     );
   };
 
+  // Handle project name editing
+  const handleProjectNameEdit = () => {
+    const currentProject = projects.find(p => p.id === activeProject);
+    if (currentProject) {
+      setEditingProjectName(currentProject.name);
+      setIsEditingProjectName(true);
+    }
+  };
+
+  const handleProjectNameSave = async () => {
+    if (editingProjectName.trim() && activeProject) {
+      try {
+        // Update project name in local state
+        setProjects(prevProjects => 
+          prevProjects.map(project => 
+            project.id === activeProject 
+              ? { ...project, name: editingProjectName.trim() }
+              : project
+          )
+        );
+        
+        // TODO: Update project name via API
+        // await updateProjectName(activeProject, editingProjectName.trim());
+        
+        setIsEditingProjectName(false);
+        setEditingProjectName('');
+      } catch (error) {
+        console.error('Error updating project name:', error);
+      }
+    }
+  };
+
+  const handleProjectNameCancel = () => {
+    setIsEditingProjectName(false);
+    setEditingProjectName('');
+  };
+
+  const handleProjectNameKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleProjectNameSave();
+    } else if (e.key === 'Escape') {
+      handleProjectNameCancel();
+    }
+  };
+
   const loadProjects = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -751,9 +798,56 @@ export default function FloatingChatDashboard() {
                   </svg>
                 </button>
                 
-                <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
-                  Project Dashboard
-                </h1>
+                <div className="flex items-center gap-2">
+                  {isEditingProjectName ? (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={editingProjectName}
+                        onChange={(e) => setEditingProjectName(e.target.value)}
+                        onKeyPress={handleProjectNameKeyPress}
+                        onBlur={handleProjectNameSave}
+                        className="text-lg sm:text-xl font-semibold text-gray-900 bg-transparent border-b-2 border-blue-500 focus:outline-none focus:border-blue-600"
+                        autoFocus
+                      />
+                      <button
+                        onClick={handleProjectNameSave}
+                        className="text-green-600 hover:text-green-700 p-1"
+                        title="Save"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={handleProjectNameCancel}
+                        className="text-red-600 hover:text-red-700 p-1"
+                        title="Cancel"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
+                        {activeProject && projects.length > 0 
+                          ? projects.find(p => p.id === activeProject)?.name || 'Project Dashboard'
+                          : 'Project Dashboard'}
+                      </h1>
+                      <button
+                        onClick={handleProjectNameEdit}
+                        className="text-gray-400 hover:text-gray-600 p-1"
+                        title="Edit project name"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Project Count and New Project Button */}
