@@ -26,6 +26,28 @@ interface SubTask {
   }>;
 }
 
+interface CalendarTask {
+  id: string;
+  title: string;
+  description?: string;
+  status: 'completed' | 'in-progress' | 'todo';
+  priority: 'high' | 'medium' | 'low';
+  progress: number;
+  assignedUsers: string[];
+  comments: number;
+  likes: number;
+  dueDate?: string;
+  estimatedHours?: number;
+}
+
+interface TaskUpdate {
+  status?: 'completed' | 'in-progress' | 'todo';
+  progress?: number;
+  priority?: 'high' | 'medium' | 'low';
+  dueDate?: string;
+  [key: string]: unknown;
+}
+
 interface TaskStep {
   id: string;
   title: string;
@@ -53,8 +75,8 @@ interface LinearTaskFlowProps {
   onStepLock?: (stepId: string, locked: boolean) => void;
   onStepComplete?: (stepId: string) => void;
   onStepAdvance?: (currentStepId: string, nextStepId: string) => void;
-  onTaskUpdate?: (taskId: string, updates: any) => void;
-  onAddTask?: (task: any) => void;
+  onTaskUpdate?: (taskId: string, updates: TaskUpdate) => void;
+  onAddTask?: (task: Omit<CalendarTask, 'id'>) => void;
 }
 
 const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({ 
@@ -328,8 +350,8 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
   };
 
   // Convert sub-tasks to calendar tasks
-  const getCalendarTasks = () => {
-    const tasks: any[] = [];
+  const getCalendarTasks = (): CalendarTask[] => {
+    const tasks: CalendarTask[] = [];
     steps.forEach(step => {
       if (step.subTasks) {
         step.subTasks.forEach(subTask => {
