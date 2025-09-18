@@ -75,6 +75,7 @@ interface LinearTaskFlowProps {
   onStepLock?: (stepId: string, locked: boolean) => void;
   onStepComplete?: (stepId: string) => void;
   onStepAdvance?: (currentStepId: string, nextStepId: string) => void;
+  onStepStatusUpdate?: (stepId: string, status: 'completed' | 'in-progress' | 'pending') => void;
   onTaskUpdate?: (taskId: string, updates: TaskUpdate) => void;
   onAddTask?: (task: Omit<CalendarTask, 'id'>) => void;
 }
@@ -89,11 +90,11 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
   onStepLock,
   onStepComplete,
   onStepAdvance,
+  onStepStatusUpdate,
   onTaskUpdate,
   onAddTask
 }) => {
   const [expandedStep, setExpandedStep] = useState<string | null>(null);
-  const [collapsedSteps, setCollapsedSteps] = useState<Set<string>>(new Set());
   const [collapsedSubTasks, setCollapsedSubTasks] = useState<Set<string>>(new Set());
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
   const [notesValue, setNotesValue] = useState<string>('');
@@ -195,7 +196,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
           </div>
           {/* Lock icon */}
           {isLocked && (
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+            <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center z-10">
               <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
               </svg>
@@ -203,7 +204,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
           )}
           {/* Notification icon for incomplete sub-tasks */}
           {isPreviousStep && hasIncomplete && !isLocked && (
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
+            <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center z-10 animate-pulse">
               <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
@@ -272,16 +273,20 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
     }, 100);
   };
 
-  const toggleStepCollapse = (stepId: string) => {
-    setCollapsedSteps(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(stepId)) {
-        newSet.delete(stepId);
-      } else {
-        newSet.add(stepId);
+  const handleStepStatusUpdate = (stepId: string, status: 'completed' | 'in-progress' | 'pending') => {
+    // If trying to toggle off a completed step, show confirmation
+    if (status !== 'completed') {
+      const step = steps.find(s => s.id === stepId);
+      if (step?.status === 'completed') {
+        setShowConfirmation({
+          type: 'step',
+          stepId,
+          action: 'toggle-off'
+        });
+        return;
       }
-      return newSet;
-    });
+    }
+    onStepStatusUpdate?.(stepId, status);
   };
 
   const toggleSubTaskCollapse = (subTaskId: string) => {
@@ -344,6 +349,13 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
     
     if (showConfirmation.type === 'subtask' && showConfirmation.subTaskId) {
       onSubTaskUpdate?.(showConfirmation.stepId, showConfirmation.subTaskId, 'pending');
+    } else if (showConfirmation.type === 'step') {
+      // Find the current step status and toggle it
+      const step = steps.find(s => s.id === showConfirmation.stepId);
+      if (step) {
+        const newStatus = step.status === 'completed' ? 'in-progress' : 'pending';
+        onStepStatusUpdate?.(showConfirmation.stepId, newStatus);
+      }
     }
     
     setShowConfirmation(null);
@@ -459,6 +471,24 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                       </button>
                     )}
 
+                    {/* Step status toggle button */}
+                    {onStepStatusUpdate && (
+                      <button
+                        onClick={() => {
+                          const newStatus = step.status === 'completed' ? 'in-progress' : 
+                                           step.status === 'in-progress' ? 'pending' : 'completed';
+                          handleStepStatusUpdate(step.id, newStatus);
+                        }}
+                        className="mt-1 p-1 rounded-full transition-colors bg-gray-100 text-gray-400 hover:bg-gray-200"
+                        title={`Toggle step status: ${step.status === 'completed' ? 'Mark as in-progress' : 
+                                                      step.status === 'in-progress' ? 'Mark as pending' : 'Mark as completed'}`}
+                      >
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                    )}
+
                     {/* Step Title */}
                     <div className="mt-2 text-center max-w-24 min-w-0">
                       <h4 className={`text-xs font-medium leading-tight ${getStepColor(step)} truncate`}>
@@ -485,14 +515,14 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
           {/* Mobile: Vertical Layout */}
           <div className="md:hidden space-y-4">
             {steps.map((step) => {
-              const isCollapsed = collapsedSteps.has(step.id);
+              const isExpanded = expandedStep === step.id;
 
               return (
                 <div key={step.id} className="border border-gray-200 rounded-lg overflow-hidden">
                 {/* Step Header - Always Visible */}
                 <div 
                   className="flex items-center justify-between p-4 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
-                  onClick={() => toggleStepCollapse(step.id)}
+                  onClick={() => handleStepClick(step.id)}
                 >
                   <div className="flex items-center space-x-3">
                     <div className="flex-shrink-0">
@@ -529,10 +559,28 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                         </svg>
                       </button>
                     )}
+
+                    {/* Step status toggle button */}
+                    {onStepStatusUpdate && (
+                      <button
+                        onClick={() => {
+                          const newStatus = step.status === 'completed' ? 'in-progress' : 
+                                           step.status === 'in-progress' ? 'pending' : 'completed';
+                          handleStepStatusUpdate(step.id, newStatus);
+                        }}
+                        className="p-1 rounded-full transition-colors bg-gray-100 text-gray-400 hover:bg-gray-200"
+                        title={`Toggle step status: ${step.status === 'completed' ? 'Mark as in-progress' : 
+                                                      step.status === 'in-progress' ? 'Mark as pending' : 'Mark as completed'}`}
+                      >
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                    )}
                     
                     <button className="p-1 hover:bg-gray-200 rounded">
                       <svg
-                        className={`w-4 h-4 text-gray-500 transition-transform ${isCollapsed ? 'rotate-180' : ''}`}
+                        className={`w-4 h-4 text-gray-500 transition-transform ${isExpanded ? '' : 'rotate-180'}`}
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -544,7 +592,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                 </div>
 
                 {/* Step Content - Collapsible */}
-                {!isCollapsed && (
+                {isExpanded && (
                   <div className="p-4 bg-white">
                     <p className="text-sm text-gray-600 mb-4">{step.description}</p>
                     
