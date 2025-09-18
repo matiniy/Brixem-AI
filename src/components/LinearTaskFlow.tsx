@@ -94,6 +94,9 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
   onTaskUpdate,
   onAddTask
 }) => {
+  // Debug: Log the steps data to see what we're receiving
+  console.log('LinearTaskFlow received steps:', steps);
+  console.log('First step sub-tasks:', steps[0]?.subTasks);
   const [expandedStep, setExpandedStep] = useState<string | null>(null);
   const [collapsedSubTasks, setCollapsedSubTasks] = useState<Set<string>>(new Set());
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
