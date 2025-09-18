@@ -128,7 +128,7 @@ export default function FloatingChatDashboard() {
     return { totalTasks, completedTasks, toDoTasks };
   };
 
-  // Sample project steps data with sub-tasks and details
+  // Sample project steps data with sub-tasks and details (Streamlined to 6 steps)
   const [projectSteps, setProjectSteps] = useState<ProjectStep[]>([
     {
       id: '1',
@@ -370,200 +370,223 @@ export default function FloatingChatDashboard() {
     },
     {
       id: '4',
-      title: 'Foundation & Substructure',
-      description: 'Excavation, foundation laying, and substructure construction',
+      title: 'Construction',
+      description: 'Foundation, substructure, superstructure, and main building construction',
       status: 'pending' as const,
       stepNumber: 4,
-      estimatedDuration: '2-3 weeks',
+      estimatedDuration: '6-9 weeks',
       dependencies: ['Site Preparation'],
       subTasks: [
         {
           id: '4.1',
-          title: 'Excavation',
-          description: 'Excavate foundation trenches and prepare ground',
+          title: 'Foundation & Substructure',
+          description: 'Excavation, foundation laying, and substructure construction',
           status: 'pending' as const,
-          estimatedDuration: '3 days',
-          assignedTo: 'Excavation Team'
+          estimatedDuration: '2-3 weeks',
+          assignedTo: 'Foundation Team',
+          notes: 'Foundation work will begin once site preparation is complete.',
+          materials: ['Concrete', 'Reinforcement steel', 'Formwork', 'Brick/block'],
+          requirements: ['Excavation equipment', 'Concrete delivery', 'Quality control'],
+          deliverables: [
+            { id: 'd31', title: 'Excavated foundations', status: 'pending' as const },
+            { id: 'd32', title: 'Concrete foundations', status: 'pending' as const },
+            { id: 'd33', title: 'Substructure walls', status: 'pending' as const }
+          ],
+          documents: [
+            { id: '12', name: 'Foundation Drawings', type: 'PDF', url: '/docs/foundation-drawings.pdf' },
+            { id: '13', name: 'Excavation Report', type: 'PDF', url: '/docs/excavation-report.pdf' }
+          ]
         },
         {
           id: '4.2',
-          title: 'Foundation Pour',
-          description: 'Pour concrete foundations and footings',
-          status: 'pending' as const,
-          estimatedDuration: '2 days',
-          assignedTo: 'Concrete Team'
-        },
-        {
-          id: '4.3',
-          title: 'Substructure Walls',
-          description: 'Build substructure walls and retaining structures',
-          status: 'pending' as const,
-          estimatedDuration: '5 days',
-          assignedTo: 'Masonry Team'
-        }
-      ],
-      details: {
-        materials: ['Concrete', 'Reinforcement steel', 'Formwork', 'Brick/block'],
-        requirements: ['Excavation equipment', 'Concrete delivery', 'Quality control'],
-        deliverables: ['Excavated foundations', 'Concrete foundations', 'Substructure walls'],
-        notes: 'Ready to begin once site preparation is complete.'
-      }
-    },
-    {
-      id: '5',
-      title: 'Superstructure',
-      description: 'Main building construction, structural elements, and external envelope',
-      status: 'pending' as const,
-      stepNumber: 5,
-      estimatedDuration: '4-6 weeks',
-      dependencies: ['Foundation & Substructure'],
-      subTasks: [
-        {
-          id: '5.1',
           title: 'Structural Frame',
           description: 'Erect main structural frame and steelwork',
           status: 'pending' as const,
           estimatedDuration: '2 weeks',
-          assignedTo: 'Steel Erection Team'
+          assignedTo: 'Steel Erection Team',
+          notes: 'Structural frame erection requires crane access and weather protection.',
+          materials: ['Structural steel', 'Concrete', 'Crane equipment'],
+          requirements: ['Crane access', 'Weather protection', 'Quality control'],
+          deliverables: [
+            { id: 'd34', title: 'Structural frame', status: 'pending' as const },
+            { id: 'd35', title: 'Steel connections', status: 'pending' as const }
+          ],
+          documents: [
+            { id: '14', name: 'Steel Erection Plan', type: 'PDF', url: '/docs/steel-erection-plan.pdf' },
+            { id: '15', name: 'Structural Calculations', type: 'PDF', url: '/docs/structural-calculations.pdf' }
+          ]
         },
         {
-          id: '5.2',
-          title: 'External Walls',
-          description: 'Build external walls and cladding',
+          id: '4.3',
+          title: 'External Envelope',
+          description: 'Build external walls, cladding, and roof structure',
           status: 'pending' as const,
-          estimatedDuration: '2 weeks',
-          assignedTo: 'Cladding Team'
-        },
-        {
-          id: '5.3',
-          title: 'Roof Structure',
-          description: 'Install roof structure and covering',
-          status: 'pending' as const,
-          estimatedDuration: '1 week',
-          assignedTo: 'Roofing Team'
+          estimatedDuration: '2-3 weeks',
+          assignedTo: 'Envelope Team',
+          notes: 'External envelope work requires coordination between multiple trades.',
+          materials: ['Cladding panels', 'Roofing materials', 'Insulation', 'Waterproofing'],
+          requirements: ['Weather conditions', 'Access equipment', 'Quality control'],
+          deliverables: [
+            { id: 'd36', title: 'External walls', status: 'pending' as const },
+            { id: 'd37', title: 'Roof structure', status: 'pending' as const },
+            { id: 'd38', title: 'Weatherproof envelope', status: 'pending' as const }
+          ],
+          documents: [
+            { id: '16', name: 'Cladding Specifications', type: 'PDF', url: '/docs/cladding-specs.pdf' },
+            { id: '17', name: 'Roofing Details', type: 'PDF', url: '/docs/roofing-details.pdf' }
+          ]
         }
       ],
       details: {
-        materials: ['Structural steel', 'Concrete', 'Cladding panels', 'Roofing materials'],
+        materials: ['Concrete', 'Steel', 'Cladding', 'Roofing materials'],
         requirements: ['Crane access', 'Weather protection', 'Quality control'],
-        deliverables: ['Structural frame', 'External envelope', 'Roof structure'],
-        notes: 'Major construction phase - requires careful coordination.'
+        deliverables: ['Foundation', 'Structural frame', 'External envelope'],
+        notes: 'Major construction phase - requires careful coordination and weather protection.'
       }
     },
     {
-      id: '6',
-      title: 'Internal Works',
-      description: 'Internal partitions, finishes, MEP installation, and fit-out works',
+      id: '5',
+      title: 'Finishing Works',
+      description: 'Internal works, MEP installation, external works, and landscaping',
       status: 'pending' as const,
-      stepNumber: 6,
-      estimatedDuration: '3-4 weeks',
-      dependencies: ['Superstructure'],
+      stepNumber: 5,
+      estimatedDuration: '4-6 weeks',
+      dependencies: ['Construction'],
       subTasks: [
         {
-          id: '6.1',
+          id: '5.1',
           title: 'MEP Installation',
           description: 'Install mechanical, electrical, and plumbing systems',
           status: 'pending' as const,
           estimatedDuration: '2 weeks',
-          assignedTo: 'MEP Team'
+          assignedTo: 'MEP Team',
+          notes: 'MEP installation requires coordination between multiple trades.',
+          materials: ['MEP equipment', 'Cables', 'Pipes', 'Ductwork'],
+          requirements: ['MEP coordination', 'Quality control', 'Clean environment'],
+          deliverables: [
+            { id: 'd39', title: 'Electrical systems', status: 'pending' as const },
+            { id: 'd40', title: 'Plumbing systems', status: 'pending' as const },
+            { id: 'd41', title: 'HVAC systems', status: 'pending' as const }
+          ],
+          documents: [
+            { id: '18', name: 'MEP Drawings', type: 'PDF', url: '/docs/mep-drawings.pdf' },
+            { id: '19', name: 'Installation Manual', type: 'PDF', url: '/docs/installation-manual.pdf' }
+          ]
         },
         {
-          id: '6.2',
-          title: 'Internal Partitions',
-          description: 'Build internal walls and partitions',
+          id: '5.2',
+          title: 'Internal Finishes',
+          description: 'Internal partitions, finishes, and decorations',
           status: 'pending' as const,
-          estimatedDuration: '1 week',
-          assignedTo: 'Partition Team'
+          estimatedDuration: '2 weeks',
+          assignedTo: 'Finishing Team',
+          notes: 'Internal finishing work requires clean environment and quality control.',
+          materials: ['Partition materials', 'Finishing materials', 'Paint', 'Flooring'],
+          requirements: ['Clean environment', 'Quality control', 'Access equipment'],
+          deliverables: [
+            { id: 'd42', title: 'Internal partitions', status: 'pending' as const },
+            { id: 'd43', title: 'Finished surfaces', status: 'pending' as const },
+            { id: 'd44', title: 'Decorative elements', status: 'pending' as const }
+          ],
+          documents: [
+            { id: '20', name: 'Finishing Specifications', type: 'PDF', url: '/docs/finishing-specs.pdf' },
+            { id: '21', name: 'Color Schedule', type: 'PDF', url: '/docs/color-schedule.pdf' }
+          ]
         },
         {
-          id: '6.3',
-          title: 'Finishes',
-          description: 'Apply internal finishes and decorations',
+          id: '5.3',
+          title: 'External Works & Landscaping',
+          description: 'Complete external finishes, landscaping, and site cleanup',
           status: 'pending' as const,
-          estimatedDuration: '1 week',
-          assignedTo: 'Finishing Team'
+          estimatedDuration: '1-2 weeks',
+          assignedTo: 'External Team',
+          notes: 'External works and landscaping require good weather conditions.',
+          materials: ['Landscaping materials', 'External finishes', 'Cleaning supplies'],
+          requirements: ['Weather conditions', 'Access routes', 'Final inspections'],
+          deliverables: [
+            { id: 'd45', title: 'Completed landscaping', status: 'pending' as const },
+            { id: 'd46', title: 'External finishes', status: 'pending' as const },
+            { id: 'd47', title: 'Clean site', status: 'pending' as const }
+          ],
+          documents: [
+            { id: '22', name: 'Landscaping Plan', type: 'PDF', url: '/docs/landscaping-plan.pdf' },
+            { id: '23', name: 'External Finishes Guide', type: 'PDF', url: '/docs/external-finishes.pdf' }
+          ]
         }
       ],
       details: {
-        materials: ['MEP equipment', 'Partition materials', 'Finishing materials'],
-        requirements: ['MEP coordination', 'Quality control', 'Clean environment'],
-        deliverables: ['MEP systems', 'Internal partitions', 'Finished surfaces'],
-        notes: 'Requires coordination between multiple trades.'
+        materials: ['MEP equipment', 'Partition materials', 'Finishing materials', 'Landscaping materials'],
+        requirements: ['MEP coordination', 'Quality control', 'Clean environment', 'Weather conditions'],
+        deliverables: ['MEP systems', 'Internal finishes', 'External works', 'Landscaping'],
+        notes: 'Finishing phase requires coordination between multiple trades and clean environment.'
       }
     },
     {
-      id: '7',
-      title: 'External Works',
-      description: 'Landscaping, external finishes, and site completion',
-      status: 'pending' as const,
-      stepNumber: 7,
-      estimatedDuration: '1-2 weeks',
-      dependencies: ['Internal Works'],
-      subTasks: [
-        {
-          id: '7.1',
-          title: 'Landscaping',
-          description: 'Install landscaping and external features',
-          status: 'pending' as const,
-          estimatedDuration: '3 days',
-          assignedTo: 'Landscaping Team'
-        },
-        {
-          id: '7.2',
-          title: 'External Finishes',
-          description: 'Complete external finishes and details',
-          status: 'pending' as const,
-          estimatedDuration: '2 days',
-          assignedTo: 'External Team'
-        },
-        {
-          id: '7.3',
-          title: 'Site Cleanup',
-          description: 'Clean up site and remove temporary facilities',
-          status: 'pending' as const,
-          estimatedDuration: '2 days',
-          assignedTo: 'Cleanup Team'
-        }
-      ],
-      details: {
-        materials: ['Landscaping materials', 'External finishes', 'Cleaning supplies'],
-        requirements: ['Weather conditions', 'Access routes', 'Final inspections'],
-        deliverables: ['Completed landscaping', 'External finishes', 'Clean site'],
-        notes: 'Final external works before handover.'
-      }
-    },
-    {
-      id: '8',
+      id: '6',
       title: 'Testing & Handover',
       description: 'Final testing, commissioning, snagging, and project handover',
       status: 'pending' as const,
-      stepNumber: 8,
+      stepNumber: 6,
       estimatedDuration: '1-2 weeks',
-      dependencies: ['External Works'],
+      dependencies: ['Finishing Works'],
       subTasks: [
         {
-          id: '8.1',
+          id: '6.1',
           title: 'System Testing',
           description: 'Test all MEP systems and building services',
           status: 'pending' as const,
           estimatedDuration: '3 days',
-          assignedTo: 'Testing Team'
+          assignedTo: 'Testing Team',
+          notes: 'System testing ensures all building services are functioning correctly.',
+          materials: ['Testing equipment', 'Test procedures', 'Safety equipment'],
+          requirements: ['System commissioning', 'Quality assurance', 'Safety protocols'],
+          deliverables: [
+            { id: 'd48', title: 'Tested systems', status: 'pending' as const },
+            { id: 'd49', title: 'Commissioning reports', status: 'pending' as const }
+          ],
+          documents: [
+            { id: '24', name: 'Test Procedures', type: 'PDF', url: '/docs/test-procedures.pdf' },
+            { id: '25', name: 'Commissioning Checklist', type: 'PDF', url: '/docs/commissioning-checklist.pdf' }
+          ]
         },
         {
-          id: '8.2',
+          id: '6.2',
           title: 'Snagging',
           description: 'Identify and rectify any defects or issues',
           status: 'pending' as const,
           estimatedDuration: '2 days',
-          assignedTo: 'Snagging Team'
+          assignedTo: 'Snagging Team',
+          notes: 'Snagging ensures all work meets quality standards before handover.',
+          materials: ['Snagging lists', 'Repair materials', 'Quality checklists'],
+          requirements: ['Quality standards', 'Client approval', 'Final inspections'],
+          deliverables: [
+            { id: 'd50', title: 'Snag-free building', status: 'pending' as const },
+            { id: 'd51', title: 'Quality certificates', status: 'pending' as const }
+          ],
+          documents: [
+            { id: '26', name: 'Snagging List', type: 'PDF', url: '/docs/snagging-list.pdf' },
+            { id: '27', name: 'Quality Checklist', type: 'PDF', url: '/docs/quality-checklist.pdf' }
+          ]
         },
         {
-          id: '8.3',
+          id: '6.3',
           title: 'Handover',
           description: 'Complete project handover and documentation',
           status: 'pending' as const,
           estimatedDuration: '1 day',
-          assignedTo: 'Project Manager'
+          assignedTo: 'Project Manager',
+          notes: 'Final handover includes all documentation and client training.',
+          materials: ['Handover documentation', 'Keys', 'Warranties', 'Manuals'],
+          requirements: ['Client approval', 'Final inspections', 'Documentation complete'],
+          deliverables: [
+            { id: 'd52', title: 'Handover documentation', status: 'pending' as const },
+            { id: 'd53', title: 'Client training', status: 'pending' as const },
+            { id: 'd54', title: 'Project completion', status: 'pending' as const }
+          ],
+          documents: [
+            { id: '28', name: 'Handover Manual', type: 'PDF', url: '/docs/handover-manual.pdf' },
+            { id: '29', name: 'Warranty Documents', type: 'PDF', url: '/docs/warranty-docs.pdf' }
+          ]
         }
       ],
       details: {
@@ -1225,6 +1248,14 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
                 onDeliverableUpdate={handleDeliverableUpdate}
                 onStepComplete={handleStepComplete}
                 onStepAdvance={handleStepAdvance}
+                onTaskUpdate={(taskId, updates) => {
+                  console.log('Task updated:', taskId, updates);
+                  // TODO: Handle task updates from calendar view
+                }}
+                onAddTask={(task) => {
+                  console.log('Task added:', task);
+                  // TODO: Handle adding new tasks from calendar view
+                }}
               />
             </div>
 

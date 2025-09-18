@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import CalendarView from './CalendarView';
 
 interface SubTask {
   id: string;
@@ -52,6 +53,8 @@ interface LinearTaskFlowProps {
   onStepLock?: (stepId: string, locked: boolean) => void;
   onStepComplete?: (stepId: string) => void;
   onStepAdvance?: (currentStepId: string, nextStepId: string) => void;
+  onTaskUpdate?: (taskId: string, updates: any) => void;
+  onAddTask?: (task: any) => void;
 }
 
 const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({ 
@@ -63,7 +66,9 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
   onDeliverableUpdate,
   onStepLock,
   onStepComplete,
-  onStepAdvance
+  onStepAdvance,
+  onTaskUpdate,
+  onAddTask
 }) => {
   const [expandedStep, setExpandedStep] = useState<string | null>(null);
   const [collapsedSteps, setCollapsedSteps] = useState<Set<string>>(new Set());
@@ -71,6 +76,13 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
   const [notesValue, setNotesValue] = useState<string>('');
   const [lockedSteps, setLockedSteps] = useState<Set<string>>(new Set());
+  const [viewMode, setViewMode] = useState<'progress' | 'calendar'>('progress');
+  const [showConfirmation, setShowConfirmation] = useState<{
+    type: 'step' | 'subtask';
+    stepId: string;
+    subTaskId?: string;
+    action: 'toggle-off';
+  } | null>(null);
 
   // Check if all sub-tasks in a step are completed
   const areAllSubTasksCompleted = (step: TaskStep) => {
@@ -205,11 +217,27 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
   };
 
   const handleStepClick = (stepId: string) => {
+    // Allow viewing any step, even completed ones
     setExpandedStep(expandedStep === stepId ? null : stepId);
     onStepClick?.(stepId);
   };
 
   const handleSubTaskUpdate = (stepId: string, subTaskId: string, status: 'completed' | 'in-progress' | 'pending') => {
+    // If trying to toggle off a completed sub-task, show confirmation
+    if (status === 'pending') {
+      const step = steps.find(s => s.id === stepId);
+      const subTask = step?.subTasks?.find(st => st.id === subTaskId);
+      if (subTask?.status === 'completed') {
+        setShowConfirmation({
+          type: 'subtask',
+          stepId,
+          subTaskId,
+          action: 'toggle-off'
+        });
+        return;
+      }
+    }
+    
     onSubTaskUpdate?.(stepId, subTaskId, status);
     
     // Check for auto-advancement after a short delay to allow state updates
@@ -284,21 +312,95 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
     return !lockedSteps.has(stepId);
   };
 
+  // Handle confirmation actions
+  const handleConfirmationConfirm = () => {
+    if (!showConfirmation) return;
+    
+    if (showConfirmation.type === 'subtask' && showConfirmation.subTaskId) {
+      onSubTaskUpdate?.(showConfirmation.stepId, showConfirmation.subTaskId, 'pending');
+    }
+    
+    setShowConfirmation(null);
+  };
+
+  const handleConfirmationCancel = () => {
+    setShowConfirmation(null);
+  };
+
+  // Convert sub-tasks to calendar tasks
+  const getCalendarTasks = () => {
+    const tasks: any[] = [];
+    steps.forEach(step => {
+      if (step.subTasks) {
+        step.subTasks.forEach(subTask => {
+          // Generate a due date based on step order and estimated duration
+          const stepIndex = steps.findIndex(s => s.id === step.id);
+          const baseDate = new Date();
+          baseDate.setDate(baseDate.getDate() + (stepIndex * 7)); // Each step gets a week
+          
+          tasks.push({
+            id: subTask.id,
+            title: subTask.title,
+            description: subTask.description,
+            status: subTask.status === 'completed' ? 'completed' : 
+                   subTask.status === 'in-progress' ? 'in-progress' : 'todo',
+            priority: step.status === 'in-progress' ? 'high' : 'medium',
+            progress: subTask.status === 'completed' ? 100 : 
+                     subTask.status === 'in-progress' ? 50 : 0,
+            assignedUsers: subTask.assignedTo ? [subTask.assignedTo] : [],
+            comments: 0,
+            likes: 0,
+            dueDate: baseDate.toISOString().split('T')[0],
+            estimatedHours: subTask.estimatedDuration ? 
+              parseInt(subTask.estimatedDuration.replace(/\D/g, '')) * 8 : 8
+          });
+        });
+      }
+    });
+    return tasks;
+  };
+
 
   return (
+    <div>
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900">Project Progress</h3>
-        <div className="text-sm text-gray-500">
-          {steps.filter(s => s.status === 'completed').length} of {steps.length} steps completed
+        <div className="flex items-center space-x-4">
+          <div className="text-sm text-gray-500">
+            {steps.filter(s => s.status === 'completed').length} of {steps.length} steps completed
+          </div>
+          <div className="flex bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setViewMode('progress')}
+              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
+                viewMode === 'progress'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Progress
+            </button>
+            <button
+              onClick={() => setViewMode('calendar')}
+              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
+                viewMode === 'calendar'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Calendar
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Responsive Progress Layout */}
-      <div className="relative mb-6">
-        {/* Desktop: Horizontal Layout */}
-        <div className="hidden md:block">
-          <div className="flex items-start justify-between overflow-x-auto pb-4">
+      {/* Conditional View Rendering */}
+      {viewMode === 'progress' ? (
+        <div className="relative mb-6">
+          {/* Desktop: Horizontal Layout */}
+          <div className="hidden md:block">
+            <div className="flex items-start justify-between overflow-x-auto pb-4">
             {steps.map((step, index) => {
               const isLast = index === steps.length - 1;
               const isExpanded = expandedStep === step.id;
@@ -351,16 +453,16 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                 </div>
               );
             })}
+            </div>
           </div>
-        </div>
 
-        {/* Mobile: Vertical Layout */}
-        <div className="md:hidden space-y-4">
-          {steps.map((step) => {
-            const isCollapsed = collapsedSteps.has(step.id);
+          {/* Mobile: Vertical Layout */}
+          <div className="md:hidden space-y-4">
+            {steps.map((step) => {
+              const isCollapsed = collapsedSteps.has(step.id);
 
-            return (
-              <div key={step.id} className="border border-gray-200 rounded-lg overflow-hidden">
+              return (
+                <div key={step.id} className="border border-gray-200 rounded-lg overflow-hidden">
                 {/* Step Header - Always Visible */}
                 <div 
                   className="flex items-center justify-between p-4 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
@@ -611,12 +713,19 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                 )}
               </div>
             );
-          })}
+            })}
+          </div>
         </div>
-      </div>
+      ) : (
+        <CalendarView
+          tasks={getCalendarTasks()}
+          onTaskUpdate={onTaskUpdate || (() => {})}
+          onAddTask={onAddTask || (() => {})}
+        />
+      )}
 
       {/* Desktop: Expanded Step Details */}
-      {expandedStep && (
+      {expandedStep && viewMode === 'progress' && (
         <div className="hidden md:block border-t border-gray-200 pt-4">
           {(() => {
             const step = steps.find(s => s.id === expandedStep);
@@ -844,6 +953,47 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
               </div>
             );
           })()}
+          </div>
+        )}
+      </div>
+
+      {/* Confirmation Overlay */}
+      {showConfirmation && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md mx-4">
+            <div className="flex items-center mb-4">
+              <div className="flex-shrink-0 w-10 h-10 mx-auto bg-yellow-100 rounded-full flex items-center justify-center">
+                <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+            </div>
+            <div className="text-center">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Confirm Action
+              </h3>
+              <p className="text-sm text-gray-500 mb-6">
+                {showConfirmation?.type === 'subtask' 
+                  ? 'Are you sure you want to mark this sub-task as incomplete? This will affect the overall progress.'
+                  : 'Are you sure you want to mark this step as incomplete? This will affect the overall progress.'
+                }
+              </p>
+              <div className="flex space-x-3">
+                <button
+                  onClick={handleConfirmationCancel}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmationConfirm}
+                  className="flex-1 px-4 py-2 bg-red-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
