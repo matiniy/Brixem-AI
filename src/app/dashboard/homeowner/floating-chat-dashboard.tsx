@@ -1522,6 +1522,7 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
             {/* Project Progress Section */}
             <div className="mb-8">
               <LinearTaskFlow 
+                key={`linear-task-flow-${projectSteps.length}-${Date.now()}`}
                 steps={projectSteps}
                 currentStep={projectSteps.find(step => step.status === 'in-progress')?.id}
                 onStepClick={(stepId) => {

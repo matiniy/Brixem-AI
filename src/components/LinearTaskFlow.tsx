@@ -94,9 +94,6 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
   onTaskUpdate,
   onAddTask
 }) => {
-  // Debug: Log the steps data to see what we're receiving
-  console.log('LinearTaskFlow received steps:', steps);
-  console.log('First step sub-tasks:', steps[0]?.subTasks);
   const [expandedStep, setExpandedStep] = useState<string | null>(null);
   const [collapsedSubTasks, setCollapsedSubTasks] = useState<Set<string>>(new Set());
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
@@ -605,6 +602,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                         <h5 className="text-sm font-semibold text-gray-900">Sub-tasks</h5>
                         {step.subTasks.map((subTask) => {
                           const isSubTaskCollapsed = collapsedSubTasks.has(subTask.id);
+                          console.log('Rendering sub-task:', subTask.title, 'for step:', step.title);
                           return (
                             <div key={subTask.id}>
                               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
