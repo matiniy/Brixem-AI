@@ -213,14 +213,18 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
       );
     } else if (step.status === 'in-progress') {
       return (
-        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-          <div className="w-3 h-3 bg-white rounded-full"></div>
+        <div className="relative">
+          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+            <div className="w-3 h-3 bg-white rounded-full"></div>
+          </div>
         </div>
       );
     } else {
       return (
-        <div className="w-8 h-8 border-2 border-gray-300 rounded-full flex items-center justify-center">
-          <span className="text-gray-400 text-xs font-medium">{step.stepNumber}</span>
+        <div className="relative">
+          <div className="w-8 h-8 border-2 border-gray-300 rounded-full flex items-center justify-center">
+            <span className="text-gray-400 text-xs font-medium">{step.stepNumber}</span>
+          </div>
         </div>
       );
     }
