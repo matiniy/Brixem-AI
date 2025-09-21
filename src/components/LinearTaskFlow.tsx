@@ -498,7 +498,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                               </svg>
                   <span className="text-sm text-gray-600">
-                    Click the expand/collapse icon on any phase card to view detailed tasks
+                    Click on any phase card to expand and view detailed tasks
                   </span>
                                           </div>
                                         </div>
@@ -513,9 +513,16 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                   }`}>
                     {/* Phase Header */}
                     <div 
-                      className={`p-3 sm:p-4 transition-colors ${
-                        isCurrentPhase ? 'bg-blue-50' : 'bg-gray-50'
+                      className={`p-3 sm:p-4 cursor-pointer transition-colors ${
+                        isCurrentPhase ? 'bg-blue-50 hover:bg-blue-100' : 'bg-gray-50 hover:bg-gray-100'
                       }`}
+                      onClick={(e) => {
+                        // Only toggle if not clicking on interactive elements
+                        const target = e.target as HTMLElement;
+                        if (!target.closest('button') && !target.closest('input') && !target.closest('[role="button"]')) {
+                          togglePhaseCollapse(step.id);
+                        }
+                      }}
                     >
                                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4">
