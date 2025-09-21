@@ -300,7 +300,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                 }
               }}
             >
-            {steps.map((step, index) => {
+            {steps.map((step) => {
                 const isCurrentPhase = step.status === 'in-progress';
                 const nextTask = step.subTasks?.find(st => st.status === 'pending');
                 const completedTasks = step.subTasks?.filter(st => st.status === 'completed').length || 0;
