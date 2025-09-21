@@ -312,7 +312,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
 
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 space-y-4 sm:space-y-0">
-          <div>
+    <div>
             <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Phase Details</h3>
             <p className="text-sm text-gray-500 mt-1">
               Click on any phase card below to expand and view detailed tasks
@@ -343,10 +343,10 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
             >
               Calendar
             </button>
-          </div>
         </div>
+      </div>
 
-        {viewMode === 'progress' ? (
+      {viewMode === 'progress' ? (
           <div className="space-y-4 lg:space-y-6">
             {/* Next Task Highlighting */}
             {nextTask && (
@@ -355,7 +355,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                   <div className="flex items-center space-x-3">
                     <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
                     <h4 className="text-base lg:text-lg font-semibold text-blue-900">Next Task</h4>
-                  </div>
+                    </div>
                   <span className="text-sm text-blue-600 bg-blue-100 px-3 py-1 rounded-full w-fit">
                     Due in {nextTask.subTask.estimatedDuration || '2 days'}
                   </span>
@@ -408,7 +408,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                   >
                     View All
                   </button>
-                </div>
+                    </div>
                 <div className="space-y-2">
                   {upcomingTasks.map((task) => (
                     <div key={task.id} className="flex items-center space-x-3 text-sm">
@@ -416,11 +416,11 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                       <span className="text-gray-700 truncate">{task.title}</span>
                       <span className="text-gray-500">•</span>
                       <span className="text-gray-500 flex-shrink-0">{task.estimatedDuration || '1 day'}</span>
-                    </div>
+                  </div>
                   ))}
                 </div>
-              </div>
-            )}
+                    </div>
+                  )}
 
             {/* Timeline View */}
             <div className="space-y-4">
@@ -434,13 +434,13 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                     Click on any phase card below to expand and view detailed tasks
                   </span>
                 </div>
-              </div>
+            </div>
               {steps.map((step, index) => {
                 const isCollapsed = collapsedPhases.has(step.id);
                 const progress = getStepProgress(step);
                 const isCurrentPhase = step.status === 'in-progress';
-                
-                return (
+
+              return (
                   <div key={step.id} className={`border rounded-lg overflow-hidden transition-all ${
                     isCurrentPhase ? 'border-blue-300 shadow-lg ring-2 ring-blue-100 scale-[1.02]' : 'border-gray-200'
                   }`}>
@@ -467,20 +467,20 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                               ) : (
                                 <span className="text-xs lg:text-sm font-semibold">{step.stepNumber}</span>
                               )}
-                            </div>
+                    </div>
                             {index < steps.length - 1 && (
                               <div className={`w-0.5 h-6 lg:h-8 mt-2 ${
                                 step.status === 'completed' ? 'bg-green-500' : 'bg-gray-300'
                               }`} />
                             )}
-                          </div>
+                    </div>
                           
                           <div className="flex-1 min-w-0">
                             <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-3">
                               <h3 className={`text-base lg:text-lg font-semibold truncate ${
                                 isCurrentPhase ? 'text-blue-900' : 'text-gray-900'
                               }`}>{step.title}</h3>
-                              <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2">
                                 <span className={`px-2 py-1 text-xs font-medium rounded-full flex-shrink-0 flex items-center gap-1 ${
                                   step.status === 'completed' ? 'bg-green-100 text-green-700' :
                                   step.status === 'in-progress' ? 'bg-blue-100 text-blue-700' :
@@ -488,7 +488,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                 }`}>
                                   {step.status === 'completed' ? '✓ Done' :
                                    step.status === 'in-progress' ? '🔄 In Progress' : '⏳ Upcoming'}
-                                </span>
+                    </span>
                                 {isCurrentPhase && isCollapsed && (
                                   <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full animate-pulse">
                                     Current Phase
@@ -527,11 +527,11 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                   <div className="flex items-center gap-2 mb-1">
                                     <span className="text-blue-600 font-medium">👉 Next Task:</span>
                                     <span className="font-semibold text-blue-900">{nextTask.title}</span>
-                                  </div>
+                  </div>
                                   <div className="text-sm text-blue-700">
                                     {nextTask.estimatedDuration && `Estimated: ${nextTask.estimatedDuration}`}
                                     {nextTask.assignedTo && ` • Assigned to: ${nextTask.assignedTo}`}
-                                  </div>
+                </div>
                                 </div>
                               ) : null;
                             })()}
@@ -550,34 +550,34 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                 />
                               </div>
                             )}
-                          </div>
-                        </div>
+                                  </div>
+                                </div>
                         
                         <div className="flex items-center space-x-2 flex-shrink-0">
                           {isCollapsed && (
                             <span className="text-xs text-gray-500 hidden sm:inline">
                               Click to expand
-                            </span>
+                                  </span>
                           )}
-                          <button 
+                                  <button
                             type="button"
                             className="text-gray-400 hover:text-gray-600 transition-colors"
                             style={{ touchAction: 'manipulation' }}
                             title={isCollapsed ? 'Expand phase details' : 'Collapse phase details'}
-                          >
-                            <svg
+                                  >
+                                    <svg
                               className={`w-5 h-5 transition-transform ${isCollapsed ? 'rotate-180' : ''}`}
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </svg>
-                          </button>
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                  </button>
                         </div>
-                      </div>
-                    </div>
-
+                                </div>
+                              </div>
+                            
                     {/* AI Helper Nudges for Current Phase */}
                     {isCurrentPhase && !isCollapsed && step.subTasks && (() => {
                       const nextTask = step.subTasks.find(st => st.status === 'pending');
@@ -592,7 +592,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                           <div className="flex items-start space-x-2 sm:space-x-3">
                             <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                               <span className="text-blue-600 font-bold text-xs sm:text-sm">AI</span>
-                            </div>
+                                        </div>
                             <div className="flex-1 min-w-0">
                               <div className="text-xs sm:text-sm text-blue-900 leading-relaxed">
                                 {completedTasks.length > 0 ? (
@@ -609,16 +609,16 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                     I can help you review requirements and set up the task.
                                   </>
                                 )}
-                              </div>
+                                          </div>
                               <div className="flex flex-wrap items-center gap-2 mt-2">
-                                <button
+                                    <button
                                   type="button"
                                   className="text-xs bg-blue-600 text-white px-2 sm:px-3 py-1 rounded hover:bg-blue-700 transition-colors"
                                   style={{ touchAction: 'manipulation' }}
-                                >
+                                    >
                                   Show Docs
-                                </button>
-                                <button
+                                    </button>
+                                        <button
                                   type="button"
                                   className="text-xs text-blue-600 hover:text-blue-800 transition-colors px-1"
                                   style={{ touchAction: 'manipulation' }}
@@ -631,11 +631,11 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                   style={{ touchAction: 'manipulation' }}
                                 >
                                   Ask AI
-                                </button>
+                                        </button>
+                                      </div>
+                                    </div>
+                                </div>
                               </div>
-                            </div>
-                          </div>
-                        </div>
                       ) : null;
                     })()}
 
@@ -651,35 +651,41 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                           {step.subTasks.map((subTask) => {
                             const deliverableProgress = getDeliverableProgress(subTask);
                             const isNextTask = nextTask?.subTask.id === subTask.id;
-                            
-                            return (
-                              <div key={subTask.id} className={`rounded-lg border p-4 ${
-                                isNextTask ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-gray-50'
-                              }`}>
-                                <div className="flex items-start justify-between">
+
+            return (
+                              <div 
+                                key={subTask.id} 
+                                className={`rounded-lg border p-4 ${
+                                  isNextTask ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-gray-50'
+                                }`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                }}
+                              >
+                <div className="flex items-start justify-between">
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-center space-x-3 mb-2">
-                                      <button
+                  <button
                                         type="button"
                                         onClick={(e) => {
                                           e.preventDefault();
                                           e.stopPropagation();
-                                          const newStatus = subTask.status === 'completed' ? 'pending' : 'completed';
-                                          handleSubTaskUpdate(step.id, subTask.id, newStatus);
-                                        }}
+                                      const newStatus = subTask.status === 'completed' ? 'pending' : 'completed';
+                                      handleSubTaskUpdate(step.id, subTask.id, newStatus);
+                                  }}
                                         className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors flex-shrink-0 ${
-                                          subTask.status === 'completed' 
+                                    subTask.status === 'completed' 
                                             ? 'bg-green-500 border-green-500' 
                                             : 'border-gray-300 hover:border-gray-400'
                                         }`}
                                         style={{ touchAction: 'manipulation' }}
-                                      >
-                                        {subTask.status === 'completed' && (
+                                  >
+                                    {subTask.status === 'completed' && (
                                           <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                          </svg>
-                                        )}
-                                      </button>
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                      </svg>
+                                    )}
+                                </button>
                                       
                                       <div className="flex-1 min-w-0">
                                         <h4 className={`font-medium text-sm lg:text-base ${
@@ -689,51 +695,61 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                           {subTask.title}
                                         </h4>
                                         <p className="text-xs lg:text-sm text-gray-600 mt-1">{subTask.description}</p>
-                                      </div>
-                                    </div>
-                                    
+                              </div>
+                            </div>
+
                                     {/* Deliverables Checklist */}
-                                    {subTask.deliverables && subTask.deliverables.length > 0 && (
-                                      <div className="mt-3 pl-8">
+                                {subTask.deliverables && subTask.deliverables.length > 0 && (
+                                      <div 
+                                        className="mt-3 pl-8"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                        }}
+                                      >
                                         <div className="mb-2">
                                           <h5 className="text-xs lg:text-sm font-medium text-gray-700">
                                             Deliverables ({deliverableProgress.completed}/{deliverableProgress.total} complete)
                                           </h5>
                                         </div>
-                                        <div className="space-y-2">
-                                          {subTask.deliverables.map((deliverable) => (
+                                    <div className="space-y-2">
+                                      {subTask.deliverables.map((deliverable) => (
                                             <div key={deliverable.id} className="flex items-center space-x-2">
-                                              <button
+                                          <button
                                                 type="button"
                                                 onClick={(e) => {
                                                   e.preventDefault();
                                                   e.stopPropagation();
-                                                  const newStatus = deliverable.status === 'completed' ? 'pending' : 'completed';
+                                              const newStatus = deliverable.status === 'completed' ? 'pending' : 'completed';
                                                   handleDeliverableUpdate(step.id, subTask.id, deliverable.id, newStatus);
-                                                }}
+                                            }}
                                                 className={`w-4 h-4 rounded border flex items-center justify-center text-xs transition-colors ${
-                                                  deliverable.status === 'completed' 
+                                              deliverable.status === 'completed' 
                                                     ? 'bg-green-500 border-green-500 text-white' 
                                                     : 'border-gray-300 hover:border-gray-400'
-                                                }`}
+                                            }`}
                                                 style={{ touchAction: 'manipulation' }}
-                                              >
+                                          >
                                                 {deliverable.status === 'completed' && '✓'}
-                                              </button>
+                                          </button>
                                               <span className={`text-xs lg:text-sm ${
                                                 deliverable.status === 'completed' ? 'text-green-700 line-through' : 'text-gray-700'
-                                              }`}>
+                                          }`}>
                                                 {deliverable.title}
-                                              </span>
-                                            </div>
-                                          ))}
+                                          </span>
                                         </div>
-                                      </div>
-                                    )}
-                                    
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
                                     {/* Documents - Progressive Disclosure */}
-                                    {subTask.documents && subTask.documents.length > 0 && (
-                                      <div className="mt-3 pl-8">
+                                {subTask.documents && subTask.documents.length > 0 && (
+                                      <div 
+                                        className="mt-3 pl-8"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                        }}
+                                      >
                                         <details className="group">
                                           <summary className="text-xs lg:text-sm font-medium text-gray-700 cursor-pointer hover:text-gray-900 transition-colors">
                                             📎 Documents ({subTask.documents.length})
@@ -743,12 +759,12 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                               <div key={doc.id} className="flex items-center space-x-2 text-xs lg:text-sm text-gray-600">
                                                 <span>📄</span>
                                                 <span className="truncate">{doc.name}</span>
-                                              </div>
-                                            ))}
-                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
                                         </details>
-                                      </div>
-                                    )}
+                                  </div>
+                                )}
                                   </div>
                                   
                                   <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 ml-4 flex-shrink-0">
@@ -764,19 +780,19 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                       {subTask.status === 'completed' ? '✅ Done' : 
                                        isNextTask ? '🔄 Next' : '⏳ Pending'}
                                     </span>
-                                  </div>
                                 </div>
                               </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                );
+                )}
+              </div>
+            );
               })}
-            </div>
           </div>
+      </div>
         ) : (
           <CalendarView
             tasks={getCalendarTasks()}
@@ -786,45 +802,45 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
         )}
 
         {/* Confirmation Modal */}
-        {showConfirmation && (
+      {showConfirmation && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg p-6 max-w-md w-full">
-              <div className="flex items-center mb-4">
-                <div className="flex-shrink-0 w-10 h-10 mx-auto bg-yellow-100 rounded-full flex items-center justify-center">
-                  <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                  </svg>
-                </div>
+            <div className="flex items-center mb-4">
+              <div className="flex-shrink-0 w-10 h-10 mx-auto bg-yellow-100 rounded-full flex items-center justify-center">
+                <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
               </div>
-              <div className="text-center">
+            </div>
+            <div className="text-center">
                 <h3 className="text-lg font-medium text-gray-900 mb-2">Confirm Action</h3>
-                <p className="text-sm text-gray-500 mb-6">
+              <p className="text-sm text-gray-500 mb-6">
                   Are you sure you want to mark this as incomplete? This will affect the overall progress.
-                </p>
-                <div className="flex space-x-3">
-                  <button
+              </p>
+              <div className="flex space-x-3">
+                <button
                     type="button"
                     onClick={() => setShowConfirmation(null)}
                     className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                     style={{ touchAction: 'manipulation' }}
-                  >
-                    Cancel
-                  </button>
-                  <button
+                >
+                  Cancel
+                </button>
+                <button
                     type="button"
                     onClick={() => {
                       setShowConfirmation(null);
                     }}
                     className="flex-1 px-4 py-2 bg-red-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-red-700 transition-colors"
                     style={{ touchAction: 'manipulation' }}
-                  >
-                    Confirm
-                  </button>
-                </div>
+                >
+                  Confirm
+                </button>
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
       </div>
     </div>
   );
