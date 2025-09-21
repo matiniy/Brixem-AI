@@ -435,15 +435,14 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                             
                             {/* Progress Bar */}
                             {step.subTasks && (
-                              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                              <div className="w-32 bg-gray-200 rounded-full h-1.5 mt-2">
                                 <div 
                                   className={`h-1.5 rounded-full transition-all ${
                                     step.status === 'completed' ? 'bg-green-500' :
                                     step.status === 'in-progress' ? 'bg-blue-500' : 'bg-gray-400'
                                   }`}
                                   style={{ 
-                                    width: step.status === 'completed' ? '100%' : `${progress}%`,
-                                    maxWidth: step.status === 'completed' ? '60%' : '100%'
+                                    width: step.status === 'completed' ? '100%' : `${progress}%`
                                   }}
                                 />
                               </div>
@@ -531,12 +530,11 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                           <h5 className="text-xs lg:text-sm font-medium text-gray-700">
                                             Deliverables ({deliverableProgress.completed}/{deliverableProgress.total} complete)
                                           </h5>
-                                          <div className="w-12 bg-gray-200 rounded-full h-1.5">
+                                          <div className="w-16 bg-gray-200 rounded-full h-1.5">
                                             <div 
                                               className="bg-green-500 h-1.5 rounded-full transition-all"
                                               style={{ 
-                                                width: `${deliverableProgress.total > 0 ? (deliverableProgress.completed / deliverableProgress.total) * 100 : 0}%`,
-                                                maxWidth: deliverableProgress.completed === deliverableProgress.total ? '100%' : '100%'
+                                                width: `${deliverableProgress.total > 0 ? (deliverableProgress.completed / deliverableProgress.total) * 100 : 0}%`
                                               }}
                                             />
                                           </div>
