@@ -274,7 +274,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
         <div className="mb-6">
           <div className="flex items-center justify-between relative">
             <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 -translate-y-1/2"></div>
-            {steps.map((step, index) => (
+            {steps.map((step) => (
               <div key={step.id} className="relative z-10 flex flex-col items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-sm transition-all ${
                   step.status === 'completed' ? 'bg-green-500 shadow-lg' :
