@@ -1068,60 +1068,60 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
                   <span className="sm:hidden">Documents</span>
                 </button>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 {/* Project Stats Cards */}
-                <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+                <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
                   <div className="flex items-center">
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                      <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="p-1.5 bg-blue-100 rounded-lg">
+                      <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                       </svg>
                     </div>
-                    <div className="ml-3 sm:ml-4">
-                      <p className="text-xs sm:text-sm font-medium text-gray-600">Total Tasks</p>
-                      <p className="text-xl sm:text-2xl font-bold text-gray-900">{taskCounts.totalTasks}</p>
+                    <div className="ml-2 sm:ml-3">
+                      <p className="text-xs font-medium text-gray-600">Total Tasks</p>
+                      <p className="text-lg sm:text-xl font-bold text-gray-900">{taskCounts.totalTasks}</p>
                     </div>
                   </div>
                 </div>
 
-                       <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+                       <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
                          <div className="flex items-center">
-                           <div className="p-2 bg-yellow-100 rounded-lg">
-                             <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           <div className="p-1.5 bg-yellow-100 rounded-lg">
+                             <svg className="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                              </svg>
                            </div>
-                           <div className="ml-3 sm:ml-4">
-                             <p className="text-xs sm:text-sm font-medium text-gray-600">To Do</p>
-                             <p className="text-xl sm:text-2xl font-bold text-gray-900">{taskCounts.toDoTasks}</p>
+                           <div className="ml-2 sm:ml-3">
+                             <p className="text-xs font-medium text-gray-600">To Do</p>
+                             <p className="text-lg sm:text-xl font-bold text-gray-900">{taskCounts.toDoTasks}</p>
                            </div>
                          </div>
                        </div>
 
-                <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+                <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
                   <div className="flex items-center">
-                    <div className="p-2 bg-green-100 rounded-lg">
-                      <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="p-1.5 bg-green-100 rounded-lg">
+                      <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
-                    <div className="ml-3 sm:ml-4">
-                      <p className="text-xs sm:text-sm font-medium text-gray-600">Completed Tasks</p>
-                      <p className="text-xl sm:text-2xl font-bold text-gray-900">{taskCounts.completedTasks}</p>
+                    <div className="ml-2 sm:ml-3">
+                      <p className="text-xs font-medium text-gray-600">Completed Tasks</p>
+                      <p className="text-lg sm:text-xl font-bold text-gray-900">{taskCounts.completedTasks}</p>
                     </div>
                   </div>
             </div>
 
-                <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+                <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
                   <div className="flex items-center">
-                    <div className="p-2 bg-purple-100 rounded-lg">
-                      <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="p-1.5 bg-purple-100 rounded-lg">
+                      <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                       </svg>
                     </div>
-                    <div className="ml-3 sm:ml-4">
-                      <p className="text-xs sm:text-sm font-medium text-gray-600">Documents</p>
-                      <p className="text-xl sm:text-2xl font-bold text-gray-900">12</p>
+                    <div className="ml-2 sm:ml-3">
+                      <p className="text-xs font-medium text-gray-600">Documents</p>
+                      <p className="text-lg sm:text-xl font-bold text-gray-900">12</p>
                     </div>
                   </div>
                 </div>
