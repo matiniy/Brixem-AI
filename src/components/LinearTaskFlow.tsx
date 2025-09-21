@@ -95,10 +95,9 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
   onAddTask
 }) => {
   const [expandedStep, setExpandedStep] = useState<string | null>(null);
-  const [collapsedSubTasks, setCollapsedSubTasks] = useState<Set<string>>(new Set());
+  const [collapsedPhases, setCollapsedPhases] = useState<Set<string>>(new Set());
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
   const [notesValue, setNotesValue] = useState<string>('');
-  const [lockedSteps, setLockedSteps] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<'progress' | 'calendar'>('progress');
   const [showConfirmation, setShowConfirmation] = useState<{
     type: 'step' | 'subtask';
@@ -107,262 +106,67 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
     action: 'toggle-off';
   } | null>(null);
 
-  // Check if all sub-tasks in a step are completed
-  const areAllSubTasksCompleted = (step: TaskStep) => {
-    if (!step.subTasks || step.subTasks.length === 0) return false;
-    return step.subTasks.every(subTask => subTask.status === 'completed');
-  };
-
-  // Handle auto-advancement when all sub-tasks are completed
-  const handleAutoAdvancement = useCallback((stepId: string) => {
-    const step = steps.find(s => s.id === stepId);
-    if (!step) {
-      console.log('Step not found:', stepId);
-      return;
-    }
-
-    console.log('Checking auto-advancement for step:', step.title, 'Status:', step.status);
-    console.log('Sub-tasks:', step.subTasks?.map(st => ({ title: st.title, status: st.status })));
-
-    // Check if all sub-tasks are completed
-    if (areAllSubTasksCompleted(step)) {
-      console.log('All sub-tasks completed! Auto-advancing...');
-      
-      // Mark current step as completed
-      onStepComplete?.(stepId);
-      
-      // Find next step
-      const currentIndex = steps.findIndex(s => s.id === stepId);
-      const nextStep = steps[currentIndex + 1];
-      
-      if (nextStep) {
-        console.log('Advancing to next step:', nextStep.title);
-        // Advance to next step
-        onStepAdvance?.(stepId, nextStep.id);
-      } else {
-        console.log('No next step found - this is the last step');
+  // Helper functions
+  const getNextTask = () => {
+    for (const step of steps) {
+      if (step.status === 'in-progress' && step.subTasks) {
+        const nextSubTask = step.subTasks.find(st => st.status === 'pending');
+        if (nextSubTask) {
+          return { step, subTask: nextSubTask };
+        }
       }
-    } else {
-      console.log('Not all sub-tasks completed yet');
     }
-  }, [steps, onStepComplete, onStepAdvance]);
+    return null;
+  };
 
-  // Check for auto-advancement on mount and when steps change
-  useEffect(() => {
-    console.log('Checking for auto-advancement on mount/update');
-    steps.forEach(step => {
-      if (step.status === 'in-progress' && areAllSubTasksCompleted(step)) {
-        console.log('Found completed step on mount:', step.title);
-        handleAutoAdvancement(step.id);
+  const getUpcomingTasks = () => {
+    const upcoming = [];
+    for (const step of steps) {
+      if (step.status === 'pending' || (step.status === 'in-progress' && step.subTasks)) {
+        if (step.subTasks) {
+          const pendingTasks = step.subTasks.filter(st => st.status === 'pending');
+          upcoming.push(...pendingTasks.slice(0, 3)); // Limit to 3 upcoming tasks
+        }
       }
-    });
-  }, [steps, handleAutoAdvancement]);
-
-  // Update expanded step when currentStep changes
-  useEffect(() => {
-    if (currentStep && currentStep !== expandedStep) {
-      console.log('Updating expanded step from', expandedStep, 'to', currentStep);
-      setExpandedStep(currentStep);
     }
-  }, [currentStep, expandedStep]);
-
-  // Initialize expanded step on mount
-  useEffect(() => {
-    if (currentStep && !expandedStep) {
-      console.log('Initializing expanded step to', currentStep);
-      setExpandedStep(currentStep);
-    }
-  }, [currentStep, expandedStep]);
-
-  // Check if a step has incomplete sub-tasks
-  const hasIncompleteSubTasks = (step: TaskStep) => {
-    if (!step.subTasks) return false;
-    return step.subTasks.some(subTask => subTask.status !== 'completed');
+    return upcoming.slice(0, 3);
   };
 
-  const getStepIcon = (step: TaskStep, stepIndex: number) => {
-    const isLocked = lockedSteps.has(step.id);
-    const hasIncomplete = hasIncompleteSubTasks(step);
-    const currentStepIndex = steps.findIndex(s => s.status !== 'completed');
-    const isPreviousStep = stepIndex < currentStepIndex;
-    
-    if (step.status === 'completed') {
-      return (
-        <div className="relative">
-          <div className={`w-8 h-8 bg-green-500 rounded-full flex items-center justify-center ${isLocked ? 'ring-2 ring-blue-500' : ''}`}>
-            <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-            </svg>
-          </div>
-          {/* Lock icon */}
-          {isLocked && (
-            <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center z-10">
-              <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-              </svg>
-            </div>
-          )}
-          {/* Notification icon for incomplete sub-tasks */}
-          {isPreviousStep && hasIncomplete && !isLocked && (
-            <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center z-10 animate-pulse">
-              <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-              </svg>
-            </div>
-          )}
-        </div>
-      );
-    } else if (step.status === 'in-progress') {
-      return (
-        <div className="relative">
-          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-            <div className="w-3 h-3 bg-white rounded-full"></div>
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <div className="relative">
-          <div className="w-8 h-8 border-2 border-gray-300 rounded-full flex items-center justify-center">
-            <span className="text-gray-400 text-xs font-medium">{step.stepNumber}</span>
-          </div>
-        </div>
-      );
-    }
+  const getDeliverableProgress = (subTask: SubTask) => {
+    if (!subTask.deliverables || subTask.deliverables.length === 0) return { completed: 0, total: 0 };
+    const completed = subTask.deliverables.filter(d => d.status === 'completed').length;
+    return { completed, total: subTask.deliverables.length };
   };
 
-  const getStepColor = (step: TaskStep) => {
-    if (step.status === 'completed') return 'text-green-600';
-    if (step.status === 'in-progress') return 'text-blue-600';
-    return 'text-gray-400';
-  };
-
-  const getConnectorColor = (currentStep: TaskStep) => {
-    if (currentStep.status === 'completed') return 'bg-green-500';
-    if (currentStep.status === 'in-progress') return 'bg-blue-500';
-    return 'bg-gray-300';
+  const getStepProgress = (step: TaskStep) => {
+    if (!step.subTasks || step.subTasks.length === 0) return 0;
+    const completed = step.subTasks.filter(st => st.status === 'completed').length;
+    return Math.round((completed / step.subTasks.length) * 100);
   };
 
   const handleStepClick = (stepId: string) => {
-    // Allow viewing any step, even completed ones
     setExpandedStep(expandedStep === stepId ? null : stepId);
     onStepClick?.(stepId);
   };
 
-  const handleSubTaskUpdate = (stepId: string, subTaskId: string, status: 'completed' | 'in-progress' | 'pending') => {
-    // If trying to toggle off a completed sub-task, show confirmation
-    if (status === 'pending') {
-      const step = steps.find(s => s.id === stepId);
-      const subTask = step?.subTasks?.find(st => st.id === subTaskId);
-      if (subTask?.status === 'completed') {
-        setShowConfirmation({
-          type: 'subtask',
-          stepId,
-          subTaskId,
-          action: 'toggle-off'
-        });
-        return;
-      }
-    }
-    
-    onSubTaskUpdate?.(stepId, subTaskId, status);
-    
-    // Check for auto-advancement after a short delay to allow state updates
-    setTimeout(() => {
-      handleAutoAdvancement(stepId);
-    }, 100);
-  };
-
-  const handleStepStatusUpdate = (stepId: string, status: 'completed' | 'in-progress' | 'pending') => {
-    // If trying to toggle off a completed step, show confirmation
-    if (status !== 'completed') {
-      const step = steps.find(s => s.id === stepId);
-      if (step?.status === 'completed') {
-        setShowConfirmation({
-          type: 'step',
-          stepId,
-          action: 'toggle-off'
-        });
-        return;
-      }
-    }
-    onStepStatusUpdate?.(stepId, status);
-  };
-
-  const toggleSubTaskCollapse = (subTaskId: string) => {
-    setCollapsedSubTasks(prev => {
+  const togglePhaseCollapse = (stepId: string) => {
+    setCollapsedPhases(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(subTaskId)) {
-        newSet.delete(subTaskId);
+      if (newSet.has(stepId)) {
+        newSet.delete(stepId);
       } else {
-        newSet.add(subTaskId);
+        newSet.add(stepId);
       }
       return newSet;
     });
   };
 
-  const handleNotesEdit = (stepId: string, subTaskId: string, currentNotes: string) => {
-    setEditingNotes(`${stepId}-${subTaskId}`);
-    setNotesValue(currentNotes || '');
+  const handleSubTaskUpdate = (stepId: string, subTaskId: string, status: 'completed' | 'in-progress' | 'pending') => {
+    onSubTaskUpdate?.(stepId, subTaskId, status);
   };
 
-  const handleNotesSave = (stepId: string, subTaskId: string) => {
-    onSubTaskNotesUpdate?.(stepId, subTaskId, notesValue);
-    setEditingNotes(null);
-    setNotesValue('');
-  };
-
-  const handleNotesCancel = () => {
-    setEditingNotes(null);
-    setNotesValue('');
-  };
-
-  const handleNotesKeyPress = (e: React.KeyboardEvent, stepId: string, subTaskId: string) => {
-    if (e.key === 'Enter' && e.ctrlKey) {
-      handleNotesSave(stepId, subTaskId);
-    } else if (e.key === 'Escape') {
-      handleNotesCancel();
-    }
-  };
-
-  // Handle step locking
-  const handleStepLock = (stepId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    const newLockedSteps = new Set(lockedSteps);
-    if (newLockedSteps.has(stepId)) {
-      newLockedSteps.delete(stepId);
-    } else {
-      newLockedSteps.add(stepId);
-    }
-    setLockedSteps(newLockedSteps);
-    onStepLock?.(stepId, newLockedSteps.has(stepId));
-  };
-
-  // Check if sub-task can be toggled (step not locked)
-  const canToggleSubTask = (stepId: string) => {
-    return !lockedSteps.has(stepId);
-  };
-
-  // Handle confirmation actions
-  const handleConfirmationConfirm = () => {
-    if (!showConfirmation) return;
-    
-    if (showConfirmation.type === 'subtask' && showConfirmation.subTaskId) {
-      onSubTaskUpdate?.(showConfirmation.stepId, showConfirmation.subTaskId, 'pending');
-    } else if (showConfirmation.type === 'step') {
-      // Find the current step status and toggle it
-      const step = steps.find(s => s.id === showConfirmation.stepId);
-      if (step) {
-        const newStatus = step.status === 'completed' ? 'in-progress' : 'pending';
-        onStepStatusUpdate?.(showConfirmation.stepId, newStatus);
-      }
-    }
-    
-    setShowConfirmation(null);
-  };
-
-  const handleConfirmationCancel = () => {
-    setShowConfirmation(null);
+  const handleDeliverableUpdate = (stepId: string, subTaskId: string, deliverableId: string, status: 'completed' | 'pending') => {
+    onDeliverableUpdate?.(stepId, subTaskId, deliverableId, status);
   };
 
   // Convert sub-tasks to calendar tasks
@@ -371,10 +175,9 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
     steps.forEach(step => {
       if (step.subTasks) {
         step.subTasks.forEach(subTask => {
-          // Generate a due date based on step order and estimated duration
           const stepIndex = steps.findIndex(s => s.id === step.id);
           const baseDate = new Date();
-          baseDate.setDate(baseDate.getDate() + (stepIndex * 7)); // Each step gets a week
+          baseDate.setDate(baseDate.getDate() + (stepIndex * 7));
           
           tasks.push({
             id: subTask.id,
@@ -398,701 +201,450 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
     return tasks;
   };
 
+  const nextTask = getNextTask();
+  const upcomingTasks = getUpcomingTasks();
 
   return (
-    <div>
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Project Progress</h3>
-        <div className="flex items-center space-x-4">
-          <div className="text-sm text-gray-500">
-            {steps.filter(s => s.status === 'completed').length} of {steps.length} steps completed
+    <div className="relative">
+      {/* Persistent "What's Next" Widget - Hidden on mobile */}
+      {nextTask && (
+        <div className="hidden lg:block fixed top-4 right-4 z-40 bg-white border border-blue-200 rounded-lg shadow-lg p-4 max-w-sm">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-sm font-semibold text-blue-900">What's Next</h4>
+            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
           </div>
-          <div className="flex bg-gray-100 rounded-lg p-1">
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-gray-900">{nextTask.subTask.title}</p>
+            <p className="text-xs text-gray-600">{nextTask.step.title}</p>
+            <div className="flex items-center space-x-2">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleSubTaskUpdate(nextTask.step.id, nextTask.subTask.id, 'completed');
+                }}
+                className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors"
+                style={{ touchAction: 'manipulation' }}
+              >
+                Mark Complete
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleStepClick(nextTask.step.id);
+                }}
+                className="text-xs text-blue-600 hover:text-blue-800 transition-colors"
+                style={{ touchAction: 'manipulation' }}
+              >
+                View Details
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 lg:p-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 space-y-4 sm:space-y-0">
+          <div>
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Project Timeline</h3>
+            <p className="text-sm text-gray-500 mt-1">
+              {steps.filter(s => s.status === 'completed').length} of {steps.length} phases completed
+            </p>
+          </div>
+          <div className="flex bg-gray-100 rounded-lg p-1 w-full sm:w-auto">
             <button
+              type="button"
               onClick={() => setViewMode('progress')}
-              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
+              className={`flex-1 sm:flex-none px-3 py-1 text-sm font-medium rounded-md transition-colors ${
                 viewMode === 'progress'
                   ? 'bg-white text-gray-900 shadow-sm'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
+              style={{ touchAction: 'manipulation' }}
             >
-              Progress
+              Timeline
             </button>
             <button
+              type="button"
               onClick={() => setViewMode('calendar')}
-              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
+              className={`flex-1 sm:flex-none px-3 py-1 text-sm font-medium rounded-md transition-colors ${
                 viewMode === 'calendar'
                   ? 'bg-white text-gray-900 shadow-sm'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
+              style={{ touchAction: 'manipulation' }}
             >
               Calendar
             </button>
           </div>
         </div>
-      </div>
 
-      {/* Conditional View Rendering */}
-      {viewMode === 'progress' ? (
-        <div className="relative mb-6">
-          {/* Desktop: Horizontal Layout */}
-          <div className="hidden md:block">
-            <div className="flex items-start justify-between overflow-x-auto pb-4">
-            {steps.map((step, index) => {
-              const isLast = index === steps.length - 1;
-              const isExpanded = expandedStep === step.id;
-
-              return (
-                <div key={step.id} className="flex items-start flex-1">
-                  {/* Step Circle and Content */}
-                  <div className="flex flex-col items-center flex-1 relative">
-                    <div
-                      className={`cursor-pointer transition-all duration-200 ${isExpanded ? 'scale-110' : 'hover:scale-105'}`}
-                      onClick={() => handleStepClick(step.id)}
-                    >
-                      {getStepIcon(step, index)}
-                    </div>
-                    
-                    {/* Lock button for completed steps */}
-                    {step.status === 'completed' && (
-                      <button
-                        onClick={(e) => handleStepLock(step.id, e)}
-                        className={`mt-1 p-1 rounded-full transition-colors ${
-                          lockedSteps.has(step.id) 
-                            ? 'bg-blue-100 text-blue-600' 
-                            : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
-                        }`}
-                        title={lockedSteps.has(step.id) ? 'Unlock step' : 'Lock step'}
-                      >
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                        </svg>
-                      </button>
-                    )}
-
-                    {/* Step status toggle button */}
-                    {onStepStatusUpdate && (
-                      <button
-                        onClick={() => {
-                          const newStatus = step.status === 'completed' ? 'in-progress' : 
-                                           step.status === 'in-progress' ? 'pending' : 'completed';
-                          handleStepStatusUpdate(step.id, newStatus);
-                        }}
-                        className="mt-1 p-1 rounded-full transition-colors bg-gray-100 text-gray-400 hover:bg-gray-200"
-                        title={`Toggle step status: ${step.status === 'completed' ? 'Mark as in-progress' : 
-                                                      step.status === 'in-progress' ? 'Mark as pending' : 'Mark as completed'}`}
-                      >
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
-                        </svg>
-                      </button>
-                    )}
-
-                    {/* Step Title */}
-                    <div className="mt-2 text-center max-w-24 min-w-0">
-                      <h4 className={`text-xs font-medium leading-tight ${getStepColor(step)} truncate`}>
-                        {step.title}
-                      </h4>
-                      <p className="text-xs text-gray-500 mt-1 truncate">
-                        {step.estimatedDuration}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Connector Line */}
-                  {!isLast && (
-                    <div className="flex-1 h-0.5 mx-2 mt-4">
-                      <div className={`w-full h-full ${getConnectorColor(step)}`}></div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-            </div>
-          </div>
-
-          {/* Mobile: Vertical Layout */}
-          <div className="md:hidden space-y-4">
-            {steps.map((step) => {
-              const isExpanded = expandedStep === step.id;
-
-              return (
-                <div key={step.id} className="border border-gray-200 rounded-lg overflow-hidden">
-                {/* Step Header - Always Visible */}
-                <div 
-                  className="flex items-center justify-between p-4 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
-                  onClick={() => handleStepClick(step.id)}
-                >
+        {viewMode === 'progress' ? (
+          <div className="space-y-4 lg:space-y-6">
+            {/* Next Task Highlighting */}
+            {nextTask && (
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 lg:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 space-y-2 sm:space-y-0">
                   <div className="flex items-center space-x-3">
-                    <div className="flex-shrink-0">
-                      {getStepIcon(step, steps.findIndex(s => s.id === step.id))}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className={`text-sm font-medium ${getStepColor(step)} truncate`}>
-                        {step.title}
-                      </h4>
-                      <p className="text-xs text-gray-500 mt-1 truncate">
-                        {step.estimatedDuration}
-                      </p>
-                    </div>
+                    <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                    <h4 className="text-base lg:text-lg font-semibold text-blue-900">Next Task</h4>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <span className={`text-xs font-medium ${getStepColor(step)}`}>
-                      {step.status === 'completed' ? 'Completed' :
-                       step.status === 'in-progress' ? 'In Progress' : 'Pending'}
-                    </span>
-                    
-                    {/* Lock button for completed steps */}
-                    {step.status === 'completed' && (
+                  <span className="text-sm text-blue-600 bg-blue-100 px-3 py-1 rounded-full w-fit">
+                    Due in {nextTask.subTask.estimatedDuration || '2 days'}
+                  </span>
+                </div>
+                <div className="space-y-3">
+                  <h5 className="text-lg lg:text-xl font-bold text-gray-900">{nextTask.subTask.title}</h5>
+                  <p className="text-sm lg:text-base text-gray-600">{nextTask.subTask.description}</p>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
+                    <span className="text-sm text-gray-500">Phase: {nextTask.step.title}</span>
+                    <div className="flex items-center space-x-3">
                       <button
-                        onClick={(e) => handleStepLock(step.id, e)}
-                        className={`p-1 rounded-full transition-colors ${
-                          lockedSteps.has(step.id) 
-                            ? 'bg-blue-100 text-blue-600' 
-                            : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
-                        }`}
-                        title={lockedSteps.has(step.id) ? 'Unlock step' : 'Lock step'}
-                      >
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                        </svg>
-                      </button>
-                    )}
-
-                    {/* Step status toggle button */}
-                    {onStepStatusUpdate && (
-                      <button
-                        onClick={() => {
-                          const newStatus = step.status === 'completed' ? 'in-progress' : 
-                                           step.status === 'in-progress' ? 'pending' : 'completed';
-                          handleStepStatusUpdate(step.id, newStatus);
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleSubTaskUpdate(nextTask.step.id, nextTask.subTask.id, 'completed');
                         }}
-                        className="p-1 rounded-full transition-colors bg-gray-100 text-gray-400 hover:bg-gray-200"
-                        title={`Toggle step status: ${step.status === 'completed' ? 'Mark as in-progress' : 
-                                                      step.status === 'in-progress' ? 'Mark as pending' : 'Mark as completed'}`}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm lg:text-base"
+                        style={{ touchAction: 'manipulation' }}
                       >
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
-                        </svg>
+                        Mark Complete
                       </button>
-                    )}
-                    
-                    <button className="p-1 hover:bg-gray-200 rounded">
-                      <svg
-                        className={`w-4 h-4 text-gray-500 transition-transform ${isExpanded ? '' : 'rotate-180'}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleStepClick(nextTask.step.id);
+                        }}
+                        className="text-blue-600 hover:text-blue-800 font-medium text-sm lg:text-base transition-colors"
+                        style={{ touchAction: 'manipulation' }}
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
+                        View Details →
+                      </button>
+                    </div>
                   </div>
                 </div>
+              </div>
+            )}
 
-                {/* Step Content - Collapsible */}
-                {isExpanded && (
-                  <div className="p-4 bg-white">
-                    <p className="text-sm text-gray-600 mb-4">{step.description}</p>
-                    
-                    {/* Sub-tasks */}
-                    {step.subTasks && step.subTasks.length > 0 && (
-                      <div className="space-y-3">
-                        <h5 className="text-sm font-semibold text-gray-900">Sub-tasks</h5>
-                        {step.subTasks.map((subTask) => {
-                          const isSubTaskCollapsed = collapsedSubTasks.has(subTask.id);
-                          console.log('Rendering sub-task:', subTask.title, 'for step:', step.title);
-                          return (
-                            <div key={subTask.id}>
-                              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                <div className="flex items-center space-x-3">
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      if (canToggleSubTask(step.id)) {
-                                        const newStatus = subTask.status === 'completed' ? 'pending' : 'completed';
-                                        handleSubTaskUpdate(step.id, subTask.id, newStatus);
-                                      }
-                                    }}
-                                    disabled={!canToggleSubTask(step.id)}
-                                    className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
-                                      canToggleSubTask(step.id) ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
-                                    } ${
-                                      subTask.status === 'completed' 
-                                        ? 'bg-green-500' 
-                                        : 'bg-gray-300'
-                                    }`}
-                                  >
-                                    <span
-                                      className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform shadow-sm ${
-                                        subTask.status === 'completed' ? 'translate-x-7' : 'translate-x-1'
-                                      }`}
-                                    >
-                                      {subTask.status === 'completed' && (
-                                        <svg className="h-4 w-4 text-green-500 m-1" fill="currentColor" viewBox="0 0 20 20">
-                                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                        </svg>
-                                      )}
-                                      {subTask.status === 'pending' && (
-                                        <svg className="h-4 w-4 text-gray-400 m-1" fill="currentColor" viewBox="0 0 20 20">
-                                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                                        </svg>
-                                      )}
-                                    </span>
-                                  </button>
-                                  <div className="flex-1">
-                                    <h6 className="text-sm font-medium text-gray-900">{subTask.title}</h6>
-                                    <p className="text-xs text-gray-600">{subTask.description}</p>
-                                  </div>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  {subTask.estimatedDuration && (
-                                    <span className="text-xs text-gray-500">{subTask.estimatedDuration}</span>
-                                  )}
-                                  <span className={`text-xs font-medium ${
-                                    subTask.status === 'completed' ? 'text-green-600' : 'text-gray-400'
-                                  }`}>
-                                    {subTask.status === 'completed' ? 'Complete' : 'Not Complete'}
-                                  </span>
-                                  <button
-                                    onClick={() => toggleSubTaskCollapse(subTask.id)}
-                                    className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                                    title={isSubTaskCollapsed ? 'Expand details' : 'Collapse details'}
-                                  >
-                                    <svg
-                                      className={`w-4 h-4 transition-transform ${isSubTaskCollapsed ? 'rotate-180' : ''}`}
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                  </button>
-                                </div>
-                              </div>
+            {/* Upcoming Tasks Preview */}
+            {upcomingTasks.length > 0 && (
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-semibold text-gray-900">Upcoming Tasks ({upcomingTasks.length})</h4>
+                  <button 
+                    type="button"
+                    className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                    style={{ touchAction: 'manipulation' }}
+                  >
+                    View All
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {upcomingTasks.map((task, index) => (
+                    <div key={task.id} className="flex items-center space-x-3 text-sm">
+                      <span className="w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></span>
+                      <span className="text-gray-700 truncate">{task.title}</span>
+                      <span className="text-gray-500">•</span>
+                      <span className="text-gray-500 flex-shrink-0">{task.estimatedDuration || '1 day'}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Timeline View */}
+            <div className="space-y-4">
+              {steps.map((step, index) => {
+                const isCollapsed = collapsedPhases.has(step.id);
+                const progress = getStepProgress(step);
+                const isCurrentPhase = step.status === 'in-progress';
+                
+                return (
+                  <div key={step.id} className={`border rounded-lg overflow-hidden transition-all ${
+                    isCurrentPhase ? 'border-blue-200 shadow-sm' : 'border-gray-200'
+                  }`}>
+                    {/* Phase Header */}
+                    <div 
+                      className={`p-4 cursor-pointer transition-colors ${
+                        isCurrentPhase ? 'bg-blue-50 hover:bg-blue-100' : 'bg-gray-50 hover:bg-gray-100'
+                      }`}
+                      onClick={() => togglePhaseCollapse(step.id)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3 lg:space-x-4">
+                          {/* Timeline Indicator */}
+                          <div className="flex flex-col items-center flex-shrink-0">
+                            <div className={`w-6 h-6 lg:w-8 lg:h-8 rounded-full flex items-center justify-center ${
+                              step.status === 'completed' ? 'bg-green-500 text-white' :
+                              step.status === 'in-progress' ? 'bg-blue-500 text-white' : 
+                              'bg-gray-300 text-gray-600'
+                            }`}>
+                              {step.status === 'completed' ? (
+                                <svg className="w-3 h-3 lg:w-4 lg:h-4" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
+                              ) : (
+                                <span className="text-xs lg:text-sm font-semibold">{step.stepNumber}</span>
+                              )}
+                            </div>
+                            {index < steps.length - 1 && (
+                              <div className={`w-0.5 h-6 lg:h-8 mt-2 ${
+                                step.status === 'completed' ? 'bg-green-500' : 'bg-gray-300'
+                              }`} />
+                            )}
+                          </div>
+                          
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-3">
+                              <h3 className="text-base lg:text-lg font-semibold text-gray-900 truncate">{step.title}</h3>
+                              <span className={`px-2 py-1 text-xs font-medium rounded-full flex-shrink-0 ${
+                                step.status === 'completed' ? 'bg-green-100 text-green-700' :
+                                step.status === 'in-progress' ? 'bg-blue-100 text-blue-700' :
+                                'bg-gray-100 text-gray-700'
+                              }`}>
+                                {step.status === 'completed' ? 'Done' :
+                                 step.status === 'in-progress' ? 'In Progress' : 'Upcoming'}
+                              </span>
+                            </div>
                             
-                            {/* Sub-task Details - Collapsible */}
-                            {!isSubTaskCollapsed && (
-                              <div className="mt-3 space-y-4">
-                                {/* Deliverables Section */}
-                                {subTask.deliverables && subTask.deliverables.length > 0 && (
-                                  <div className="bg-white rounded-lg p-4 border border-gray-200">
-                                    <h6 className="text-sm font-semibold text-gray-900 mb-3">Deliverables</h6>
-                                    <div className="space-y-2">
-                                      {subTask.deliverables.map((deliverable) => (
-                                        <div key={deliverable.id} className="flex items-center space-x-3">
-                                          <button
-                                            type="button"
-                                            onClick={(e) => {
-                                              e.preventDefault();
-                                              e.stopPropagation();
-                                              // Toggle deliverable status
-                                              const newStatus = deliverable.status === 'completed' ? 'pending' : 'completed';
-                                              // Call the deliverable update handler
-                                              onDeliverableUpdate?.(step.id, subTask.id, deliverable.id, newStatus);
-                                            }}
-                                            className={`w-4 h-4 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors hover:scale-110 ${
-                                              deliverable.status === 'completed' 
-                                                ? 'bg-green-500 border-green-500 hover:bg-green-600' 
-                                                : 'bg-white border-gray-300 hover:border-gray-400'
-                                            }`}
-                                          >
-                                            {deliverable.status === 'completed' && (
-                                              <div className="w-2 h-2 bg-white rounded-full"></div>
-                                            )}
-                                          </button>
-                                          <span className="text-sm text-gray-700 flex-1">{deliverable.title}</span>
-                                          <span className={`text-xs italic ${
-                                            deliverable.status === 'completed' ? 'text-green-600' : 'text-gray-500'
-                                          }`}>
-                                            {deliverable.status === 'completed' ? 'Completed' : 'To Do'}
-                                          </span>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-
-                                {/* Documents Section */}
-                                {subTask.documents && subTask.documents.length > 0 && (
-                                  <div className="bg-white rounded-lg p-4 border border-gray-200">
-                                    <h6 className="text-sm font-semibold text-gray-900 mb-3">Documents</h6>
-                                    <div className="space-y-2">
-                                      {subTask.documents.map((document) => (
-                                        <div key={document.id} className="flex items-center space-x-3">
-                                          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                          </svg>
-                                          <span className="text-sm text-gray-700 flex-1">{document.name}</span>
-                                          <div className="flex items-center space-x-2">
-                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="View document">
-                                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                              </svg>
-                                            </button>
-                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="Share document">
-                                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                                              </svg>
-                                            </button>
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-
-                                {/* Notes Section - Moved to bottom */}
-                                <div className="bg-white rounded-lg p-4 border border-gray-200">
-                                  <div className="flex items-center justify-between mb-3">
-                                    <h6 className="text-sm font-semibold text-gray-900">Notes</h6>
-                                    <button
-                                      onClick={() => handleNotesEdit(step.id, subTask.id, subTask.notes || '')}
-                                      className="text-sm text-blue-600 hover:text-blue-800"
-                                    >
-                                      {editingNotes === `${step.id}-${subTask.id}` ? 'Cancel' : 'Edit'}
-                                    </button>
-                                  </div>
-                                  {editingNotes === `${step.id}-${subTask.id}` ? (
-                                    <div className="space-y-2">
-                                      <textarea
-                                        value={notesValue}
-                                        onChange={(e) => setNotesValue(e.target.value)}
-                                        onKeyDown={(e) => handleNotesKeyPress(e, step.id, subTask.id)}
-                                        className="w-full text-sm text-gray-600 bg-gray-50 border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        rows={3}
-                                        placeholder="Add notes for this sub-task..."
-                                      />
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-xs text-gray-500">Ctrl+Enter to save, Esc to cancel</span>
-                                        <button
-                                          onClick={() => handleNotesSave(step.id, subTask.id)}
-                                          className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                                        >
-                                          Save
-                                        </button>
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded min-h-[3rem]">
-                                      {subTask.notes || 'No notes added yet. Click Edit to add notes.'}
-                                    </p>
-                                  )}
-                                </div>
+                            <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 mt-1">
+                              <span className="text-sm text-gray-600">{step.estimatedDuration}</span>
+                              {step.subTasks && (
+                                <span className="text-sm text-gray-500">
+                                  {progress}% complete ({step.subTasks.filter(st => st.status === 'completed').length}/{step.subTasks.length} tasks)
+                                </span>
+                              )}
+                            </div>
+                            
+                            {/* Progress Bar */}
+                            {step.subTasks && (
+                              <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                <div 
+                                  className={`h-2 rounded-full transition-all ${
+                                    step.status === 'completed' ? 'bg-green-500' :
+                                    step.status === 'in-progress' ? 'bg-blue-500' : 'bg-gray-400'
+                                  }`}
+                                  style={{ width: `${progress}%` }}
+                                />
                               </div>
                             )}
                           </div>
-                        );
-                      })}
+                        </div>
+                        
+                        <button 
+                          type="button"
+                          className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
+                          style={{ touchAction: 'manipulation' }}
+                        >
+                          <svg
+                            className={`w-5 h-5 transition-transform ${isCollapsed ? 'rotate-180' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Phase Content */}
+                    {!isCollapsed && step.subTasks && (
+                      <div className="p-4 bg-white border-t border-gray-100">
+                        <div className="space-y-4">
+                          {step.subTasks.map((subTask) => {
+                            const deliverableProgress = getDeliverableProgress(subTask);
+                            const isNextTask = nextTask?.subTask.id === subTask.id;
+                            
+                            return (
+                              <div key={subTask.id} className={`rounded-lg border p-4 ${
+                                isNextTask ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-gray-50'
+                              }`}>
+                                <div className="flex items-start justify-between">
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center space-x-3 mb-2">
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          const newStatus = subTask.status === 'completed' ? 'pending' : 'completed';
+                                          handleSubTaskUpdate(step.id, subTask.id, newStatus);
+                                        }}
+                                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors flex-shrink-0 ${
+                                          subTask.status === 'completed' 
+                                            ? 'bg-green-500 border-green-500' 
+                                            : 'border-gray-300 hover:border-gray-400'
+                                        }`}
+                                        style={{ touchAction: 'manipulation' }}
+                                      >
+                                        {subTask.status === 'completed' && (
+                                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                          </svg>
+                                        )}
+                                      </button>
+                                      
+                                      <div className="flex-1 min-w-0">
+                                        <h4 className={`font-medium text-sm lg:text-base ${
+                                          isNextTask ? 'text-blue-900' : 'text-gray-900'
+                                        }`}>
+                                          {isNextTask && <span className="text-blue-600 mr-2">👉</span>}
+                                          {subTask.title}
+                                        </h4>
+                                        <p className="text-xs lg:text-sm text-gray-600 mt-1">{subTask.description}</p>
+                                      </div>
+                                    </div>
+                                    
+                                    {/* Deliverables Checklist */}
+                                    {subTask.deliverables && subTask.deliverables.length > 0 && (
+                                      <div className="mt-3 pl-8">
+                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 space-y-1 sm:space-y-0">
+                                          <h5 className="text-xs lg:text-sm font-medium text-gray-700">
+                                            Deliverables ({deliverableProgress.completed}/{deliverableProgress.total} complete)
+                                          </h5>
+                                          <div className="w-16 bg-gray-200 rounded-full h-1.5">
+                                            <div 
+                                              className="bg-green-500 h-1.5 rounded-full transition-all"
+                                              style={{ 
+                                                width: `${deliverableProgress.total > 0 ? (deliverableProgress.completed / deliverableProgress.total) * 100 : 0}%` 
+                                              }}
+                                            />
+                                          </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                          {subTask.deliverables.map((deliverable) => (
+                                            <div key={deliverable.id} className="flex items-center space-x-2">
+                                              <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                  e.preventDefault();
+                                                  e.stopPropagation();
+                                                  const newStatus = deliverable.status === 'completed' ? 'pending' : 'completed';
+                                                  handleDeliverableUpdate(step.id, subTask.id, deliverable.id, newStatus);
+                                                }}
+                                                className={`w-4 h-4 rounded border flex items-center justify-center text-xs transition-colors ${
+                                                  deliverable.status === 'completed' 
+                                                    ? 'bg-green-500 border-green-500 text-white' 
+                                                    : 'border-gray-300 hover:border-gray-400'
+                                                }`}
+                                                style={{ touchAction: 'manipulation' }}
+                                              >
+                                                {deliverable.status === 'completed' && '✓'}
+                                              </button>
+                                              <span className={`text-xs lg:text-sm ${
+                                                deliverable.status === 'completed' ? 'text-green-700 line-through' : 'text-gray-700'
+                                              }`}>
+                                                {deliverable.title}
+                                              </span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                    
+                                    {/* Documents - Progressive Disclosure */}
+                                    {subTask.documents && subTask.documents.length > 0 && (
+                                      <div className="mt-3 pl-8">
+                                        <details className="group">
+                                          <summary className="text-xs lg:text-sm font-medium text-gray-700 cursor-pointer hover:text-gray-900 transition-colors">
+                                            📎 Documents ({subTask.documents.length})
+                                          </summary>
+                                          <div className="mt-2 space-y-1">
+                                            {subTask.documents.map((doc) => (
+                                              <div key={doc.id} className="flex items-center space-x-2 text-xs lg:text-sm text-gray-600">
+                                                <span>📄</span>
+                                                <span className="truncate">{doc.name}</span>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </details>
+                                      </div>
+                                    )}
+                                  </div>
+                                  
+                                  <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 ml-4 flex-shrink-0">
+                                    {subTask.estimatedDuration && (
+                                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                        {subTask.estimatedDuration}
+                                      </span>
+                                    )}
+                                    <span className={`text-xs font-medium ${
+                                      subTask.status === 'completed' ? 'text-green-600' : 
+                                      isNextTask ? 'text-blue-600' : 'text-gray-500'
+                                    }`}>
+                                      {subTask.status === 'completed' ? '✅ Done' : 
+                                       isNextTask ? '🔄 Next' : '⏳ Pending'}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     )}
                   </div>
-                )}
-              </div>
-            );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </div>
-      ) : (
-        <CalendarView
-          tasks={getCalendarTasks()}
-          onTaskUpdate={onTaskUpdate || (() => {})}
-          onAddTask={onAddTask || (() => {})}
-        />
-      )}
+        ) : (
+          <CalendarView
+            tasks={getCalendarTasks()}
+            onTaskUpdate={onTaskUpdate || (() => {})}
+            onAddTask={onAddTask || (() => {})}
+          />
+        )}
 
-      {/* Desktop: Expanded Step Details */}
-      {expandedStep && viewMode === 'progress' && (
-        <div className="hidden md:block border-t border-gray-200 pt-4">
-          {(() => {
-            const step = steps.find(s => s.id === expandedStep);
-            if (!step) return null;
-
-            return (
-              <div className="space-y-4">
-                {/* Step Header */}
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900">{step.title}</h4>
-                    <p className="text-sm text-gray-600 mt-1">{step.description}</p>
-                    <div className="flex items-center space-x-4 mt-2">
-                      <span className={`text-sm font-medium ${getStepColor(step)}`}>
-                        {step.status === 'completed' ? 'Completed' :
-                         step.status === 'in-progress' ? 'In Progress' : 'Pending'}
-                      </span>
-                      {step.estimatedDuration && (
-                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                          {step.estimatedDuration}
-                        </span>
-                      )}
-                    </div>
-                  </div>
+        {/* Confirmation Modal */}
+        {showConfirmation && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full">
+              <div className="flex items-center mb-4">
+                <div className="flex-shrink-0 w-10 h-10 mx-auto bg-yellow-100 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                </div>
+              </div>
+              <div className="text-center">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Confirm Action</h3>
+                <p className="text-sm text-gray-500 mb-6">
+                  Are you sure you want to mark this as incomplete? This will affect the overall progress.
+                </p>
+                <div className="flex space-x-3">
                   <button
-                    onClick={() => setExpandedStep(null)}
-                    className="text-gray-400 hover:text-gray-600"
+                    type="button"
+                    onClick={() => setShowConfirmation(null)}
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                    style={{ touchAction: 'manipulation' }}
                   >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowConfirmation(null);
+                    }}
+                    className="flex-1 px-4 py-2 bg-red-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-red-700 transition-colors"
+                    style={{ touchAction: 'manipulation' }}
+                  >
+                    Confirm
                   </button>
                 </div>
-
-                {/* Next Task Indicator */}
-                {step.status === 'in-progress' && step.subTasks && step.subTasks.length > 0 && (
-                  <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                      <span className="text-sm font-medium text-blue-900">Next Task:</span>
-                      <span className="text-sm text-blue-700">
-                        {step.subTasks.find(subTask => subTask.status === 'pending')?.title || 'All tasks completed'}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Sub-tasks */}
-                {step.subTasks && step.subTasks.length > 0 && (
-                  <div>
-                    <h5 className="text-md font-semibold text-gray-900 mb-4">Sub-tasks</h5>
-                    <div className="space-y-3">
-                      {step.subTasks.map((subTask) => {
-                        const isCollapsed = collapsedSubTasks.has(subTask.id);
-                        return (
-                          <div key={subTask.id} className="bg-gray-50 rounded-lg p-4">
-                            {/* Sub-task Header */}
-                            <div className="flex items-center justify-between mb-3">
-                              <div className="flex items-center space-x-3">
-                                <button
-                                  onClick={() => {
-                                    if (canToggleSubTask(step.id)) {
-                                      const newStatus = subTask.status === 'completed' ? 'pending' : 'completed';
-                                      handleSubTaskUpdate(step.id, subTask.id, newStatus);
-                                    }
-                                  }}
-                                  disabled={!canToggleSubTask(step.id)}
-                                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
-                                    canToggleSubTask(step.id) ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
-                                  } ${
-                                    subTask.status === 'completed' 
-                                      ? 'bg-green-500' 
-                                      : 'bg-gray-300'
-                                  }`}
-                                >
-                                  <span
-                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                      subTask.status === 'completed' ? 'translate-x-6' : 'translate-x-1'
-                                    }`}
-                                  >
-                                    {subTask.status === 'completed' && (
-                                      <svg className="h-3 w-3 text-green-500 m-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                      </svg>
-                                    )}
-                                    {subTask.status === 'pending' && (
-                                      <svg className="h-3 w-3 text-gray-400 m-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                                      </svg>
-                                    )}
-                                  </span>
-                                </button>
-                                <div className="flex-1">
-                                  <h6 className="text-sm font-medium text-gray-900">{subTask.title}</h6>
-                                  <p className="text-xs text-gray-600">{subTask.description}</p>
-                                </div>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                {subTask.estimatedDuration && (
-                                  <span className="text-xs text-gray-500">{subTask.estimatedDuration}</span>
-                                )}
-                                <span className={`text-xs font-medium ${
-                                  subTask.status === 'completed' ? 'text-green-600' : 'text-gray-400'
-                                }`}>
-                                  {subTask.status === 'completed' ? 'Complete' : 'Not Complete'}
-                                </span>
-                                <button
-                                  onClick={() => toggleSubTaskCollapse(subTask.id)}
-                                  className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                                  title={isCollapsed ? 'Expand details' : 'Collapse details'}
-                                >
-                                  <svg
-                                    className={`w-4 h-4 transition-transform ${isCollapsed ? 'rotate-180' : ''}`}
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                  </svg>
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* Sub-task Details - Collapsible */}
-                            {!isCollapsed && (
-                              <div className="space-y-4">
-                                {/* Deliverables Section */}
-                                {subTask.deliverables && subTask.deliverables.length > 0 && (
-                                  <div className="bg-white rounded-lg p-4 border border-gray-200">
-                                    <h6 className="text-sm font-semibold text-gray-900 mb-3">Deliverables</h6>
-                                    <div className="space-y-2">
-                                      {subTask.deliverables.map((deliverable) => (
-                                        <div key={deliverable.id} className="flex items-center space-x-3">
-                                          <button
-                                            type="button"
-                                            onClick={(e) => {
-                                              e.preventDefault();
-                                              e.stopPropagation();
-                                              // Toggle deliverable status
-                                              const newStatus = deliverable.status === 'completed' ? 'pending' : 'completed';
-                                              // Call the deliverable update handler
-                                              onDeliverableUpdate?.(step.id, subTask.id, deliverable.id, newStatus);
-                                            }}
-                                            className={`w-4 h-4 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors hover:scale-110 ${
-                                              deliverable.status === 'completed' 
-                                                ? 'bg-green-500 border-green-500 hover:bg-green-600' 
-                                                : 'bg-white border-gray-300 hover:border-gray-400'
-                                            }`}
-                                          >
-                                            {deliverable.status === 'completed' && (
-                                              <div className="w-2 h-2 bg-white rounded-full"></div>
-                                            )}
-                                          </button>
-                                          <span className="text-sm text-gray-700 flex-1">{deliverable.title}</span>
-                                          <span className={`text-xs italic ${
-                                            deliverable.status === 'completed' ? 'text-green-600' : 'text-gray-500'
-                                          }`}>
-                                            {deliverable.status === 'completed' ? 'Completed' : 'To Do'}
-                                          </span>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-
-                                {/* Documents Section */}
-                                {subTask.documents && subTask.documents.length > 0 && (
-                                  <div className="bg-white rounded-lg p-4 border border-gray-200">
-                                    <h6 className="text-sm font-semibold text-gray-900 mb-3">Documents</h6>
-                                    <div className="space-y-2">
-                                      {subTask.documents.map((document) => (
-                                        <div key={document.id} className="flex items-center space-x-3">
-                                          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                                          </svg>
-                                          <span className="text-sm text-gray-700 flex-1">{document.name}</span>
-                                          <div className="flex items-center space-x-2">
-                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="View document">
-                                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                              </svg>
-                                            </button>
-                                            <button className="p-1 text-gray-400 hover:text-gray-600" title="Share document">
-                                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                                              </svg>
-                                            </button>
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-
-                                {/* Notes Section - Moved to bottom */}
-                                <div className="bg-white rounded-lg p-4 border border-gray-200">
-                                  <div className="flex items-center justify-between mb-3">
-                                    <h6 className="text-sm font-semibold text-gray-900">Notes</h6>
-                                    <button
-                                      onClick={() => handleNotesEdit(step.id, subTask.id, subTask.notes || '')}
-                                      className="text-sm text-blue-600 hover:text-blue-800"
-                                    >
-                                      {editingNotes === `${step.id}-${subTask.id}` ? 'Cancel' : 'Edit'}
-                                    </button>
-                                  </div>
-                                  {editingNotes === `${step.id}-${subTask.id}` ? (
-                                    <div className="space-y-2">
-                                      <textarea
-                                        value={notesValue}
-                                        onChange={(e) => setNotesValue(e.target.value)}
-                                        onKeyDown={(e) => handleNotesKeyPress(e, step.id, subTask.id)}
-                                        className="w-full text-sm text-gray-600 bg-gray-50 border border-gray-300 rounded p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        rows={3}
-                                        placeholder="Add notes for this sub-task..."
-                                      />
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-xs text-gray-500">Ctrl+Enter to save, Esc to cancel</span>
-                                        <button
-                                          onClick={() => handleNotesSave(step.id, subTask.id)}
-                                          className="text-sm bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                                        >
-                                          Save
-                                        </button>
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded min-h-[3rem]">
-                                      {subTask.notes || 'No notes added yet. Click Edit to add notes.'}
-                                    </p>
-                                  )}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
               </div>
-            );
-          })()}
+            </div>
           </div>
         )}
       </div>
-
-      {/* Confirmation Overlay */}
-      {showConfirmation && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md mx-4">
-            <div className="flex items-center mb-4">
-              <div className="flex-shrink-0 w-10 h-10 mx-auto bg-yellow-100 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-              </div>
-            </div>
-            <div className="text-center">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Confirm Action
-              </h3>
-              <p className="text-sm text-gray-500 mb-6">
-                {showConfirmation?.type === 'subtask' 
-                  ? 'Are you sure you want to mark this sub-task as incomplete? This will affect the overall progress.'
-                  : 'Are you sure you want to mark this step as incomplete? This will affect the overall progress.'
-                }
-              </p>
-              <div className="flex space-x-3">
-                <button
-                  onClick={handleConfirmationCancel}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleConfirmationConfirm}
-                  className="flex-1 px-4 py-2 bg-red-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
