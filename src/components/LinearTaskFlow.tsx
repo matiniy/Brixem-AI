@@ -608,7 +608,9 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                 <div className="flex items-center space-x-3">
                                   <button
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
                                       if (canToggleSubTask(step.id)) {
                                         const newStatus = subTask.status === 'completed' ? 'pending' : 'completed';
                                         handleSubTaskUpdate(step.id, subTask.id, newStatus);
@@ -682,7 +684,9 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                       {subTask.deliverables.map((deliverable) => (
                                         <div key={deliverable.id} className="flex items-center space-x-3">
                                           <button
-                                            onClick={() => {
+                                            onClick={(e) => {
+                                              e.preventDefault();
+                                              e.stopPropagation();
                                               // Toggle deliverable status
                                               const newStatus = deliverable.status === 'completed' ? 'pending' : 'completed';
                                               // Call the deliverable update handler
@@ -922,7 +926,9 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                       {subTask.deliverables.map((deliverable) => (
                                         <div key={deliverable.id} className="flex items-center space-x-3">
                                           <button
-                                            onClick={() => {
+                                            onClick={(e) => {
+                                              e.preventDefault();
+                                              e.stopPropagation();
                                               // Toggle deliverable status
                                               const newStatus = deliverable.status === 'completed' ? 'pending' : 'completed';
                                               // Call the deliverable update handler

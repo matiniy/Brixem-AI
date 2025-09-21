@@ -164,6 +164,22 @@ export default function FloatingChatDashboard() {
         },
         {
           id: '1.2',
+          title: 'Client Requirements Workshop',
+          description: 'Conduct stakeholder interviews and requirements gathering sessions',
+          status: 'completed' as const,
+          estimatedDuration: '2 days',
+          assignedTo: 'Project Manager',
+          notes: 'Successfully gathered all client requirements. Budget confirmed at £2.5M with 10% contingency.',
+          materials: ['Meeting room', 'Presentation materials', 'Requirements templates'],
+          requirements: ['Client availability', 'Stakeholder identification', 'Budget confirmation'],
+          deliverables: [
+            { id: 'd5', title: 'Stakeholder requirements document', status: 'completed' as const },
+            { id: 'd6', title: 'Project scope definition', status: 'completed' as const },
+            { id: 'd7', title: 'Budget breakdown and approval', status: 'completed' as const }
+          ]
+        },
+        {
+          id: '1.3',
           title: 'Architectural Design Development',
           description: 'Develop detailed architectural designs including floor plans, elevations, and 3D models',
           status: 'completed' as const,
@@ -173,10 +189,10 @@ export default function FloatingChatDashboard() {
           materials: ['CAD software licenses', '3D modeling software', 'Drawing materials', 'Client brief documentation'],
           requirements: ['Client requirements brief', 'Site survey data', 'Planning policy compliance', 'Building regulations'],
           deliverables: [
-            { id: 'd5', title: 'Architectural drawings package (1:100 scale)', status: 'completed' as const },
-            { id: 'd6', title: '3D architectural visualization', status: 'completed' as const },
-            { id: 'd7', title: 'Material and finish specifications', status: 'completed' as const },
-            { id: 'd8', title: 'Design and access statement', status: 'completed' as const }
+            { id: 'd8', title: 'Architectural drawings package (1:100 scale)', status: 'completed' as const },
+            { id: 'd9', title: '3D architectural visualization', status: 'completed' as const },
+            { id: 'd10', title: 'Material and finish specifications', status: 'completed' as const },
+            { id: 'd11', title: 'Design and access statement', status: 'completed' as const }
           ],
           documents: [
             { id: '5', name: 'Architectural Drawings Package', type: 'PDF', url: '/docs/architectural-drawings.pdf' },
@@ -186,7 +202,7 @@ export default function FloatingChatDashboard() {
           ]
         },
         {
-          id: '1.3',
+          id: '1.4',
           title: 'Structural Engineering Design',
           description: 'Develop structural calculations, foundation design, and structural drawings',
           status: 'completed' as const,
@@ -196,10 +212,10 @@ export default function FloatingChatDashboard() {
           materials: ['Structural analysis software', 'Calculation tools', 'Design codes and standards', 'Load testing equipment'],
           requirements: ['Architectural drawings', 'Geotechnical report', 'Building regulations compliance', 'Structural engineer certification'],
           deliverables: [
-            { id: 'd9', title: 'Structural calculations report', status: 'completed' as const },
-            { id: 'd10', title: 'Foundation design drawings', status: 'completed' as const },
-            { id: 'd11', title: 'Structural steelwork drawings', status: 'completed' as const },
-            { id: 'd12', title: 'Load path analysis', status: 'completed' as const }
+            { id: 'd12', title: 'Structural calculations report', status: 'completed' as const },
+            { id: 'd13', title: 'Foundation design drawings', status: 'completed' as const },
+            { id: 'd14', title: 'Structural steelwork drawings', status: 'completed' as const },
+            { id: 'd15', title: 'Load path analysis', status: 'completed' as const }
           ],
           documents: [
             { id: '9', name: 'Structural Calculations', type: 'PDF', url: '/docs/structural-calculations.pdf' },
@@ -209,7 +225,7 @@ export default function FloatingChatDashboard() {
           ]
         },
         {
-          id: '1.4',
+          id: '1.5',
           title: 'MEP Design & Coordination',
           description: 'Design mechanical, electrical, and plumbing systems with full coordination',
           status: 'completed' as const,
@@ -219,10 +235,10 @@ export default function FloatingChatDashboard() {
           materials: ['MEP design software', 'Load calculation tools', 'Equipment specifications', 'Coordination software'],
           requirements: ['Architectural drawings', 'Client requirements', 'Building regulations', 'Energy efficiency standards'],
           deliverables: [
-            { id: 'd13', title: 'MEP drawings package', status: 'completed' as const },
-            { id: 'd14', title: 'Load calculations and sizing', status: 'completed' as const },
-            { id: 'd15', title: 'Equipment schedules and specifications', status: 'completed' as const },
-            { id: 'd16', title: 'MEP coordination drawings', status: 'completed' as const }
+            { id: 'd16', title: 'MEP drawings package', status: 'completed' as const },
+            { id: 'd17', title: 'Load calculations and sizing', status: 'completed' as const },
+            { id: 'd18', title: 'Equipment schedules and specifications', status: 'completed' as const },
+            { id: 'd19', title: 'MEP coordination drawings', status: 'completed' as const }
           ],
           documents: [
             { id: '13', name: 'MEP Drawings Package', type: 'PDF', url: '/docs/mep-drawings.pdf' },
@@ -259,10 +275,10 @@ export default function FloatingChatDashboard() {
           materials: ['Planning application forms', 'Technical drawings package', 'Design and access statement', 'Community consultation materials', 'Application fees'],
           requirements: ['Full planning permission', 'Approved architectural drawings', 'Community consultation report', 'Environmental impact assessment'],
           deliverables: [
-            { id: 'd17', title: 'Planning permission certificate', status: 'completed' as const },
-            { id: 'd18', title: 'Approved planning drawings', status: 'completed' as const },
-            { id: 'd19', title: 'Planning conditions compliance schedule', status: 'completed' as const },
-            { id: 'd20', title: 'Community consultation report', status: 'completed' as const }
+            { id: 'd20', title: 'Planning permission certificate', status: 'completed' as const },
+            { id: 'd21', title: 'Approved planning drawings', status: 'completed' as const },
+            { id: 'd22', title: 'Planning conditions compliance schedule', status: 'completed' as const },
+            { id: 'd23', title: 'Community consultation report', status: 'completed' as const }
           ],
           documents: [
             { id: '17', name: 'Planning Application Package', type: 'PDF', url: '/docs/planning-application.pdf' },
@@ -273,6 +289,21 @@ export default function FloatingChatDashboard() {
         },
         {
           id: '2.2',
+          title: 'Stakeholder Engagement',
+          description: 'Coordinate with local authorities and community groups',
+          status: 'completed' as const,
+          estimatedDuration: '1 week',
+          assignedTo: 'Community Relations Manager',
+          notes: 'Successfully engaged with 15 local stakeholders. No major concerns raised.',
+          materials: ['Presentation materials', 'Community engagement tools'],
+          requirements: ['Stakeholder identification', 'Meeting coordination', 'Feedback collection'],
+          deliverables: [
+            { id: 'd24', title: 'Stakeholder engagement report', status: 'completed' as const },
+            { id: 'd25', title: 'Community feedback summary', status: 'completed' as const }
+          ]
+        },
+        {
+          id: '2.3',
           title: 'Building Regulations Approval',
           description: 'Submit building regulations application with full compliance documentation and structural certification',
           status: 'completed' as const,
@@ -282,10 +313,10 @@ export default function FloatingChatDashboard() {
           materials: ['Building regulations application forms', 'Structural calculations', 'Fire safety strategy', 'Accessibility compliance report', 'Energy performance certificate'],
           requirements: ['Full building regulations approval', 'Structural engineer certification', 'Fire safety assessment', 'Accessibility compliance', 'Energy efficiency compliance'],
           deliverables: [
-            { id: 'd21', title: 'Building regulations approval certificate', status: 'completed' as const },
-            { id: 'd22', title: 'Structural compliance certificate', status: 'completed' as const },
-            { id: 'd23', title: 'Fire safety compliance certificate', status: 'completed' as const },
-            { id: 'd24', title: 'Building control inspection schedule', status: 'completed' as const }
+            { id: 'd26', title: 'Building regulations approval certificate', status: 'completed' as const },
+            { id: 'd27', title: 'Structural compliance certificate', status: 'completed' as const },
+            { id: 'd28', title: 'Fire safety compliance certificate', status: 'completed' as const },
+            { id: 'd29', title: 'Building control inspection schedule', status: 'completed' as const }
           ],
           documents: [
             { id: '21', name: 'Building Regulations Application', type: 'PDF', url: '/docs/building-regs-application.pdf' },
@@ -295,7 +326,7 @@ export default function FloatingChatDashboard() {
           ]
         },
         {
-          id: '2.3',
+          id: '2.4',
           title: 'Utility Connections & NOCs',
           description: 'Obtain all necessary utility connections, NOCs, and service agreements',
           status: 'completed' as const,
@@ -305,11 +336,11 @@ export default function FloatingChatDashboard() {
           materials: ['Utility application forms', 'Site connection drawings', 'Service specifications', 'Connection fees', 'Meter installation agreements'],
           requirements: ['Electricity connection agreement', 'Gas connection agreement', 'Water connection agreement', 'Telecommunications NOC', 'Sewer connection agreement'],
           deliverables: [
-            { id: 'd25', title: 'Electricity connection agreement', status: 'completed' as const },
-            { id: 'd26', title: 'Gas connection agreement', status: 'completed' as const },
-            { id: 'd27', title: 'Water connection agreement', status: 'completed' as const },
-            { id: 'd28', title: 'Telecommunications NOC', status: 'completed' as const },
-            { id: 'd29', title: 'Utility connection schedule', status: 'completed' as const }
+            { id: 'd30', title: 'Electricity connection agreement', status: 'completed' as const },
+            { id: 'd31', title: 'Gas connection agreement', status: 'completed' as const },
+            { id: 'd32', title: 'Water connection agreement', status: 'completed' as const },
+            { id: 'd33', title: 'Telecommunications NOC', status: 'completed' as const },
+            { id: 'd34', title: 'Utility connection schedule', status: 'completed' as const }
           ],
           documents: [
             { id: '25', name: 'Electricity Connection Agreement', type: 'PDF', url: '/docs/electricity-connection.pdf' },
@@ -320,7 +351,7 @@ export default function FloatingChatDashboard() {
           ]
         },
         {
-          id: '2.4',
+          id: '2.5',
           title: 'Environmental & Safety Permits',
           description: 'Obtain environmental permits, health and safety approvals, and construction phase plan approval',
           status: 'completed' as const,
@@ -330,10 +361,10 @@ export default function FloatingChatDashboard() {
           materials: ['Environmental permit applications', 'Health and safety documentation', 'Construction phase plan', 'Risk assessments', 'Method statements'],
           requirements: ['Environmental permit', 'Health and safety approval', 'Construction phase plan approval', 'CDM compliance', 'Noise and dust control permits'],
           deliverables: [
-            { id: 'd30', title: 'Environmental permit', status: 'completed' as const },
-            { id: 'd31', title: 'Health and safety approval', status: 'completed' as const },
-            { id: 'd32', title: 'Construction phase plan approval', status: 'completed' as const },
-            { id: 'd33', title: 'CDM compliance certificate', status: 'completed' as const }
+            { id: 'd35', title: 'Environmental permit', status: 'completed' as const },
+            { id: 'd36', title: 'Health and safety approval', status: 'completed' as const },
+            { id: 'd37', title: 'Construction phase plan approval', status: 'completed' as const },
+            { id: 'd38', title: 'CDM compliance certificate', status: 'completed' as const }
           ],
           documents: [
             { id: '30', name: 'Environmental Permit', type: 'PDF', url: '/docs/environmental-permit.pdf' },
@@ -370,10 +401,10 @@ export default function FloatingChatDashboard() {
           materials: ['Portable office units', 'Welfare facilities', 'Computer equipment', 'Safety equipment', 'Communication systems'],
           requirements: ['Site access permits', 'Utility connections', 'Safety certifications', 'Insurance coverage'],
           deliverables: [
-            { id: 'd34', title: 'Fully operational site office', status: 'completed' as const },
-            { id: 'd35', title: 'Welfare facilities (toilets, canteen, first aid)', status: 'completed' as const },
-            { id: 'd36', title: 'Site safety management system', status: 'completed' as const },
-            { id: 'd37', title: 'Communication and IT infrastructure', status: 'completed' as const }
+            { id: 'd39', title: 'Fully operational site office', status: 'completed' as const },
+            { id: 'd40', title: 'Welfare facilities (toilets, canteen, first aid)', status: 'completed' as const },
+            { id: 'd41', title: 'Site safety management system', status: 'completed' as const },
+            { id: 'd42', title: 'Communication and IT infrastructure', status: 'completed' as const }
           ],
           documents: [
             { id: '34', name: 'Site Setup Checklist', type: 'PDF', url: '/docs/site-setup-checklist.pdf' },
@@ -383,6 +414,21 @@ export default function FloatingChatDashboard() {
         },
         {
           id: '3.2',
+          title: 'Team Briefing & Safety Induction',
+          description: 'Conduct comprehensive safety briefings for all construction personnel',
+          status: 'completed' as const,
+          estimatedDuration: '1 day',
+          assignedTo: 'Health & Safety Manager',
+          notes: 'All 45 construction workers completed safety induction. Zero incidents recorded.',
+          materials: ['Safety training materials', 'PPE equipment', 'Induction videos'],
+          requirements: ['Safety certification', 'PPE distribution', 'Training records'],
+          deliverables: [
+            { id: 'd43', title: 'Safety induction completion certificates', status: 'completed' as const },
+            { id: 'd44', title: 'PPE distribution records', status: 'completed' as const }
+          ]
+        },
+        {
+          id: '3.3',
           title: 'Site Security & Hoarding',
           description: 'Install comprehensive site security, hoarding, and access control systems',
           status: 'in-progress' as const,
@@ -392,10 +438,10 @@ export default function FloatingChatDashboard() {
           materials: ['Hoarding panels', 'Steel posts', 'Security cameras', 'Access control systems', 'Warning signs', 'Lighting'],
           requirements: ['Planning permission compliance', 'Security system certification', 'Safety equipment', 'Installation team certification'],
           deliverables: [
-            { id: 'd38', title: 'Secured site perimeter with hoarding', status: 'completed' as const },
-            { id: 'd39', title: '24/7 security monitoring system', status: 'pending' as const },
-            { id: 'd40', title: 'Access control and visitor management', status: 'pending' as const },
-            { id: 'd41', title: 'Site lighting and safety signage', status: 'completed' as const }
+            { id: 'd45', title: 'Secured site perimeter with hoarding', status: 'completed' as const },
+            { id: 'd46', title: '24/7 security monitoring system', status: 'pending' as const },
+            { id: 'd47', title: 'Access control and visitor management', status: 'pending' as const },
+            { id: 'd48', title: 'Site lighting and safety signage', status: 'completed' as const }
           ],
           documents: [
             { id: '37', name: 'Security System Specifications', type: 'PDF', url: '/docs/security-specs.pdf' },
@@ -404,7 +450,7 @@ export default function FloatingChatDashboard() {
           ]
         },
         {
-          id: '3.3',
+          id: '3.4',
           title: 'Temporary Utilities Installation',
           description: 'Install temporary power, water, and telecommunications connections for construction',
           status: 'pending' as const,
@@ -414,10 +460,10 @@ export default function FloatingChatDashboard() {
           materials: ['Temporary power distribution', 'Water supply connections', 'Telecommunications equipment', 'Safety equipment', 'Metering systems'],
           requirements: ['Utility connection agreements', 'Safety certificates', 'Electrical certification', 'Water quality testing'],
           deliverables: [
-            { id: 'd42', title: 'Temporary electrical distribution system', status: 'pending' as const },
-            { id: 'd43', title: 'Temporary water supply and storage', status: 'pending' as const },
-            { id: 'd44', title: 'Site telecommunications network', status: 'pending' as const },
-            { id: 'd45', title: 'Utility safety and monitoring systems', status: 'pending' as const }
+            { id: 'd49', title: 'Temporary electrical distribution system', status: 'pending' as const },
+            { id: 'd50', title: 'Temporary water supply and storage', status: 'pending' as const },
+            { id: 'd51', title: 'Site telecommunications network', status: 'pending' as const },
+            { id: 'd52', title: 'Utility safety and monitoring systems', status: 'pending' as const }
           ],
           documents: [
             { id: '40', name: 'Temporary Utilities Plan', type: 'PDF', url: '/docs/temp-utilities-plan.pdf' },
@@ -426,7 +472,7 @@ export default function FloatingChatDashboard() {
           ]
         },
         {
-          id: '3.4',
+          id: '3.5',
           title: 'Site Clearance & Ground Preparation',
           description: 'Clear site, remove existing structures, and prepare ground for construction',
           status: 'pending' as const,
@@ -436,10 +482,10 @@ export default function FloatingChatDashboard() {
           materials: ['Excavation equipment', 'Demolition tools', 'Safety barriers', 'Ground protection', 'Waste management equipment'],
           requirements: ['Site clearance permits', 'Demolition licenses', 'Waste disposal permits', 'Safety equipment', 'Environmental compliance'],
           deliverables: [
-            { id: 'd46', title: 'Site cleared of existing structures', status: 'pending' as const },
-            { id: 'd47', title: 'Ground leveled and prepared', status: 'pending' as const },
-            { id: 'd48', title: 'Temporary access roads established', status: 'pending' as const },
-            { id: 'd49', title: 'Environmental protection measures', status: 'pending' as const }
+            { id: 'd53', title: 'Site cleared of existing structures', status: 'pending' as const },
+            { id: 'd54', title: 'Ground leveled and prepared', status: 'pending' as const },
+            { id: 'd55', title: 'Temporary access roads established', status: 'pending' as const },
+            { id: 'd56', title: 'Environmental protection measures', status: 'pending' as const }
           ],
           documents: [
             { id: '43', name: 'Site Clearance Plan', type: 'PDF', url: '/docs/site-clearance-plan.pdf' },
@@ -448,7 +494,7 @@ export default function FloatingChatDashboard() {
           ]
         },
         {
-          id: '3.5',
+          id: '3.6',
           title: 'Site Survey & Setting Out',
           description: 'Conduct detailed site survey and set out building positions and levels',
           status: 'pending' as const,
@@ -458,10 +504,10 @@ export default function FloatingChatDashboard() {
           materials: ['Total station', 'GPS equipment', 'Leveling equipment', 'Survey markers', 'Measuring equipment'],
           requirements: ['Surveyor certification', 'Equipment calibration', 'Site access', 'Safety equipment'],
           deliverables: [
-            { id: 'd50', title: 'Detailed site survey and levels', status: 'pending' as const },
-            { id: 'd51', title: 'Building position setting out', status: 'pending' as const },
-            { id: 'd52', title: 'Survey control points established', status: 'pending' as const },
-            { id: 'd53', title: 'As-built survey documentation', status: 'pending' as const }
+            { id: 'd57', title: 'Detailed site survey and levels', status: 'pending' as const },
+            { id: 'd58', title: 'Building position setting out', status: 'pending' as const },
+            { id: 'd59', title: 'Survey control points established', status: 'pending' as const },
+            { id: 'd60', title: 'As-built survey documentation', status: 'pending' as const }
           ],
           documents: [
             { id: '46', name: 'Site Survey Report', type: 'PDF', url: '/docs/site-survey-report.pdf' },
@@ -497,10 +543,10 @@ export default function FloatingChatDashboard() {
           materials: ['Excavation equipment', 'Drainage pipes', 'Geotextile membranes', 'Compaction equipment', 'Survey equipment'],
           requirements: ['Excavation permits', 'Ground conditions assessment', 'Drainage design approval', 'Safety equipment'],
           deliverables: [
-            { id: 'd54', title: 'Foundation trenches excavated to design levels', status: 'pending' as const },
-            { id: 'd55', title: 'Foundation drainage system installed', status: 'pending' as const },
-            { id: 'd56', title: 'Foundation beds prepared and compacted', status: 'pending' as const },
-            { id: 'd57', title: 'Foundation survey and level check', status: 'pending' as const }
+            { id: 'd61', title: 'Foundation trenches excavated to design levels', status: 'pending' as const },
+            { id: 'd62', title: 'Foundation drainage system installed', status: 'pending' as const },
+            { id: 'd63', title: 'Foundation beds prepared and compacted', status: 'pending' as const },
+            { id: 'd64', title: 'Foundation survey and level check', status: 'pending' as const }
           ],
           documents: [
             { id: '49', name: 'Foundation Excavation Plan', type: 'PDF', url: '/docs/foundation-excavation.pdf' },
@@ -519,10 +565,10 @@ export default function FloatingChatDashboard() {
           materials: ['Reinforcement steel', 'Concrete', 'Formwork', 'Vibrating equipment', 'Curing materials'],
           requirements: ['Concrete delivery schedule', 'Weather protection', 'Quality control', 'Structural engineer inspection'],
           deliverables: [
-            { id: 'd58', title: 'Reinforcement steel installed and inspected', status: 'pending' as const },
-            { id: 'd59', title: 'Concrete foundations poured and cured', status: 'pending' as const },
-            { id: 'd60', title: 'Foundation quality control tests completed', status: 'pending' as const },
-            { id: 'd61', title: 'Substructure walls constructed', status: 'pending' as const }
+            { id: 'd65', title: 'Reinforcement steel installed and inspected', status: 'pending' as const },
+            { id: 'd66', title: 'Concrete foundations poured and cured', status: 'pending' as const },
+            { id: 'd67', title: 'Foundation quality control tests completed', status: 'pending' as const },
+            { id: 'd68', title: 'Substructure walls constructed', status: 'pending' as const }
           ],
           documents: [
             { id: '52', name: 'Concrete Pour Schedule', type: 'PDF', url: '/docs/concrete-pour-schedule.pdf' },
@@ -541,10 +587,10 @@ export default function FloatingChatDashboard() {
           materials: ['Structural steel sections', 'Bolts and connections', 'Crane equipment', 'Welding equipment', 'Safety equipment'],
           requirements: ['Crane access permits', 'Weather protection', 'Steel erection certification', 'Quality control'],
           deliverables: [
-            { id: 'd62', title: 'Main structural steel frame erected', status: 'pending' as const },
-            { id: 'd63', title: 'All steel connections completed and inspected', status: 'pending' as const },
-            { id: 'd64', title: 'Structural bracing installed', status: 'pending' as const },
-            { id: 'd65', title: 'Steel frame survey and alignment check', status: 'pending' as const }
+            { id: 'd69', title: 'Main structural steel frame erected', status: 'pending' as const },
+            { id: 'd70', title: 'All steel connections completed and inspected', status: 'pending' as const },
+            { id: 'd71', title: 'Structural bracing installed', status: 'pending' as const },
+            { id: 'd72', title: 'Steel frame survey and alignment check', status: 'pending' as const }
           ],
           documents: [
             { id: '55', name: 'Steel Erection Method Statement', type: 'PDF', url: '/docs/steel-erection-method.pdf' },
@@ -563,10 +609,10 @@ export default function FloatingChatDashboard() {
           materials: ['Concrete', 'Reinforcement mesh', 'Formwork', 'Insulation', 'Vapor barriers'],
           requirements: ['MEP coordination', 'Weather protection', 'Quality control', 'Access planning'],
           deliverables: [
-            { id: 'd66', title: 'Ground floor slab constructed', status: 'pending' as const },
-            { id: 'd67', title: 'Upper floor slabs constructed', status: 'pending' as const },
-            { id: 'd68', title: 'Floor slab quality control tests', status: 'pending' as const },
-            { id: 'd69', title: 'MEP penetrations completed', status: 'pending' as const }
+            { id: 'd73', title: 'Ground floor slab constructed', status: 'pending' as const },
+            { id: 'd74', title: 'Upper floor slabs constructed', status: 'pending' as const },
+            { id: 'd75', title: 'Floor slab quality control tests', status: 'pending' as const },
+            { id: 'd76', title: 'MEP penetrations completed', status: 'pending' as const }
           ],
           documents: [
             { id: '58', name: 'Floor Slab Construction Plan', type: 'PDF', url: '/docs/floor-slab-plan.pdf' },
@@ -585,15 +631,30 @@ export default function FloatingChatDashboard() {
           materials: ['Cladding panels', 'Roofing materials', 'Insulation', 'Waterproofing', 'Access equipment'],
           requirements: ['Weather conditions', 'Access equipment', 'Quality control', 'Coordination between trades'],
           deliverables: [
-            { id: 'd70', title: 'External wall construction completed', status: 'pending' as const },
-            { id: 'd71', title: 'Cladding system installed', status: 'pending' as const },
-            { id: 'd72', title: 'Roof structure and covering completed', status: 'pending' as const },
-            { id: 'd73', title: 'Weatherproof envelope sealed', status: 'pending' as const }
+            { id: 'd77', title: 'External wall construction completed', status: 'pending' as const },
+            { id: 'd78', title: 'Cladding system installed', status: 'pending' as const },
+            { id: 'd79', title: 'Roof structure and covering completed', status: 'pending' as const },
+            { id: 'd80', title: 'Weatherproof envelope sealed', status: 'pending' as const }
           ],
           documents: [
             { id: '61', name: 'Cladding Installation Guide', type: 'PDF', url: '/docs/cladding-installation.pdf' },
             { id: '62', name: 'Roofing Installation Details', type: 'PDF', url: '/docs/roofing-installation.pdf' },
             { id: '63', name: 'Waterproofing Test Results', type: 'PDF', url: '/docs/waterproofing-tests.pdf' }
+          ]
+        },
+        {
+          id: '4.6',
+          title: 'Quality Control Inspections',
+          description: 'Conduct regular quality control inspections throughout construction',
+          status: 'pending' as const,
+          estimatedDuration: 'Ongoing',
+          assignedTo: 'Quality Control Inspector',
+          notes: 'Continuous quality monitoring ensures all work meets specifications and standards.',
+          materials: ['Inspection tools', 'Testing equipment', 'Quality checklists'],
+          requirements: ['Quality standards', 'Inspection schedules', 'Defect reporting'],
+          deliverables: [
+            { id: 'd81', title: 'Daily quality control reports', status: 'pending' as const },
+            { id: 'd82', title: 'Defect identification and rectification', status: 'pending' as const }
           ]
         }
       ],
@@ -624,10 +685,10 @@ export default function FloatingChatDashboard() {
           materials: ['Electrical cables', 'Distribution boards', 'Lighting fixtures', 'Power outlets', 'Testing equipment'],
           requirements: ['Electrical certification', 'Coordination with other trades', 'Quality control', 'Safety protocols'],
           deliverables: [
-            { id: 'd74', title: 'Main electrical distribution system installed', status: 'pending' as const },
-            { id: 'd75', title: 'Lighting systems installed and tested', status: 'pending' as const },
-            { id: 'd76', title: 'Power outlets and switches installed', status: 'pending' as const },
-            { id: 'd77', title: 'Electrical safety testing completed', status: 'pending' as const }
+            { id: 'd83', title: 'Main electrical distribution system installed', status: 'pending' as const },
+            { id: 'd84', title: 'Lighting systems installed and tested', status: 'pending' as const },
+            { id: 'd85', title: 'Power outlets and switches installed', status: 'pending' as const },
+            { id: 'd86', title: 'Electrical safety testing completed', status: 'pending' as const }
           ],
           documents: [
             { id: '64', name: 'Electrical Installation Plan', type: 'PDF', url: '/docs/electrical-installation.pdf' },
@@ -646,10 +707,10 @@ export default function FloatingChatDashboard() {
           materials: ['Water pipes', 'Drainage pipes', 'Fittings and valves', 'Water heaters', 'Sanitary fixtures'],
           requirements: ['Plumbing certification', 'Water pressure testing', 'Drainage testing', 'Quality control'],
           deliverables: [
-            { id: 'd78', title: 'Cold and hot water systems installed', status: 'pending' as const },
-            { id: 'd79', title: 'Drainage and waste systems installed', status: 'pending' as const },
-            { id: 'd80', title: 'Sanitary fixtures installed and tested', status: 'pending' as const },
-            { id: 'd81', title: 'Water pressure and flow testing completed', status: 'pending' as const }
+            { id: 'd87', title: 'Cold and hot water systems installed', status: 'pending' as const },
+            { id: 'd88', title: 'Drainage and waste systems installed', status: 'pending' as const },
+            { id: 'd89', title: 'Sanitary fixtures installed and tested', status: 'pending' as const },
+            { id: 'd90', title: 'Water pressure and flow testing completed', status: 'pending' as const }
           ],
           documents: [
             { id: '67', name: 'Plumbing Installation Drawings', type: 'PDF', url: '/docs/plumbing-installation.pdf' },
@@ -668,10 +729,10 @@ export default function FloatingChatDashboard() {
           materials: ['HVAC units', 'Ductwork', 'Vents and grilles', 'Control systems', 'Insulation'],
           requirements: ['HVAC certification', 'System balancing', 'Quality control', 'Energy efficiency compliance'],
           deliverables: [
-            { id: 'd82', title: 'HVAC equipment installed and commissioned', status: 'pending' as const },
-            { id: 'd83', title: 'Ductwork system installed and balanced', status: 'pending' as const },
-            { id: 'd84', title: 'Control systems installed and programmed', status: 'pending' as const },
-            { id: 'd85', title: 'HVAC performance testing completed', status: 'pending' as const }
+            { id: 'd91', title: 'HVAC equipment installed and commissioned', status: 'pending' as const },
+            { id: 'd92', title: 'Ductwork system installed and balanced', status: 'pending' as const },
+            { id: 'd93', title: 'Control systems installed and programmed', status: 'pending' as const },
+            { id: 'd94', title: 'HVAC performance testing completed', status: 'pending' as const }
           ],
           documents: [
             { id: '70', name: 'HVAC Installation Plan', type: 'PDF', url: '/docs/hvac-installation.pdf' },
@@ -683,17 +744,17 @@ export default function FloatingChatDashboard() {
           id: '5.4',
           title: 'Internal Partitions & Ceilings',
           description: 'Install internal partitions, suspended ceilings, and acoustic treatments',
-      status: 'pending' as const,
+          status: 'pending' as const,
           estimatedDuration: '1 week',
           assignedTo: 'Partition Team',
           notes: 'Internal partitions require careful coordination with MEP installations and fire safety requirements.',
           materials: ['Partition systems', 'Ceiling tiles', 'Acoustic insulation', 'Fire barriers', 'Finishing materials'],
           requirements: ['Fire safety compliance', 'Acoustic performance', 'Quality control', 'MEP coordination'],
           deliverables: [
-            { id: 'd86', title: 'Internal partition walls installed', status: 'pending' as const },
-            { id: 'd87', title: 'Suspended ceiling systems installed', status: 'pending' as const },
-            { id: 'd88', title: 'Acoustic treatments installed', status: 'pending' as const },
-            { id: 'd89', title: 'Fire barriers and seals completed', status: 'pending' as const }
+            { id: 'd95', title: 'Internal partition walls installed', status: 'pending' as const },
+            { id: 'd96', title: 'Suspended ceiling systems installed', status: 'pending' as const },
+            { id: 'd97', title: 'Acoustic treatments installed', status: 'pending' as const },
+            { id: 'd98', title: 'Fire barriers and seals completed', status: 'pending' as const }
           ],
           documents: [
             { id: '73', name: 'Partition Installation Guide', type: 'PDF', url: '/docs/partition-installation.pdf' },
@@ -712,10 +773,10 @@ export default function FloatingChatDashboard() {
           materials: ['Paint and primers', 'Wall coverings', 'Flooring materials', 'Decorative elements', 'Protective coatings'],
           requirements: ['Clean environment', 'Quality control', 'Color matching', 'Access equipment'],
           deliverables: [
-            { id: 'd90', title: 'Wall finishes and painting completed', status: 'pending' as const },
-            { id: 'd91', title: 'Flooring systems installed', status: 'pending' as const },
-            { id: 'd92', title: 'Decorative elements installed', status: 'pending' as const },
-            { id: 'd93', title: 'Final cleaning and protection applied', status: 'pending' as const }
+            { id: 'd99', title: 'Wall finishes and painting completed', status: 'pending' as const },
+            { id: 'd100', title: 'Flooring systems installed', status: 'pending' as const },
+            { id: 'd101', title: 'Decorative elements installed', status: 'pending' as const },
+            { id: 'd102', title: 'Final cleaning and protection applied', status: 'pending' as const }
           ],
           documents: [
             { id: '76', name: 'Finishing Specifications', type: 'PDF', url: '/docs/finishing-specifications.pdf' },
@@ -734,15 +795,30 @@ export default function FloatingChatDashboard() {
           materials: ['Landscaping materials', 'External finishes', 'Cleaning supplies', 'Planting materials', 'Hardscaping'],
           requirements: ['Weather conditions', 'Access routes', 'Final inspections', 'Environmental compliance'],
           deliverables: [
-            { id: 'd94', title: 'Landscaping and planting completed', status: 'pending' as const },
-            { id: 'd95', title: 'External finishes and cleaning completed', status: 'pending' as const },
-            { id: 'd96', title: 'Site cleanup and waste removal', status: 'pending' as const },
-            { id: 'd97', title: 'Final site inspection completed', status: 'pending' as const }
+            { id: 'd103', title: 'Landscaping and planting completed', status: 'pending' as const },
+            { id: 'd104', title: 'External finishes and cleaning completed', status: 'pending' as const },
+            { id: 'd105', title: 'Site cleanup and waste removal', status: 'pending' as const },
+            { id: 'd106', title: 'Final site inspection completed', status: 'pending' as const }
           ],
           documents: [
             { id: '79', name: 'Landscaping Plan', type: 'PDF', url: '/docs/landscaping-plan.pdf' },
             { id: '80', name: 'External Finishes Guide', type: 'PDF', url: '/docs/external-finishes.pdf' },
             { id: '81', name: 'Site Cleanup Checklist', type: 'PDF', url: '/docs/site-cleanup.pdf' }
+          ]
+        },
+        {
+          id: '5.7',
+          title: 'Client Walkthrough & Feedback',
+          description: 'Conduct client walkthrough and collect feedback on finishes',
+          status: 'pending' as const,
+          estimatedDuration: '1 day',
+          assignedTo: 'Project Manager',
+          notes: 'Client walkthrough scheduled to ensure all requirements are met before final handover.',
+          materials: ['Walkthrough checklist', 'Feedback forms', 'Camera for documentation'],
+          requirements: ['Client availability', 'Completed areas', 'Feedback collection'],
+          deliverables: [
+            { id: 'd107', title: 'Client walkthrough completed', status: 'pending' as const },
+            { id: 'd108', title: 'Feedback collected and documented', status: 'pending' as const }
           ]
         }
       ],
@@ -773,10 +849,10 @@ export default function FloatingChatDashboard() {
           materials: ['Testing equipment', 'Commissioning procedures', 'Safety equipment', 'Calibration tools'],
           requirements: ['System commissioning', 'Quality assurance', 'Safety protocols', 'Performance standards'],
           deliverables: [
-            { id: 'd98', title: 'Electrical systems commissioned and tested', status: 'pending' as const },
-            { id: 'd99', title: 'Plumbing systems commissioned and tested', status: 'pending' as const },
-            { id: 'd100', title: 'HVAC systems commissioned and balanced', status: 'pending' as const },
-            { id: 'd101', title: 'MEP commissioning reports completed', status: 'pending' as const }
+            { id: 'd109', title: 'Electrical systems commissioned and tested', status: 'pending' as const },
+            { id: 'd110', title: 'Plumbing systems commissioned and tested', status: 'pending' as const },
+            { id: 'd111', title: 'HVAC systems commissioned and balanced', status: 'pending' as const },
+            { id: 'd112', title: 'MEP commissioning reports completed', status: 'pending' as const }
           ],
           documents: [
             { id: '82', name: 'MEP Commissioning Procedures', type: 'PDF', url: '/docs/mep-commissioning-procedures.pdf' },
@@ -795,10 +871,10 @@ export default function FloatingChatDashboard() {
           materials: ['Safety testing equipment', 'Compliance checklists', 'Testing procedures', 'Safety equipment'],
           requirements: ['Safety compliance', 'Regulatory standards', 'Fire safety testing', 'Accessibility compliance'],
           deliverables: [
-            { id: 'd102', title: 'Fire safety systems tested and certified', status: 'pending' as const },
-            { id: 'd103', title: 'Emergency systems tested and verified', status: 'pending' as const },
-            { id: 'd104', title: 'Accessibility compliance verified', status: 'pending' as const },
-            { id: 'd105', title: 'Safety compliance certificates issued', status: 'pending' as const }
+            { id: 'd113', title: 'Fire safety systems tested and certified', status: 'pending' as const },
+            { id: 'd114', title: 'Emergency systems tested and verified', status: 'pending' as const },
+            { id: 'd115', title: 'Accessibility compliance verified', status: 'pending' as const },
+            { id: 'd116', title: 'Safety compliance certificates issued', status: 'pending' as const }
           ],
           documents: [
             { id: '85', name: 'Fire Safety Test Report', type: 'PDF', url: '/docs/fire-safety-test.pdf' },
@@ -817,10 +893,10 @@ export default function FloatingChatDashboard() {
           materials: ['Snagging lists', 'Quality checklists', 'Repair materials', 'Inspection tools'],
           requirements: ['Quality standards', 'Client approval', 'Final inspections', 'Defect rectification'],
           deliverables: [
-            { id: 'd106', title: 'Comprehensive snagging list completed', status: 'pending' as const },
-            { id: 'd107', title: 'All defects identified and rectified', status: 'pending' as const },
-            { id: 'd108', title: 'Quality control inspection passed', status: 'pending' as const },
-            { id: 'd109', title: 'Client approval obtained', status: 'pending' as const }
+            { id: 'd117', title: 'Comprehensive snagging list completed', status: 'pending' as const },
+            { id: 'd118', title: 'All defects identified and rectified', status: 'pending' as const },
+            { id: 'd119', title: 'Quality control inspection passed', status: 'pending' as const },
+            { id: 'd120', title: 'Client approval obtained', status: 'pending' as const }
           ],
           documents: [
             { id: '88', name: 'Snagging List and Defects', type: 'PDF', url: '/docs/snagging-list.pdf' },
@@ -832,17 +908,17 @@ export default function FloatingChatDashboard() {
           id: '6.4',
           title: 'Final Inspections & Approvals',
           description: 'Conduct final building inspections and obtain all necessary approvals',
-      status: 'pending' as const,
+          status: 'pending' as const,
           estimatedDuration: '1 day',
           assignedTo: 'Building Control Officer',
           notes: 'Final inspections ensure all building regulations and planning conditions are met.',
           materials: ['Inspection checklists', 'Compliance documentation', 'Approval certificates'],
           requirements: ['Building control approval', 'Planning compliance', 'Final inspections', 'Occupancy certificate'],
           deliverables: [
-            { id: 'd110', title: 'Building control final inspection passed', status: 'pending' as const },
-            { id: 'd111', title: 'Planning conditions compliance verified', status: 'pending' as const },
-            { id: 'd112', title: 'Occupancy certificate obtained', status: 'pending' as const },
-            { id: 'd113', title: 'All regulatory approvals completed', status: 'pending' as const }
+            { id: 'd121', title: 'Building control final inspection passed', status: 'pending' as const },
+            { id: 'd122', title: 'Planning conditions compliance verified', status: 'pending' as const },
+            { id: 'd123', title: 'Occupancy certificate obtained', status: 'pending' as const },
+            { id: 'd124', title: 'All regulatory approvals completed', status: 'pending' as const }
           ],
           documents: [
             { id: '91', name: 'Building Control Final Certificate', type: 'PDF', url: '/docs/building-control-final.pdf' },
@@ -861,16 +937,31 @@ export default function FloatingChatDashboard() {
           materials: ['Handover documentation', 'Keys and access cards', 'Warranties', 'Operation manuals', 'Training materials'],
           requirements: ['Client approval', 'Documentation complete', 'Training completed', 'Project completion'],
           deliverables: [
-            { id: 'd114', title: 'Comprehensive handover documentation package', status: 'pending' as const },
-            { id: 'd115', title: 'Client training completed', status: 'pending' as const },
-            { id: 'd116', title: 'Keys and access control handed over', status: 'pending' as const },
-            { id: 'd117', title: 'Project completion certificate issued', status: 'pending' as const }
+            { id: 'd125', title: 'Comprehensive handover documentation package', status: 'pending' as const },
+            { id: 'd126', title: 'Client training completed', status: 'pending' as const },
+            { id: 'd127', title: 'Keys and access control handed over', status: 'pending' as const },
+            { id: 'd128', title: 'Project completion certificate issued', status: 'pending' as const }
           ],
           documents: [
             { id: '94', name: 'Project Handover Manual', type: 'PDF', url: '/docs/project-handover-manual.pdf' },
             { id: '95', name: 'Warranty and Maintenance Documents', type: 'PDF', url: '/docs/warranty-maintenance.pdf' },
             { id: '96', name: 'Operation and Maintenance Manuals', type: 'PDF', url: '/docs/operation-manuals.pdf' },
             { id: '97', name: 'Project Completion Certificate', type: 'PDF', url: '/docs/project-completion.pdf' }
+          ]
+        },
+        {
+          id: '6.6',
+          title: 'Post-Handover Support Setup',
+          description: 'Establish post-handover support and maintenance arrangements',
+          status: 'pending' as const,
+          estimatedDuration: '1 day',
+          assignedTo: 'Facilities Manager',
+          notes: 'Setting up ongoing maintenance contracts and support systems for the completed building.',
+          materials: ['Maintenance contracts', 'Support documentation', 'Contact information'],
+          requirements: ['Maintenance agreements', 'Support team assignment', 'Documentation handover'],
+          deliverables: [
+            { id: 'd129', title: 'Maintenance contracts established', status: 'pending' as const },
+            { id: 'd130', title: 'Support team contact information provided', status: 'pending' as const }
           ]
         }
       ],
