@@ -608,6 +608,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                 <div className="flex items-center space-x-3">
                                   <button
+                                    type="button"
                                     onClick={(e) => {
                                       e.preventDefault();
                                       e.stopPropagation();
@@ -684,6 +685,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                       {subTask.deliverables.map((deliverable) => (
                                         <div key={deliverable.id} className="flex items-center space-x-3">
                                           <button
+                                            type="button"
                                             onClick={(e) => {
                                               e.preventDefault();
                                               e.stopPropagation();
@@ -839,6 +841,19 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                   </button>
                 </div>
 
+                {/* Next Task Indicator */}
+                {step.status === 'in-progress' && step.subTasks && step.subTasks.length > 0 && (
+                  <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                      <span className="text-sm font-medium text-blue-900">Next Task:</span>
+                      <span className="text-sm text-blue-700">
+                        {step.subTasks.find(subTask => subTask.status === 'pending')?.title || 'All tasks completed'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 {/* Sub-tasks */}
                 {step.subTasks && step.subTasks.length > 0 && (
                   <div>
@@ -926,6 +941,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                       {subTask.deliverables.map((deliverable) => (
                                         <div key={deliverable.id} className="flex items-center space-x-3">
                                           <button
+                                            type="button"
                                             onClick={(e) => {
                                               e.preventDefault();
                                               e.stopPropagation();
