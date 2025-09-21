@@ -272,18 +272,27 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
 
         {/* Horizontal Timeline Stepper */}
         <div className="mb-4 sm:mb-6">
-          <div className="flex items-center justify-between relative overflow-x-auto pb-4">
-            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 -translate-y-1/2"></div>
-            <div className="flex items-center justify-between w-full min-w-max px-2">
-              {steps.map((step) => (
-                <div key={step.id} className="relative z-10 flex flex-col items-center min-w-0 flex-1">
-                  <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white font-semibold text-xs sm:text-sm transition-all ${
+          <div className="relative overflow-x-auto pb-4">
+            <div className="flex items-center justify-between w-full min-w-max px-4">
+              {steps.map((step, index) => (
+                <div key={step.id} className="relative flex flex-col items-center min-w-0 flex-1">
+                  {/* Timeline Line - Only show between steps */}
+                  {index < steps.length - 1 && (
+                    <div className="absolute top-3 sm:top-4 left-1/2 w-full h-0.5 bg-gray-200 -translate-x-1/2 z-0" 
+                         style={{ width: `calc(100% - ${step.status === 'in-progress' ? '1rem' : '0.75rem'})` }}>
+                    </div>
+                  )}
+                  
+                  {/* Step Circle */}
+                  <div className={`relative z-10 w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white font-semibold text-xs sm:text-sm transition-all border-2 border-white ${
                     step.status === 'completed' ? 'bg-green-500 shadow-lg' :
                     step.status === 'in-progress' ? 'bg-blue-500 shadow-lg ring-2 sm:ring-4 ring-blue-200 animate-pulse' :
                     'bg-gray-400'
                   }`}>
                     {step.status === 'completed' ? '✓' : step.stepNumber}
                   </div>
+                  
+                  {/* Step Label */}
                   <div className="mt-1 sm:mt-2 text-center px-1">
                     <div className={`text-xs font-medium truncate ${
                       step.status === 'in-progress' ? 'text-blue-600' :
