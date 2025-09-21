@@ -282,9 +282,12 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
 
         {/* Enhanced Horizontal Timeline Stepper */}
         <div className="mb-4 sm:mb-6">
-          <div className="relative overflow-x-auto pb-6 scrollbar-hide">
+          <div className="relative w-full">
+            {/* Background Timeline Line */}
+            <div className="absolute top-4 sm:top-5 left-4 right-4 h-0.5 bg-gray-200 z-0"></div>
+            
             <div 
-              className="flex items-center w-full min-w-max px-4" 
+              className="flex items-center justify-between w-full px-4" 
               ref={(el) => {
                 if (el) {
                   const currentPhaseIndex = steps.findIndex(step => step.status === 'in-progress');
@@ -302,34 +305,12 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                 const nextTask = step.subTasks?.find(st => st.status === 'pending');
                 const completedTasks = step.subTasks?.filter(st => st.status === 'completed').length || 0;
                 const totalTasks = step.subTasks?.length || 0;
-                
-                // Calculate variable spacing based on duration
-                const getDurationWeeks = (duration: string) => {
-                  const match = duration.match(/(\d+)-(\d+)/);
-                  if (match) {
-                    return (parseInt(match[1]) + parseInt(match[2])) / 2;
-                  }
-                  return 1; // default
-                };
-                
-                const durationWeeks = getDurationWeeks(step.estimatedDuration || '1-2 weeks');
-                const spacing = Math.max(1.5, Math.min(4, durationWeeks * 0.5)); // 1.5rem to 4rem based on duration
 
               return (
                   <div 
                     key={step.id} 
-                    className="relative flex flex-col items-center min-w-0 group"
-                    style={{ 
-                      marginRight: index < steps.length - 1 ? `${spacing}rem` : '0',
-                      marginLeft: index === 0 ? '0' : '0'
-                    }}
+                    className="relative flex flex-col items-center flex-1 group"
                   >
-                    {/* Timeline Line - Only show between steps */}
-                    {index < steps.length - 1 && (
-                      <div className="absolute top-4 sm:top-5 left-1/2 h-0.5 bg-gray-200 -translate-x-1/2 z-0" 
-                           style={{ width: `${spacing}rem` }}>
-                    </div>
-                    )}
                     
                     {/* Today Marker for Current Phase */}
                     {isCurrentPhase && (
