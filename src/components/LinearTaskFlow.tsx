@@ -574,7 +574,12 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                       const nextTask = step.subTasks.find(st => st.status === 'pending');
                       const completedTasks = step.subTasks.filter(st => st.status === 'completed');
                       return nextTask ? (
-                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-t border-blue-200 p-3 sm:p-4">
+                        <div 
+                          className="bg-gradient-to-r from-blue-50 to-indigo-50 border-t border-blue-200 p-3 sm:p-4"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                        >
                           <div className="flex items-start space-x-2 sm:space-x-3">
                             <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                               <span className="text-blue-600 font-bold text-xs sm:text-sm">AI</span>
@@ -627,7 +632,12 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
 
                     {/* Phase Content */}
                     {!isCollapsed && step.subTasks && (
-                      <div className="p-3 sm:p-4 bg-white border-t border-gray-100">
+                      <div 
+                        className="p-3 sm:p-4 bg-white border-t border-gray-100"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                      >
                         <div className="space-y-3 sm:space-y-4">
                           {step.subTasks.map((subTask) => {
                             const deliverableProgress = getDeliverableProgress(subTask);
