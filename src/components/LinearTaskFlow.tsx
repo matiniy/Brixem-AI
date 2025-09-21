@@ -209,7 +209,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
             <p className="text-sm font-medium text-gray-900">{nextTask.subTask.title}</p>
             <p className="text-xs text-gray-600">{nextTask.step.title}</p>
             <div className="flex items-center space-x-2">
-              <button
+            <button
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
@@ -220,8 +220,8 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                 style={{ touchAction: 'manipulation' }}
               >
                 Mark Complete
-              </button>
-              <button
+            </button>
+            <button
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
@@ -232,10 +232,10 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                 style={{ touchAction: 'manipulation' }}
               >
                 View Details
-              </button>
-            </div>
+            </button>
           </div>
         </div>
+      </div>
       )}
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6">
@@ -287,7 +287,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                 }
               }}
             >
-              {steps.map((step, index) => {
+            {steps.map((step, index) => {
                 const progress = getStepProgress(step);
                 const isCurrentPhase = step.status === 'in-progress';
                 const nextTask = step.subTasks?.find(st => st.status === 'pending');
@@ -305,8 +305,8 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                 
                 const durationWeeks = getDurationWeeks(step.estimatedDuration || '1-2 weeks');
                 const spacing = Math.max(1.5, Math.min(4, durationWeeks * 0.5)); // 1.5rem to 4rem based on duration
-                
-                return (
+
+              return (
                   <div 
                     key={step.id} 
                     className="relative flex flex-col items-center min-w-0 group"
@@ -319,7 +319,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                     {index < steps.length - 1 && (
                       <div className="absolute top-4 sm:top-5 left-1/2 h-0.5 bg-gray-200 -translate-x-1/2 z-0" 
                            style={{ width: `${spacing}rem` }}>
-                      </div>
+                    </div>
                     )}
                     
                     {/* Today Marker for Current Phase */}
@@ -336,7 +336,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                         <div className="w-full h-full bg-green-500 rounded-full flex items-center justify-center">
                           <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
+                        </svg>
                         </div>
                       ) : step.status === 'in-progress' ? (
                         <div className="relative w-full h-full">
@@ -384,14 +384,14 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                         step.status === 'in-progress' ? 'text-blue-600' : 'text-gray-400'
                       }`}>
                         {step.estimatedDuration}
-                      </div>
+                    </div>
                       {step.status === 'in-progress' && (
                         <div className="text-xs text-blue-500 mt-1">
                           {completedTasks}/{totalTasks} tasks
                         </div>
                       )}
-                    </div>
-                    
+                  </div>
+
                     {/* Micro-preview Tooltip */}
                     {nextTask && (
                       <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-30">
@@ -408,14 +408,14 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                             <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                           </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
             </div>
           </div>
-        </div>
+                    </div>
 
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 space-y-4 sm:space-y-0">
@@ -423,10 +423,10 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
             <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Phase Details</h3>
             <p className="text-sm text-gray-500 mt-1">
               Click on any phase card below to expand and view detailed tasks
-            </p>
-          </div>
+                      </p>
+                    </div>
           <div className="flex bg-gray-100 rounded-lg p-1 w-full sm:w-auto">
-            <button
+                      <button
               type="button"
               onClick={() => setViewMode('progress')}
               className={`flex-1 sm:flex-none px-3 py-1 text-sm font-medium rounded-md transition-colors ${
@@ -437,8 +437,8 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
               style={{ touchAction: 'manipulation' }}
             >
               Timeline
-            </button>
-            <button
+                      </button>
+                      <button
               type="button"
               onClick={() => setViewMode('calendar')}
               className={`flex-1 sm:flex-none px-3 py-1 text-sm font-medium rounded-md transition-colors ${
@@ -449,9 +449,9 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
               style={{ touchAction: 'manipulation' }}
             >
               Calendar
-            </button>
-        </div>
-      </div>
+                    </button>
+                  </div>
+                </div>
 
       {viewMode === 'progress' ? (
           <div className="space-y-4 lg:space-y-6">
@@ -467,13 +467,13 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                     Due in {nextTask.subTask.estimatedDuration || '2 days'}
                   </span>
                 </div>
-                <div className="space-y-3">
+                      <div className="space-y-3">
                   <h5 className="text-lg lg:text-xl font-bold text-gray-900">{nextTask.subTask.title}</h5>
                   <p className="text-sm lg:text-base text-gray-600">{nextTask.subTask.description}</p>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
                     <span className="text-sm text-gray-500">Phase: {nextTask.step.title}</span>
-                    <div className="flex items-center space-x-3">
-                      <button
+                                <div className="flex items-center space-x-3">
+                                  <button
                         type="button"
                         onClick={(e) => {
                           e.preventDefault();
@@ -484,8 +484,8 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                         style={{ touchAction: 'manipulation' }}
                       >
                         Mark Complete
-                      </button>
-                      <button
+                                  </button>
+                                  <button
                         type="button"
                         onClick={(e) => {
                           e.preventDefault();
@@ -496,9 +496,9 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                         style={{ touchAction: 'manipulation' }}
                       >
                         View Details →
-                      </button>
-                    </div>
-                  </div>
+                                  </button>
+                                </div>
+                              </div>
                 </div>
               </div>
             )}
@@ -508,13 +508,13 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-sm font-semibold text-gray-900">Upcoming Tasks ({upcomingTasks.length})</h4>
-                  <button 
+                                          <button
                     type="button"
                     className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
                     style={{ touchAction: 'manipulation' }}
                   >
                     View All
-                  </button>
+                                          </button>
                     </div>
                 <div className="space-y-2">
                   {upcomingTasks.map((task) => (
@@ -523,25 +523,25 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                       <span className="text-gray-700 truncate">{task.title}</span>
                       <span className="text-gray-500">•</span>
                       <span className="text-gray-500 flex-shrink-0">{task.estimatedDuration || '1 day'}</span>
-                  </div>
-                  ))}
-                </div>
-                    </div>
-                  )}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
 
             {/* Timeline View */}
             <div className="space-y-4">
               {/* Helpful instruction */}
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                <div className="flex items-center space-x-2">
+                                          <div className="flex items-center space-x-2">
                   <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                                              </svg>
                   <span className="text-sm text-gray-600">
-                    Click on any phase card below to expand and view detailed tasks
+                    Click the expand/collapse icon on any phase card to view detailed tasks
                   </span>
-                </div>
-            </div>
+                                          </div>
+                                        </div>
               {steps.map((step, index) => {
                 const isCollapsed = collapsedPhases.has(step.id);
                 const progress = getStepProgress(step);
@@ -553,12 +553,11 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                   }`}>
                     {/* Phase Header */}
                     <div 
-                      className={`p-3 sm:p-4 cursor-pointer transition-colors ${
-                        isCurrentPhase ? 'bg-blue-50 hover:bg-blue-100' : 'bg-gray-50 hover:bg-gray-100'
+                      className={`p-3 sm:p-4 transition-colors ${
+                        isCurrentPhase ? 'bg-blue-50' : 'bg-gray-50'
                       }`}
-                      onClick={() => togglePhaseCollapse(step.id)}
                     >
-                      <div className="flex items-center justify-between">
+                                      <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4">
                           {/* Timeline Indicator */}
                           <div className="flex flex-col items-center flex-shrink-0">
@@ -573,14 +572,14 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                 </svg>
                               ) : (
                                 <span className="text-xs lg:text-sm font-semibold">{step.stepNumber}</span>
-                              )}
-                    </div>
+                                  )}
+                                </div>
                             {index < steps.length - 1 && (
                               <div className={`w-0.5 h-6 lg:h-8 mt-2 ${
                                 step.status === 'completed' ? 'bg-green-500' : 'bg-gray-300'
                               }`} />
                             )}
-                    </div>
+                              </div>
                           
                           <div className="flex-1 min-w-0">
                             <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-3">
@@ -600,9 +599,9 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                   <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full animate-pulse">
                                     Current Phase
                                   </span>
-                                )}
-                              </div>
-                            </div>
+                            )}
+                          </div>
+                      </div>
                             
                             <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 mt-1">
                               <span className="text-sm text-gray-600">{step.estimatedDuration}</span>
@@ -610,8 +609,8 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                 <span className="text-sm text-gray-500">
                                   {progress}% complete ({step.subTasks.filter(st => st.status === 'completed').length}/{step.subTasks.length} tasks)
                                 </span>
-                              )}
-                            </div>
+                    )}
+                  </div>
 
                             {/* Inline Preview for Next Task */}
                             {isCollapsed && step.subTasks && (() => {
@@ -621,8 +620,8 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                   <span className="font-medium">Next Task:</span> {nextTask.title}
                                   {nextTask.estimatedDuration && (
                                     <span className="text-gray-500 ml-2">({nextTask.estimatedDuration})</span>
-                                  )}
-                                </div>
+                )}
+              </div>
                               ) : null;
                             })()}
 
@@ -634,11 +633,11 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                   <div className="flex items-center gap-2 mb-1">
                                     <span className="text-blue-600 font-medium">👉 Next Task:</span>
                                     <span className="font-semibold text-blue-900">{nextTask.title}</span>
-                  </div>
+          </div>
                                   <div className="text-sm text-blue-700">
                                     {nextTask.estimatedDuration && `Estimated: ${nextTask.estimatedDuration}`}
                                     {nextTask.assignedTo && ` • Assigned to: ${nextTask.assignedTo}`}
-                </div>
+        </div>
                                 </div>
                               ) : null;
                             })()}
@@ -664,10 +663,11 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                           {isCollapsed && (
                             <span className="text-xs text-gray-500 hidden sm:inline">
                               Click to expand
-                                  </span>
-                          )}
+                        </span>
+                      )}
                                   <button
                             type="button"
+                            onClick={() => togglePhaseCollapse(step.id)}
                             className="text-gray-400 hover:text-gray-600 transition-colors"
                             style={{ touchAction: 'manipulation' }}
                             title={isCollapsed ? 'Expand phase details' : 'Collapse phase details'}
@@ -681,8 +681,8 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                     </svg>
                                   </button>
-                        </div>
-                                </div>
+                    </div>
+                  </div>
                               </div>
                             
                     {/* AI Helper Nudges for Current Phase */}
@@ -718,7 +718,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                 )}
                                           </div>
                               <div className="flex flex-wrap items-center gap-2 mt-2">
-                                    <button
+                  <button
                                   type="button"
                                   className="text-xs bg-blue-600 text-white px-2 sm:px-3 py-1 rounded hover:bg-blue-700 transition-colors"
                                   style={{ touchAction: 'manipulation' }}
@@ -738,8 +738,8 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                   style={{ touchAction: 'manipulation' }}
                                 >
                                   Ask AI
-                                        </button>
-                                      </div>
+                  </button>
+                </div>
                                     </div>
                                 </div>
                               </div>
@@ -755,11 +755,11 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                         }}
                       >
                         <div className="space-y-3 sm:space-y-4">
-                          {step.subTasks.map((subTask) => {
+                      {step.subTasks.map((subTask) => {
                             const deliverableProgress = getDeliverableProgress(subTask);
                             const isNextTask = nextTask?.subTask.id === subTask.id;
 
-            return (
+                        return (
                               <div 
                                 key={subTask.id} 
                                 className={`rounded-lg border p-4 ${
@@ -772,7 +772,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                 <div className="flex items-start justify-between">
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-center space-x-3 mb-2">
-                  <button
+                                <button
                                         type="button"
                                         onClick={(e) => {
                                           e.preventDefault();
