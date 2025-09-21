@@ -270,42 +270,149 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
           </div>
         </div>
 
-        {/* Horizontal Timeline Stepper */}
+        {/* Enhanced Horizontal Timeline Stepper */}
         <div className="mb-4 sm:mb-6">
-          <div className="relative overflow-x-auto pb-4">
-            <div className="flex items-center justify-between w-full min-w-max px-4">
-              {steps.map((step, index) => (
-                <div key={step.id} className="relative flex flex-col items-center min-w-0 flex-1">
-                  {/* Timeline Line - Only show between steps */}
-                  {index < steps.length - 1 && (
-                    <div className="absolute top-3 sm:top-4 left-1/2 w-full h-0.5 bg-gray-200 -translate-x-1/2 z-0" 
-                         style={{ width: `calc(100% - ${step.status === 'in-progress' ? '1rem' : '0.75rem'})` }}>
+          <div className="relative overflow-x-auto pb-6 scrollbar-hide">
+            <div 
+              className="flex items-center w-full min-w-max px-4" 
+              ref={(el) => {
+                if (el) {
+                  const currentPhaseIndex = steps.findIndex(step => step.status === 'in-progress');
+                  if (currentPhaseIndex !== -1) {
+                    const currentPhaseEl = el.children[currentPhaseIndex] as HTMLElement;
+                    if (currentPhaseEl) {
+                      currentPhaseEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }
+                  }
+                }
+              }}
+            >
+              {steps.map((step, index) => {
+                const progress = getStepProgress(step);
+                const isCurrentPhase = step.status === 'in-progress';
+                const nextTask = step.subTasks?.find(st => st.status === 'pending');
+                const completedTasks = step.subTasks?.filter(st => st.status === 'completed').length || 0;
+                const totalTasks = step.subTasks?.length || 0;
+                
+                // Calculate variable spacing based on duration
+                const getDurationWeeks = (duration: string) => {
+                  const match = duration.match(/(\d+)-(\d+)/);
+                  if (match) {
+                    return (parseInt(match[1]) + parseInt(match[2])) / 2;
+                  }
+                  return 1; // default
+                };
+                
+                const durationWeeks = getDurationWeeks(step.estimatedDuration || '1-2 weeks');
+                const spacing = Math.max(1.5, Math.min(4, durationWeeks * 0.5)); // 1.5rem to 4rem based on duration
+                
+                return (
+                  <div 
+                    key={step.id} 
+                    className="relative flex flex-col items-center min-w-0 group"
+                    style={{ 
+                      marginRight: index < steps.length - 1 ? `${spacing}rem` : '0',
+                      marginLeft: index === 0 ? '0' : '0'
+                    }}
+                  >
+                    {/* Timeline Line - Only show between steps */}
+                    {index < steps.length - 1 && (
+                      <div className="absolute top-4 sm:top-5 left-1/2 h-0.5 bg-gray-200 -translate-x-1/2 z-0" 
+                           style={{ width: `${spacing}rem` }}>
+                      </div>
+                    )}
+                    
+                    {/* Today Marker for Current Phase */}
+                    {isCurrentPhase && (
+                      <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 z-20">
+                        <div className="w-0.5 h-4 bg-blue-500 rounded-full"></div>
+                        <div className="text-xs text-blue-600 font-medium mt-1 whitespace-nowrap">Today</div>
+                      </div>
+                    )}
+                    
+                    {/* Step Circle with Progress */}
+                    <div className="relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm sm:text-base transition-all border-2 border-white shadow-lg">
+                      {step.status === 'completed' ? (
+                        <div className="w-full h-full bg-green-500 rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      ) : step.status === 'in-progress' ? (
+                        <div className="relative w-full h-full">
+                          {/* Progress Ring */}
+                          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path
+                              className="text-gray-200"
+                              stroke="currentColor"
+                              strokeWidth="3"
+                              fill="none"
+                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                            <path
+                              className="text-blue-500"
+                              stroke="currentColor"
+                              strokeWidth="3"
+                              fill="none"
+                              strokeLinecap="round"
+                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                              strokeDasharray={`${progress}, 100`}
+                            />
+                          </svg>
+                          {/* Center Content */}
+                          <div className="absolute inset-0 flex items-center justify-center bg-blue-500 rounded-full">
+                            <span className="text-xs font-bold">{progress}%</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="w-full h-full bg-gray-400 rounded-full flex items-center justify-center">
+                          <span className="text-sm sm:text-base font-bold">{step.stepNumber}</span>
+                        </div>
+                      )}
                     </div>
-                  )}
-                  
-                  {/* Step Circle */}
-                  <div className={`relative z-10 w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white font-semibold text-xs sm:text-sm transition-all border-2 border-white ${
-                    step.status === 'completed' ? 'bg-green-500 shadow-lg' :
-                    step.status === 'in-progress' ? 'bg-blue-500 shadow-lg ring-2 sm:ring-4 ring-blue-200 animate-pulse' :
-                    'bg-gray-400'
-                  }`}>
-                    {step.status === 'completed' ? '✓' : step.stepNumber}
+                    
+                    {/* Step Label with Enhanced Info */}
+                    <div className="mt-2 sm:mt-3 text-center px-1 min-w-0">
+                      <div className={`text-xs font-medium truncate ${
+                        step.status === 'in-progress' ? 'text-blue-600' :
+                        step.status === 'completed' ? 'text-green-600' : 'text-gray-500'
+                      }`}>
+                        {step.title.split(' ')[0]}
+                      </div>
+                      <div className={`text-xs font-medium ${
+                        step.status === 'completed' ? 'text-green-600' :
+                        step.status === 'in-progress' ? 'text-blue-600' : 'text-gray-400'
+                      }`}>
+                        {step.estimatedDuration}
+                      </div>
+                      {step.status === 'in-progress' && (
+                        <div className="text-xs text-blue-500 mt-1">
+                          {completedTasks}/{totalTasks} tasks
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Micro-preview Tooltip */}
+                    {nextTask && (
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-30">
+                        <div className="bg-gray-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap shadow-lg">
+                          <div className="font-medium">{nextTask.title}</div>
+                          <div className="text-gray-300">
+                            {nextTask.estimatedDuration || 'Due soon'}
+                          </div>
+                          <div className="text-gray-400">
+                            {completedTasks}/{totalTasks} tasks complete
+                          </div>
+                          {/* Arrow */}
+                          <div className="absolute top-full left-1/2 transform -translate-x-1/2">
+                            <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  
-                  {/* Step Label */}
-                  <div className="mt-1 sm:mt-2 text-center px-1">
-                    <div className={`text-xs font-medium truncate ${
-                      step.status === 'in-progress' ? 'text-blue-600' :
-                      step.status === 'completed' ? 'text-green-600' : 'text-gray-500'
-                    }`}>
-                      {step.title.split(' ')[0]}
-                    </div>
-                    <div className="text-xs text-gray-400 hidden sm:block">
-                      {step.estimatedDuration}
-                    </div>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
