@@ -686,18 +686,10 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                     {/* Deliverables Checklist */}
                                     {subTask.deliverables && subTask.deliverables.length > 0 && (
                                       <div className="mt-3 pl-8">
-                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 space-y-1 sm:space-y-0">
+                                        <div className="mb-2">
                                           <h5 className="text-xs lg:text-sm font-medium text-gray-700">
                                             Deliverables ({deliverableProgress.completed}/{deliverableProgress.total} complete)
                                           </h5>
-                                          <div className="w-16 bg-gray-200 rounded-full h-1.5">
-                                            <div 
-                                              className="bg-green-500 h-1.5 rounded-full transition-all"
-                                              style={{ 
-                                                width: `${deliverableProgress.total > 0 ? (deliverableProgress.completed / deliverableProgress.total) * 100 : 0}%`
-                                              }}
-                                            />
-                                          </div>
                                         </div>
                                         <div className="space-y-2">
                                           {subTask.deliverables.map((deliverable) => (
