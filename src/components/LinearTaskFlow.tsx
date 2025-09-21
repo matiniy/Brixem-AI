@@ -518,7 +518,14 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                       onClick={(e) => {
                         // Only toggle if not clicking on interactive elements
                         const target = e.target as HTMLElement;
-                        if (!target.closest('button') && !target.closest('input') && !target.closest('[role="button"]')) {
+                        if (!target.closest('button') && 
+                            !target.closest('input') && 
+                            !target.closest('[role="button"]') &&
+                            !target.closest('svg') &&
+                            !target.closest('path') &&
+                            !target.closest('.subtask-container')) {
+                          e.preventDefault();
+                          e.stopPropagation();
                           togglePhaseCollapse(step.id);
                         }
                       }}
@@ -610,7 +617,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                             
                             {/* Progress Bar */}
                             {step.subTasks && (
-                              <div className="w-32 bg-gray-200 rounded-full h-1.5 mt-2">
+                              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
                                 <div 
                                   className={`h-1.5 rounded-full transition-all ${
                                     step.status === 'completed' ? 'bg-green-500' :
@@ -715,8 +722,9 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                     {/* Phase Content */}
                     {!isCollapsed && step.subTasks && (
                       <div 
-                        className="p-3 sm:p-4 bg-white border-t border-gray-100"
+                        className="p-3 sm:p-4 bg-white border-t border-gray-100 subtask-container"
                         onClick={(e) => {
+                          e.preventDefault();
                           e.stopPropagation();
                         }}
                       >
@@ -728,10 +736,11 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                         return (
                               <div 
                                 key={subTask.id} 
-                                className={`rounded-lg border p-4 ${
+                                className={`rounded-lg border p-4 subtask-container ${
                                   isNextTask ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-gray-50'
                                 }`}
                                 onClick={(e) => {
+                                  e.preventDefault();
                                   e.stopPropagation();
                                 }}
                               >
@@ -743,9 +752,10 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                         onClick={(e) => {
                                           e.preventDefault();
                                           e.stopPropagation();
-                                      const newStatus = subTask.status === 'completed' ? 'pending' : 'completed';
-                                      handleSubTaskUpdate(step.id, subTask.id, newStatus);
-                                  }}
+                                          e.nativeEvent.stopImmediatePropagation();
+                                          const newStatus = subTask.status === 'completed' ? 'pending' : 'completed';
+                                          handleSubTaskUpdate(step.id, subTask.id, newStatus);
+                                      }}
                                         className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors flex-shrink-0 ${
                                     subTask.status === 'completed' 
                                             ? 'bg-green-500 border-green-500' 
@@ -774,8 +784,9 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                     {/* Deliverables Checklist */}
                                 {subTask.deliverables && subTask.deliverables.length > 0 && (
                                       <div 
-                                        className="mt-3 pl-8"
+                                        className="mt-3 pl-8 subtask-container"
                                         onClick={(e) => {
+                                          e.preventDefault();
                                           e.stopPropagation();
                                         }}
                                       >
@@ -792,7 +803,8 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                                 onClick={(e) => {
                                                   e.preventDefault();
                                                   e.stopPropagation();
-                                              const newStatus = deliverable.status === 'completed' ? 'pending' : 'completed';
+                                                  e.nativeEvent.stopImmediatePropagation();
+                                                  const newStatus = deliverable.status === 'completed' ? 'pending' : 'completed';
                                                   handleDeliverableUpdate(step.id, subTask.id, deliverable.id, newStatus);
                                             }}
                                                 className={`w-4 h-4 rounded border flex items-center justify-center text-xs transition-colors ${
@@ -818,8 +830,9 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                     {/* Documents - Progressive Disclosure */}
                                 {subTask.documents && subTask.documents.length > 0 && (
                                       <div 
-                                        className="mt-3 pl-8"
+                                        className="mt-3 pl-8 subtask-container"
                                         onClick={(e) => {
+                                          e.preventDefault();
                                           e.stopPropagation();
                                         }}
                                       >
