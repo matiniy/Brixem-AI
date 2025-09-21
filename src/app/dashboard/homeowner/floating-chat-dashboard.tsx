@@ -973,8 +973,8 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <header className="bg-white shadow-sm border-b flex-shrink-0">
-          <div className="px-4 sm:px-6">
-            <div className="flex justify-between items-center h-16">
+          <div className="px-3 sm:px-4 lg:px-6">
+            <div className="flex justify-between items-center h-14 sm:h-16">
               <div className="flex items-center gap-3">
                 {/* Mobile Menu Button */}
                 <button
@@ -986,16 +986,16 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
                   </svg>
                 </button>
                 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
                   {isEditingProjectName ? (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
                       <input
                         type="text"
                         value={editingProjectName}
                         onChange={(e) => setEditingProjectName(e.target.value)}
                         onKeyDown={handleProjectNameKeyPress}
                         onBlur={handleProjectNameSave}
-                        className="text-lg sm:text-xl font-semibold text-gray-900 bg-transparent border-b-2 border-blue-500 focus:outline-none focus:border-blue-600"
+                        className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 bg-transparent border-b-2 border-blue-500 focus:outline-none focus:border-blue-600 min-w-0 flex-1"
                         autoFocus
                       />
                       <button
@@ -1018,8 +1018,8 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
                       </button>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2">
-                <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                <h1 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 truncate">
                         {activeProject && projects.length > 0 
                           ? projects.find(p => p.id === activeProject)?.name || 'Project Dashboard'
                           : 'Project Dashboard'}
@@ -1039,8 +1039,8 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
               </div>
 
               {/* Project Count and New Project Button */}
-              <div className="flex items-center gap-4">
-              <div className="text-sm text-gray-600">
+              <div className="flex items-center gap-2 sm:gap-4">
+              <div className="text-xs sm:text-sm text-gray-600 hidden sm:block">
                 {projects.length} project{projects.length !== 1 ? 's' : ''}
                 </div>
               </div>
@@ -1050,77 +1050,78 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
 
         {/* Main Content - Dashboard with Sections */}
         <main className="flex-1 overflow-hidden bg-gray-50 relative">
-          <div className="h-full p-6 overflow-y-auto">
+          <div className="h-full p-4 sm:p-6 overflow-y-auto">
             {/* Project Overview Section */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">
+            <div className="mb-6 sm:mb-8">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 space-y-3 sm:space-y-0">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
                   Project Overview
                 </h2>
                 <button
                   onClick={() => window.location.href = '/dashboard/documents'}
-                  className="px-4 py-2 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-lg hover:opacity-90 transition flex items-center gap-2"
+                  className="px-3 sm:px-4 py-2 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-lg hover:opacity-90 transition flex items-center gap-2 text-sm sm:text-base"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
-                  View All Documents
+                  <span className="hidden sm:inline">View All Documents</span>
+                  <span className="sm:hidden">Documents</span>
                 </button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 {/* Project Stats Cards */}
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
                   <div className="flex items-center">
                     <div className="p-2 bg-blue-100 rounded-lg">
                       <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                       </svg>
                     </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600">Total Tasks</p>
-                      <p className="text-2xl font-bold text-gray-900">{taskCounts.totalTasks}</p>
+                    <div className="ml-3 sm:ml-4">
+                      <p className="text-xs sm:text-sm font-medium text-gray-600">Total Tasks</p>
+                      <p className="text-xl sm:text-2xl font-bold text-gray-900">{taskCounts.totalTasks}</p>
                     </div>
                   </div>
                 </div>
 
-                       <div className="bg-white rounded-lg border border-gray-200 p-6">
+                       <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
                          <div className="flex items-center">
                            <div className="p-2 bg-yellow-100 rounded-lg">
                              <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                              </svg>
                            </div>
-                           <div className="ml-4">
-                             <p className="text-sm font-medium text-gray-600">To Do</p>
-                             <p className="text-2xl font-bold text-gray-900">{taskCounts.toDoTasks}</p>
+                           <div className="ml-3 sm:ml-4">
+                             <p className="text-xs sm:text-sm font-medium text-gray-600">To Do</p>
+                             <p className="text-xl sm:text-2xl font-bold text-gray-900">{taskCounts.toDoTasks}</p>
                            </div>
                          </div>
                        </div>
 
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
                   <div className="flex items-center">
                     <div className="p-2 bg-green-100 rounded-lg">
                       <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600">Completed Tasks</p>
-                      <p className="text-2xl font-bold text-gray-900">{taskCounts.completedTasks}</p>
+                    <div className="ml-3 sm:ml-4">
+                      <p className="text-xs sm:text-sm font-medium text-gray-600">Completed Tasks</p>
+                      <p className="text-xl sm:text-2xl font-bold text-gray-900">{taskCounts.completedTasks}</p>
                     </div>
                   </div>
             </div>
 
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
                   <div className="flex items-center">
                     <div className="p-2 bg-purple-100 rounded-lg">
                       <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                       </svg>
                     </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600">Documents</p>
-                      <p className="text-2xl font-bold text-gray-900">12</p>
+                    <div className="ml-3 sm:ml-4">
+                      <p className="text-xs sm:text-sm font-medium text-gray-600">Documents</p>
+                      <p className="text-xl sm:text-2xl font-bold text-gray-900">12</p>
                     </div>
                   </div>
                 </div>
@@ -1130,7 +1131,7 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
 
 
             {/* Project Progress Section */}
-            <div className="mb-8">
+            <div className="mb-6 sm:mb-8">
               <LinearTaskFlow 
                 key={`linear-task-flow-${projectSteps.length}-${Date.now()}`}
                 steps={projectSteps}
