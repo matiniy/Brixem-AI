@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import CalendarView from './CalendarView';
 
 interface SubTask {
@@ -82,22 +82,14 @@ interface LinearTaskFlowProps {
 
 const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({ 
   steps, 
-  currentStep,
   onStepClick,
   onSubTaskUpdate,
-  onSubTaskNotesUpdate,
   onDeliverableUpdate,
-  onStepLock,
-  onStepComplete,
-  onStepAdvance,
-  onStepStatusUpdate,
   onTaskUpdate,
   onAddTask
 }) => {
   const [expandedStep, setExpandedStep] = useState<string | null>(null);
   const [collapsedPhases, setCollapsedPhases] = useState<Set<string>>(new Set());
-  const [editingNotes, setEditingNotes] = useState<string | null>(null);
-  const [notesValue, setNotesValue] = useState<string>('');
   const [viewMode, setViewMode] = useState<'progress' | 'calendar'>('progress');
   const [showConfirmation, setShowConfirmation] = useState<{
     type: 'step' | 'subtask';
@@ -210,7 +202,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
       {nextTask && (
         <div className="hidden lg:block fixed top-4 right-4 z-40 bg-white border border-blue-200 rounded-lg shadow-lg p-4 max-w-sm">
           <div className="flex items-center justify-between mb-2">
-            <h4 className="text-sm font-semibold text-blue-900">What's Next</h4>
+            <h4 className="text-sm font-semibold text-blue-900">What&apos;s Next</h4>
             <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
           </div>
           <div className="space-y-2">
@@ -347,7 +339,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                   </button>
                 </div>
                 <div className="space-y-2">
-                  {upcomingTasks.map((task, index) => (
+                  {upcomingTasks.map((task) => (
                     <div key={task.id} className="flex items-center space-x-3 text-sm">
                       <span className="w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0"></span>
                       <span className="text-gray-700 truncate">{task.title}</span>
