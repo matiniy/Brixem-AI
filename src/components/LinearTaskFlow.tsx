@@ -330,67 +330,27 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                       </div>
                     )}
                     
-                    {/* Step Circle with Progress */}
-                    <div className="relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm sm:text-base transition-all border-2 border-white shadow-lg">
-                      {step.status === 'completed' ? (
-                        <div className="w-full h-full bg-green-500 rounded-full flex items-center justify-center">
-                          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                        </div>
-                      ) : step.status === 'in-progress' ? (
-                        <div className="relative w-full h-full">
-                          {/* Progress Ring */}
-                          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                            <path
-                              className="text-gray-200"
-                              stroke="currentColor"
-                              strokeWidth="3"
-                              fill="none"
-                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                            />
-                            <path
-                              className="text-blue-500"
-                              stroke="currentColor"
-                              strokeWidth="3"
-                              fill="none"
-                              strokeLinecap="round"
-                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                              strokeDasharray={`${progress}, 100`}
-                            />
-                          </svg>
-                          {/* Center Content */}
-                          <div className="absolute inset-0 flex items-center justify-center bg-blue-500 rounded-full">
-                            <span className="text-xs font-bold">{progress}%</span>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="w-full h-full bg-gray-400 rounded-full flex items-center justify-center">
-                          <span className="text-sm sm:text-base font-bold">{step.stepNumber}</span>
-                        </div>
-                      )}
+                    {/* Step Circle */}
+                    <div className={`relative z-10 w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white font-semibold text-xs sm:text-sm transition-all border-2 border-white ${
+                      step.status === 'completed' ? 'bg-green-500 shadow-lg' :
+                      step.status === 'in-progress' ? 'bg-blue-500 shadow-lg ring-2 sm:ring-4 ring-blue-200 animate-pulse' :
+                      'bg-gray-400'
+                    }`}>
+                      {step.status === 'completed' ? '✓' : step.stepNumber}
                     </div>
                     
-                    {/* Step Label with Enhanced Info */}
-                    <div className="mt-2 sm:mt-3 text-center px-1 min-w-0">
+                    {/* Step Label */}
+                    <div className="mt-1 sm:mt-2 text-center px-1 min-w-0">
                       <div className={`text-xs font-medium truncate ${
                         step.status === 'in-progress' ? 'text-blue-600' :
                         step.status === 'completed' ? 'text-green-600' : 'text-gray-500'
                       }`}>
                         {step.title.split(' ')[0]}
                       </div>
-                      <div className={`text-xs font-medium ${
-                        step.status === 'completed' ? 'text-green-600' :
-                        step.status === 'in-progress' ? 'text-blue-600' : 'text-gray-400'
-                      }`}>
+                      <div className="text-xs text-gray-400 hidden sm:block">
                         {step.estimatedDuration}
+                      </div>
                     </div>
-                      {step.status === 'in-progress' && (
-                        <div className="text-xs text-blue-500 mt-1">
-                          {completedTasks}/{totalTasks} tasks
-                        </div>
-                      )}
-                  </div>
 
                     {/* Micro-preview Tooltip */}
                     {nextTask && (
