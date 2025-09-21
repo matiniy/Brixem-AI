@@ -268,6 +268,16 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
               </div>
             </div>
           </div>
+          
+          {/* Overall Project Progress Bar */}
+          <div className="w-full bg-gray-200 rounded-full h-2 mt-4">
+            <div 
+              className="h-2 bg-gradient-to-r from-blue-500 to-green-500 rounded-full transition-all duration-500"
+              style={{ 
+                width: `${Math.round((steps.filter(s => s.status === 'completed').length / steps.length) * 100)}%`
+              }}
+            />
+          </div>
         </div>
 
         {/* Enhanced Horizontal Timeline Stepper */}
@@ -348,8 +358,8 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                       </div>
                       <div className="text-xs text-gray-400 hidden sm:block">
                         {step.estimatedDuration}
-                      </div>
                     </div>
+                  </div>
 
                     {/* Micro-preview Tooltip */}
                     {nextTask && (
@@ -753,9 +763,9 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                           e.preventDefault();
                                           e.stopPropagation();
                                           e.nativeEvent.stopImmediatePropagation();
-                                          const newStatus = subTask.status === 'completed' ? 'pending' : 'completed';
-                                          handleSubTaskUpdate(step.id, subTask.id, newStatus);
-                                      }}
+                                      const newStatus = subTask.status === 'completed' ? 'pending' : 'completed';
+                                      handleSubTaskUpdate(step.id, subTask.id, newStatus);
+                                  }}
                                         className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors flex-shrink-0 ${
                                     subTask.status === 'completed' 
                                             ? 'bg-green-500 border-green-500' 
@@ -804,7 +814,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                                   e.preventDefault();
                                                   e.stopPropagation();
                                                   e.nativeEvent.stopImmediatePropagation();
-                                                  const newStatus = deliverable.status === 'completed' ? 'pending' : 'completed';
+                                              const newStatus = deliverable.status === 'completed' ? 'pending' : 'completed';
                                                   handleDeliverableUpdate(step.id, subTask.id, deliverable.id, newStatus);
                                             }}
                                                 className={`w-4 h-4 rounded border flex items-center justify-center text-xs transition-colors ${
