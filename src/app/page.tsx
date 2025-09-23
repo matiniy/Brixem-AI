@@ -2,6 +2,7 @@
 import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { sendChatMessage } from "@/lib/ai";
 import Navbar from "@/components/Navbar";
 import GradientText from "@/components/GradientText";
 import Orb from "@/components/Orb";
@@ -10,7 +11,6 @@ import FeatureSection from "@/components/FeatureSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import Footer from "@/components/Footer";
 import AnimatedStats from "@/components/AnimatedStats";
-import DebugAuth from "@/components/DebugAuth";
 
 // Add Message type locally
 interface Message {
@@ -205,7 +205,7 @@ function LandingPageContent() {
     "I want to learn about Brixem's features"
   ];
 
-  const handleSend = (message: string) => {
+  const handleSend = async (message: string) => {
     // Activate chat when first message is sent
     if (messages.length === 0) {
       setIsChatActive(true);
@@ -219,66 +219,35 @@ function LandingPageContent() {
       return;
     }
     
-    // Handle role-based questions with confirmation
-    if (message.includes("homeowner")) {
-      setTimeout(() => {
-        setMessages((prev) => [...prev, { 
-          role: "ai", 
-          text: "Great! I can help you plan your renovation project. Let's get you set up with our homeowner tools. Would you like to sign up to start planning your renovation?" 
-        }]);
-        setPendingRedirect("/onboarding/homeowner");
-      }, 1000);
-      return;
-    } else if (message.includes("contractor")) {
-      setTimeout(() => {
-        setMessages((prev) => [...prev, { 
-          role: "ai", 
-          text: "Perfect! I can help you find projects and manage your business. Let's get you set up with our contractor tools. Would you like to sign up to access our contractor features?" 
-        }]);
-        setPendingRedirect("/onboarding/contractor");
-      }, 1000);
-      return;
-    } else if (message.includes("consultant")) {
-      setTimeout(() => {
-        setMessages((prev) => [...prev, { 
-          role: "ai", 
-          text: "Excellent! I can help you with project consultation tools. Let's get you set up with our consultant features. Would you like to sign up to access our consultant tools?" 
-        }]);
-        setPendingRedirect("/onboarding/contractor"); // Using contractor onboarding for consultants
-      }, 1000);
-      return;
-    } else if (message.includes("estimation")) {
-      setTimeout(() => {
-        setMessages((prev) => [...prev, { 
-          role: "ai", 
-          text: "I can help you with project estimation! Our AI-powered tools provide accurate cost estimates. Would you like to sign up to access our estimation features?" 
-        }]);
-        setPendingRedirect("/onboarding/contractor"); // Estimation tools typically for contractors
-      }, 1000);
-      return;
-    } else if (message.includes("features")) {
-      setTimeout(() => {
-        setMessages((prev) => [...prev, { 
-          role: "ai", 
-          text: "Brixem offers AI-powered project management, cost estimation, contractor matching, and real-time collaboration. Would you like to sign up to explore all our features?" 
-        }]);
-        setPendingRedirect("/onboarding/homeowner"); // Default to homeowner for general features
-      }, 1000);
-      return;
+    try {
+      // Use real AI API for all messages
+      const response = await sendChatMessage([{ role: "user", text: message }]);
+      
+      if (response.message) {
+        setMessages((prev) => [...prev, { role: "ai", text: response.message }]);
+        
+        // Check if the AI response suggests signing up
+        if (response.message.toLowerCase().includes("sign up") || response.message.toLowerCase().includes("get started")) {
+          // Determine redirect based on message content
+          if (message.includes("homeowner") || response.message.includes("homeowner")) {
+            setPendingRedirect("/onboarding/homeowner");
+          } else if (message.includes("contractor") || response.message.includes("contractor")) {
+            setPendingRedirect("/onboarding/contractor");
+          } else if (message.includes("consultant") || response.message.includes("consultant")) {
+            setPendingRedirect("/onboarding/contractor");
+          } else {
+            setPendingRedirect("/onboarding/homeowner"); // Default to homeowner
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error calling AI API:", error);
+      // Fallback to a simple response if AI API fails
+      setMessages((prev) => [...prev, { 
+        role: "ai", 
+        text: "I'm here to help with your construction project! I can assist with planning, cost estimation, and project management. What would you like to know?" 
+      }]);
     }
-    
-    // Simulate AI response for other questions
-    setTimeout(() => {
-      const aiResponses = [
-        "To start a renovation project, begin by defining your goals, setting a budget, and consulting with professionals.",
-        "Key factors include clear planning, realistic budgeting, choosing the right contractor, and regular progress tracking.",
-        "AI can analyze your project scope and local market data to provide accurate cost estimates quickly.",
-        "Brixem streamlines project management with AI-driven insights, real-time collaboration, and automated scheduling.",
-        "Unlike traditional tools, Brixem leverages AI to optimize every stage of your construction project for efficiency and clarity."
-      ];
-      const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
-      setMessages((prev) => [...prev, { role: "ai", text: randomResponse }]);
-    }, 1000);
   };
 
   const handleConfirmSignup = () => {
@@ -578,8 +547,7 @@ export default function Home() {
         <EmailConfirmationHandler />
       </Suspense>
       
-      {/* Debug component - remove in production */}
-      <DebugAuth />
+      {/* Debug component removed for production */}
       
       <Suspense fallback={null}>
         <LandingPageContent />
