@@ -4,6 +4,7 @@ import "./globals.css";
 import { Inter, Albert_Sans } from "next/font/google";
 import React, { useState, useEffect } from "react";
 import OnboardingModal from "@/components/OnboardingModal";
+import { Analytics } from '@vercel/analytics/react';
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const albert = Albert_Sans({ subsets: ["latin"], variable: "--font-albert" });
@@ -44,6 +45,7 @@ export default function RootLayout({
           <OnboardingModal open={showOnboarding} onClose={() => setShowOnboarding(false)} onSelectRole={handleSelectRole} />
         )}
         {children}
+        <Analytics />
       </body>
     </html>
   );

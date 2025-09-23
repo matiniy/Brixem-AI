@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 
 export default function ContractorDashboard() {
   const [activeProjects, setActiveProjects] = useState(0);
@@ -13,7 +13,7 @@ export default function ContractorDashboard() {
   const [isAnimating, setIsAnimating] = useState(false);
   const componentRef = useRef<HTMLDivElement>(null);
 
-  const startAnimation = () => {
+  const startAnimation = useCallback(() => {
     if (isAnimating) return;
     
     setIsAnimating(true);
@@ -78,7 +78,7 @@ export default function ContractorDashboard() {
     setTimeout(() => {
       setIsAnimating(false);
     }, 9000);
-  };
+  }, [isAnimating]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -95,14 +95,14 @@ export default function ContractorDashboard() {
       }
     );
 
-    if (componentRef.current) {
-      observer.observe(componentRef.current);
+    const currentRef = componentRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
     }
 
     return () => {
-      const ref = componentRef.current;
-      if (ref) {
-        observer.unobserve(ref);
+      if (currentRef) {
+        observer.unobserve(currentRef);
       }
     };
   }, [isAnimating, startAnimation]);

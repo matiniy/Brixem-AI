@@ -5,7 +5,7 @@ export async function GET() {
   try {
     // Test the connection by checking if we can query the database
     const { error } = await supabase
-      .from('users')
+      .from('profiles')
       .select('count')
       .limit(1);
 

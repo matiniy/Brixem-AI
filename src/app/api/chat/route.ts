@@ -232,15 +232,16 @@ export async function POST(request: NextRequest) {
 
     // Check if this is a cost estimation request
     const lastMessage = messages[messages.length - 1];
-    if (lastMessage && lastMessage.text) {
+    const messageContent = lastMessage?.content || lastMessage?.text;
+    if (lastMessage && messageContent) {
       const costKeywords = ['cost estimate', 'pricing', 'budget', 'cost estimation', 'how much', 'price', 'estimate'];
       const isCostRequest = costKeywords.some(keyword => 
-        lastMessage.text.toLowerCase().includes(keyword)
+        messageContent.toLowerCase().includes(keyword)
       );
 
       if (isCostRequest) {
         // Extract project details from the message
-        const projectDetails = extractProjectDetails(lastMessage.text);
+        const projectDetails = extractProjectDetails(messageContent);
         
         // Get live cost estimation
         const costResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/cost-estimation`, {
@@ -313,9 +314,9 @@ Always be helpful, professional, and construction-focused. When users ask to cre
     // Prepare messages for Groq
     const groqMessages = [
       { role: 'system' as const, content: systemPrompt },
-      ...messages.map((msg: { role: string; text: string }) => ({
+      ...messages.map((msg: { role: string; content?: string; text?: string }) => ({
         role: msg.role === 'user' ? 'user' as const : 'assistant' as const,
-        content: msg.text
+        content: msg.content || msg.text || ''
       }))
     ];
 

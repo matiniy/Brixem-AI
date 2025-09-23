@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 
 interface StatItem {
   icon: React.ReactNode;
@@ -16,7 +16,7 @@ export default function AnimatedStats() {
   const [animationsComplete, setAnimationsComplete] = useState([false, false, false, false]);
   const componentRef = useRef<HTMLDivElement>(null);
 
-  const stats: StatItem[] = [
+  const stats: StatItem[] = useMemo(() => [
     {
       icon: (
         <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -65,9 +65,9 @@ export default function AnimatedStats() {
       suffix: "+",
       label: "cities worldwide"
     }
-  ];
+  ], []);
 
-  const startAnimation = () => {
+  const startAnimation = useCallback(() => {
     if (isAnimating) return;
     
     setIsAnimating(true);
@@ -108,7 +108,7 @@ export default function AnimatedStats() {
     setTimeout(() => {
       setIsAnimating(false);
     }, maxDuration + 5000);
-  };
+  }, [isAnimating, stats]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -125,14 +125,14 @@ export default function AnimatedStats() {
       }
     );
 
-    if (componentRef.current) {
-      observer.observe(componentRef.current);
+    const currentRef = componentRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
     }
 
     return () => {
-      const ref = componentRef.current;
-      if (ref) {
-        observer.unobserve(ref);
+      if (currentRef) {
+        observer.unobserve(currentRef);
       }
     };
   }, [isAnimating, startAnimation]);

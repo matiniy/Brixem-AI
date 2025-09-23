@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 
 export default function AIAnalysisExample() {
   const [estimatedCost, setEstimatedCost] = useState(30000);
@@ -9,7 +9,7 @@ export default function AIAnalysisExample() {
   const [isAnimating, setIsAnimating] = useState(false);
   const componentRef = useRef<HTMLDivElement>(null);
 
-  const startAnimation = () => {
+  const startAnimation = useCallback(() => {
     if (isAnimating) return;
     
     setIsAnimating(true);
@@ -46,7 +46,7 @@ export default function AIAnalysisExample() {
     setTimeout(() => {
       setIsAnimating(false);
     }, 8000);
-  };
+  }, [isAnimating]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -63,14 +63,14 @@ export default function AIAnalysisExample() {
       }
     );
 
-    if (componentRef.current) {
-      observer.observe(componentRef.current);
+    const currentRef = componentRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
     }
 
     return () => {
-      const ref = componentRef.current;
-      if (ref) {
-        observer.unobserve(ref);
+      if (currentRef) {
+        observer.unobserve(currentRef);
       }
     };
   }, [isAnimating, startAnimation]);

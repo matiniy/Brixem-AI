@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 interface AvatarGroupProps {
   avatars: string[];
@@ -14,7 +15,7 @@ export default function AvatarGroup({ avatars, max = 3, badgeClass = "bg-gray-20
       {displayAvatars.map((src, i) => (
         <span key={i} className="w-7 h-7 rounded-full border-2 border-white bg-gray-200 inline-block overflow-hidden">
           {src ? (
-            <img src={src} alt="avatar" className="w-full h-full object-cover rounded-full" />
+            <Image src={src} alt="avatar" width={28} height={28} className="w-full h-full object-cover rounded-full" />
           ) : null}
         </span>
       ))}
