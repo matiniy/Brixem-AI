@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { projectTemplates } from '@/lib/project-templates';
+import { createClient } from '@supabase/supabase-js';
 
 interface Message {
   role: 'user' | 'ai';
@@ -22,7 +23,44 @@ export default function GuidedProjectPage() {
   const [projectData, setProjectData] = useState<Record<string, string>>({});
   const [currentStep, setCurrentStep] = useState(0);
   const [, setSelectedTemplate] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Check authentication on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        // Initialize Supabase client
+        const supabase = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        );
+
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error) {
+          console.error('Auth error:', error);
+          setIsAuthenticated(false);
+          // Redirect to login if not authenticated
+          window.location.href = '/auth/login';
+          return;
+        }
+        
+        if (user) {
+          setIsAuthenticated(true);
+          console.log('User authenticated:', user.id);
+        } else {
+          setIsAuthenticated(false);
+          window.location.href = '/auth/login';
+        }
+      } catch (error) {
+        console.error('Error checking auth:', error);
+        setIsAuthenticated(false);
+        window.location.href = '/auth/login';
+      }
+    };
+
+    checkAuth();
+  }, []);
 
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
@@ -632,10 +670,25 @@ export default function GuidedProjectPage() {
     try {
       console.log('Creating AI project with data:', projectData);
       
+      // Initialize Supabase client
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
+      
+      // Get the current session to include auth headers
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        console.error('No valid session found:', sessionError);
+        throw new Error('Authentication required. Please log in again.');
+      }
+
       const response = await fetch('/api/projects', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           name: projectData.name,
@@ -687,6 +740,19 @@ export default function GuidedProjectPage() {
       handleSend(currentInput);
     }
   };
+
+  // Show loading state while checking authentication
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Checking Authentication</h2>
+          <p className="text-gray-600">Please wait while we verify your login...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createUserClient } from '@/lib/supabase-server';
+import { createClient } from '@supabase/supabase-js';
 
 type SupabaseClient = Awaited<ReturnType<typeof createUserClient>>;
 
@@ -49,12 +50,39 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createUserClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
-    if (authError || !user) {
-      console.error('POST /api/projects: Authentication error:', authError);
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Check for Authorization header first
+    const authHeader = request.headers.get('authorization');
+    let supabase;
+    let user;
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      // Use the token from Authorization header
+      const token = authHeader.substring(7);
+      const tempSupabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
+      
+      const { data: { user: tokenUser }, error: tokenError } = await tempSupabase.auth.getUser(token);
+      
+      if (tokenError || !tokenUser) {
+        console.error('POST /api/projects: Token authentication error:', tokenError);
+        return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+      }
+      
+      user = tokenUser;
+      supabase = tempSupabase;
+    } else {
+      // Fallback to cookie-based authentication
+      supabase = await createUserClient();
+      const { data: { user: cookieUser }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !cookieUser) {
+        console.error('POST /api/projects: Cookie authentication error:', authError);
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+      
+      user = cookieUser;
     }
 
     const body = await request.json();
