@@ -141,7 +141,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }: Signup
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleInputChange}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent ${
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent text-gray-900 bg-white placeholder-gray-500 min-h-[48px] ${
                   errors.firstName ? "border-red-500" : "border-gray-300"
                 }`}
                 placeholder="Enter your first name"
@@ -161,7 +161,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }: Signup
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleInputChange}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent ${
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent text-gray-900 bg-white placeholder-gray-500 min-h-[48px] ${
                   errors.lastName ? "border-red-500" : "border-gray-300"
                 }`}
                 placeholder="Enter your last name"
@@ -182,7 +182,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }: Signup
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent ${
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent text-gray-900 bg-white placeholder-gray-500 min-h-[48px] ${
                 errors.email ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Enter your email"
@@ -203,7 +203,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }: Signup
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent ${
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent text-gray-900 bg-white placeholder-gray-500 min-h-[48px] ${
                   errors.password ? "border-red-500" : "border-gray-300"
                 }`}
                 placeholder="Create a password"
@@ -223,7 +223,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }: Signup
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent ${
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent text-gray-900 bg-white placeholder-gray-500 min-h-[48px] ${
                   errors.confirmPassword ? "border-red-500" : "border-gray-300"
                 }`}
                 placeholder="Confirm your password"
@@ -243,7 +243,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }: Signup
               name="role"
               value={formData.role}
               onChange={handleInputChange}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent ${
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent text-gray-900 bg-white min-h-[48px] ${
                 errors.role ? "border-red-500" : "border-gray-300"
               }`}
             >
@@ -263,7 +263,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }: Signup
             <input 
               type="checkbox" 
               id="terms" 
-              className="w-4 h-4 text-[#23c6e6] border-gray-300 rounded focus:ring-[#23c6e6]"
+              className="w-4 h-4 text-[#23c6e6] border-gray-300 rounded-sm focus:ring-[#23c6e6]"
               required
             />
             <label htmlFor="terms" className="ml-2 text-sm text-gray-600">

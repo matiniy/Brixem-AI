@@ -218,20 +218,21 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
           <div className="flex items-center justify-between mb-3 sm:mb-4">
             <div className="flex items-center space-x-2 sm:space-x-3">
               <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full animate-pulse"></div>
-              <h4 className="text-sm sm:text-base lg:text-lg font-semibold text-blue-900">What&apos;s Next</h4>
+              <h4 className="text-sm font-medium text-blue-900">What&apos;s Next</h4>
             </div>
             <span className="text-xs sm:text-sm text-blue-600 bg-blue-100 px-2 sm:px-3 py-1 rounded-full">
               Due in {nextTask.subTask.estimatedDuration || '2 days'}
             </span>
           </div>
           <div className="space-y-2 sm:space-y-3">
-            <h5 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 leading-tight">{nextTask.subTask.title}</h5>
+            <h5 className="text-sm font-semibold text-gray-900 leading-tight">{nextTask.subTask.title}</h5>
             <p className="text-xs sm:text-sm lg:text-base text-gray-600 leading-relaxed">{nextTask.subTask.description}</p>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
               <span className="text-xs sm:text-sm text-gray-500">Phase: {nextTask.step.title}</span>
               <div className="flex items-center space-x-2 sm:space-x-3">
                 <button
                   type="button"
+                  data-prevent-card-toggle
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -245,6 +246,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                 </button>
                 <button
                   type="button"
+                  data-prevent-card-toggle
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -267,7 +269,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 border border-blue-200">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between">
             <div className="flex-1 min-w-0">
-              <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 mb-2">Project Overview</h3>
+              <h3 className="text-sm font-medium text-gray-900 mb-2">Project Overview</h3>
               <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
                 <div className="flex items-center gap-1.5 sm:gap-2">
                   <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full flex-shrink-0"></div>
@@ -285,7 +287,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
             </div>
             <div className="mt-2 sm:mt-0 sm:ml-4 flex-shrink-0">
               <div className="text-center sm:text-right">
-                <div className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600">
+                <div className="text-sm font-semibold text-blue-600">
                   {Math.round((steps.filter(s => s.status === 'completed').length / steps.length) * 100)}%
                 </div>
                 <div className="text-xs text-gray-600">Complete</div>
@@ -329,7 +331,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                     {isCurrentPhase && (
                       <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 z-20">
                         <div className="w-0.5 h-5 bg-blue-500 rounded-full"></div>
-                        <div className="text-xs text-blue-600 font-semibold mt-1 whitespace-nowrap">Today</div>
+                        <div className="text-xs text-blue-600 font-medium mt-1 whitespace-nowrap">Today</div>
                       </div>
                     )}
                     
@@ -350,7 +352,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                     
                     {/* Step Label - Improved Layout */}
                     <div className="mt-2 sm:mt-3 lg:mt-4 text-center px-1 sm:px-2 min-w-0 w-full">
-                      <div className={`text-xs sm:text-sm lg:text-base font-semibold leading-tight ${
+                      <div className={`text-xs font-medium leading-tight ${
                         step.status === 'in-progress' ? 'text-blue-700' :
                         step.status === 'completed' ? 'text-green-700' : 'text-gray-600'
                       }`}>
@@ -400,7 +402,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 space-y-4 sm:space-y-0">
     <div>
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Phase Details</h3>
+            <h3 className="text-sm font-medium text-gray-900">Phase Details</h3>
             <p className="text-sm text-gray-500 mt-1">
               Click on any phase card below to expand and view detailed tasks
                       </p>
@@ -408,6 +410,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
           <div className="flex bg-gray-100 rounded-lg p-1 w-full sm:w-auto">
                       <button
               type="button"
+              data-prevent-card-toggle
               onClick={() => setViewMode('progress')}
               className={`flex-1 sm:flex-none px-3 py-1 text-sm font-medium rounded-md transition-colors ${
                 viewMode === 'progress'
@@ -420,6 +423,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                       </button>
                       <button
               type="button"
+              data-prevent-card-toggle
               onClick={() => setViewMode('calendar')}
               className={`flex-1 sm:flex-none px-3 py-1 text-sm font-medium rounded-md transition-colors ${
                 viewMode === 'calendar'
@@ -441,20 +445,21 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 space-y-2 sm:space-y-0">
                   <div className="flex items-center space-x-3">
                     <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-                    <h4 className="text-base lg:text-lg font-semibold text-blue-900">Next Task</h4>
+                    <h4 className="text-sm font-medium text-blue-900">Next Task</h4>
                     </div>
                   <span className="text-sm text-blue-600 bg-blue-100 px-3 py-1 rounded-full w-fit">
                     Due in {nextTask.subTask.estimatedDuration || '2 days'}
                   </span>
                 </div>
                       <div className="space-y-3">
-                  <h5 className="text-lg lg:text-xl font-bold text-gray-900">{nextTask.subTask.title}</h5>
+                  <h5 className="text-sm font-semibold text-gray-900">{nextTask.subTask.title}</h5>
                   <p className="text-sm lg:text-base text-gray-600">{nextTask.subTask.description}</p>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
                     <span className="text-sm text-gray-500">Phase: {nextTask.step.title}</span>
                                 <div className="flex items-center space-x-3">
                                   <button
                         type="button"
+                        data-prevent-card-toggle
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -468,6 +473,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                   </button>
                                   <button
                         type="button"
+                        data-prevent-card-toggle
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -489,9 +495,10 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
             {upcomingTasks.length > 0 && (
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-sm font-semibold text-gray-900">Upcoming Tasks ({upcomingTasks.length})</h4>
+                  <h4 className="text-sm font-medium text-gray-900">Upcoming Tasks ({upcomingTasks.length})</h4>
                                           <button
                     type="button"
+                    data-prevent-card-toggle
                     className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
                     style={{ touchAction: 'manipulation' }}
                   >
@@ -522,7 +529,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                     </svg>
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-900">Phase Management</h4>
+                    <h4 className="text-sm font-medium text-gray-900">Phase Management</h4>
                     <p className="text-sm text-gray-600">
                       Click on any phase card to expand and view detailed tasks
                     </p>
@@ -551,7 +558,8 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                             !target.closest('[role="button"]') &&
                             !target.closest('svg') &&
                             !target.closest('path') &&
-                            !target.closest('.subtask-container')) {
+                            !target.closest('.subtask-container') &&
+                            !target.closest('[data-prevent-card-toggle]')) {
                           e.preventDefault();
                           e.stopPropagation();
                           e.nativeEvent.stopImmediatePropagation();
@@ -585,11 +593,11 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                           
                           <div className="flex-1 min-w-0">
                             <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-3">
-                              <h3 className={`text-sm sm:text-base lg:text-lg font-semibold truncate ${
+                              <h3 className={`text-xs font-medium truncate ${
                                 isCurrentPhase ? 'text-blue-900' : 'text-gray-900'
                               }`}>{step.title}</h3>
                   <div className="flex items-center space-x-2">
-                                <span className={`px-2 sm:px-3 py-1 sm:py-1.5 text-xs font-semibold rounded-full flex-shrink-0 flex items-center gap-1 sm:gap-2 ${
+                                <span className={`px-2 sm:px-3 py-1 sm:py-1.5 text-xs font-medium rounded-full flex-shrink-0 flex items-center gap-1 sm:gap-2 ${
                                   step.status === 'completed' ? 'bg-green-100 text-green-800 border border-green-200' :
                                   step.status === 'in-progress' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
                                   'bg-gray-100 text-gray-700 border border-gray-200'
@@ -653,7 +661,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                 <div className="mt-3 bg-blue-100 border border-blue-200 rounded-lg p-3">
                                   <div className="flex items-center gap-2 mb-1">
                                     <span className="text-blue-600 font-medium">👉 Next Task:</span>
-                                    <span className="font-semibold text-blue-900">{nextTask.title}</span>
+                                    <span className="font-medium text-blue-900">{nextTask.title}</span>
           </div>
                                   <div className="text-sm text-blue-700">
                                     {nextTask.estimatedDuration && `Estimated: ${nextTask.estimatedDuration}`}
@@ -688,6 +696,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                       )}
                                   <button
                             type="button"
+                            data-prevent-card-toggle
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
@@ -719,6 +728,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                       return nextTask ? (
                         <div 
                           className="bg-gradient-to-r from-blue-50 to-indigo-50 border-t border-blue-200 p-3 sm:p-4"
+                          data-prevent-card-toggle
                           onClick={(e) => {
                             e.stopPropagation();
                           }}
@@ -747,6 +757,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                               <div className="flex flex-wrap items-center gap-2 mt-2">
                   <button
                                   type="button"
+                                  data-prevent-card-toggle
                                   onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
@@ -759,6 +770,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                     </button>
                                         <button
                                   type="button"
+                                  data-prevent-card-toggle
                                   onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
@@ -771,6 +783,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                 </button>
                                 <button
                                   type="button"
+                                  data-prevent-card-toggle
                                   onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
@@ -792,6 +805,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                     {!isCollapsed && step.subTasks && (
                       <div 
                         className="p-3 sm:p-4 bg-white border-t border-gray-100 subtask-container"
+                        data-prevent-card-toggle
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -808,6 +822,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                 className={`rounded-xl border p-3 sm:p-4 lg:p-5 subtask-container transition-all duration-200 ${
                                   isNextTask ? 'border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-sm' : 'border-gray-200 bg-white hover:bg-gray-50'
                                 }`}
+                                data-prevent-card-toggle
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
@@ -818,6 +833,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                     <div className="flex items-center space-x-2 sm:space-x-3 mb-2">
                                 <button
                                         type="button"
+                                        data-prevent-card-toggle
                                         onClick={(e) => {
                                           e.preventDefault();
                                           e.stopPropagation();
@@ -855,6 +871,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                 {subTask.deliverables && subTask.deliverables.length > 0 && (
                                       <div 
                                         className="mt-3 pl-6 sm:pl-8 subtask-container"
+                                        data-prevent-card-toggle
                                         onClick={(e) => {
                                           e.preventDefault();
                                           e.stopPropagation();
@@ -870,6 +887,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                             <div key={deliverable.id} className="flex items-center space-x-2">
                                           <button
                                                 type="button"
+                                                data-prevent-card-toggle
                                                 onClick={(e) => {
                                                   e.preventDefault();
                                                   e.stopPropagation();
@@ -901,12 +919,13 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                                 {subTask.documents && subTask.documents.length > 0 && (
                                       <div 
                                         className="mt-3 pl-8 subtask-container"
+                                        data-prevent-card-toggle
                                         onClick={(e) => {
                                           e.preventDefault();
                                           e.stopPropagation();
                                         }}
                                       >
-                                        <details className="group">
+                                        <details className="group" data-prevent-card-toggle>
                                           <summary className="text-xs lg:text-sm font-medium text-gray-700 cursor-pointer hover:text-gray-900 transition-colors">
                                             📎 Documents ({subTask.documents.length})
                                           </summary>

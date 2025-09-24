@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { projectTemplates } from '@/lib/project-templates';
 
 interface Message {
   role: 'user' | 'ai';
@@ -20,6 +21,13 @@ export default function GuidedProjectPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [projectData, setProjectData] = useState<Record<string, string>>({});
   const [currentStep, setCurrentStep] = useState(0);
+  const [, setSelectedTemplate] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when new messages are added
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const initialQuestions = [
     {
@@ -79,6 +87,35 @@ export default function GuidedProjectPage() {
   const handleInitialPhase = async (message: string) => {
     const updatedProjectData = { ...projectData };
     
+    // Check if user wants to use a template
+    if (message.toLowerCase().includes('template') || message.toLowerCase().includes('kitchen') || message.toLowerCase().includes('bathroom') || message.toLowerCase().includes('extension')) {
+      const templateMessage: Message = {
+        role: "ai",
+        text: `Great! I can help you with a template-based project. Here are some popular project templates:\n\n${projectTemplates.map((template, index) => 
+          `${index + 1}. **${template.name}**\n   ${template.description}\n   Duration: ${template.estimatedDuration}\n   Budget: ${template.budgetRange}\n`
+        ).join('\n')}\n\nWhich template would you like to use? Just type the number (1-${projectTemplates.length}) or the template name.`
+      };
+      setMessages(prev => [...prev, templateMessage]);
+      return;
+    }
+
+    // Check if user selected a template by number
+    const templateNumber = parseInt(message);
+    if (templateNumber >= 1 && templateNumber <= projectTemplates.length) {
+      const template = projectTemplates[templateNumber - 1];
+      setSelectedTemplate(template.id);
+      
+      const templateResponse: Message = {
+        role: "ai",
+        text: `Excellent choice! You've selected the **${template.name}** template.\n\n${template.description}\n\nEstimated Duration: ${template.estimatedDuration}\nBudget Range: ${template.budgetRange}\n\nI'll now create your project using this template. Let me generate the detailed project plan...`
+      };
+      setMessages(prev => [...prev, templateResponse]);
+      
+      // Generate project using template
+      await generateProjectFromTemplate(template);
+      return;
+    }
+    
     if (currentStep < initialQuestions.length) {
       const currentQ = initialQuestions[currentStep];
       updatedProjectData[currentQ.question] = message;
@@ -108,7 +145,7 @@ export default function GuidedProjectPage() {
     
     const scopeMessage: Message = {
       role: "ai",
-      text: `🎯 SCOPE OF WORKS GENERATED\n\nBased on your project details, here's your comprehensive Scope of Works:\n\nProject: ${data.projectType || 'Not specified'}\nLocation: ${data.location || 'Not specified'}\nBudget: ${data.budget || 'Not specified'}\n\nKey Components:\n• Demolition and site preparation\n• Foundation works\n• Structural elements\n• MEP (Mechanical, Electrical, Plumbing)\n• Internal finishes\n• External works\n\nRequired Consultants:\n• Architect\n• Structural Engineer\n• Party Wall Surveyor (if applicable)\n• Planning Consultant\n\nPlanning Requirements:\n• ${data.constraints?.includes('Conservation') ? 'Full planning permission required' : 'Permitted development may apply'}\n• Building regulations approval needed\n• Party wall agreements (if applicable)\n\nRisk Flags:\n• ${data.challenges?.includes('Party wall') ? 'Party wall issues require specialist attention' : 'No major access issues identified'}\n• ${data.constraints?.includes('Listed') ? 'Listed building consent required' : 'Standard planning process'}\n\n✅ Your Scope of Works is ready!\n\nWould you like to:\n1. Download as PDF\n2. Download as Word document\n3. Proceed to Work Breakdown Structure\n4. Revise details\n\nPlease choose an option (1-4):`
+      text: `🎯 SCOPE OF WORKS GENERATED\n\nBased on your project details, here's your comprehensive Scope of Works:\n\nProject: ${data.projectType || 'Not specified'}\nLocation: ${data.location || 'Not specified'}\nBudget: ${data.budget || 'Not specified'}\n\nKey Components:\n• Demolition and site preparation\n• Foundation works\n• Structural elements\n• MEP (Mechanical, Electrical, Plumbing)\n• Internal finishes\n• External works\n\nRequired Consultants:\n• Architect\n• Structural Engineer\n• Party Wall Surveyor (if applicable)\n• Planning Consultant\n\nPlanning Requirements:\n• ${data.constraints?.includes('Conservation') ? 'Full planning permission required' : 'Permitted development may apply'}\n• Building regulations approval needed\n• Party wall agreements (if applicable)\n\nRisk Flags:\n• ${data.challenges?.includes('Party wall') ? 'Party wall issues require specialist attention' : 'No major access issues identified'}\n• ${data.constraints?.includes('Listed') ? 'Listed building consent required' : 'Standard planning process'}\n\n✅ Your Scope of Works is ready!\n\nWhat would you like to do next?\n• Proceed to Work Breakdown Structure\n• Revise project details\n• Continue with the next phase\n\nJust let me know what you'd prefer!`
     };
     
     setMessages(prev => [...prev, scopeMessage]);
@@ -116,25 +153,19 @@ export default function GuidedProjectPage() {
   };
 
   const handleScopePhase = async (message: string) => {
-    if (message.includes('1') || message.toLowerCase().includes('pdf')) {
-      const response: Message = {
-        role: "ai",
-        text: "📄 Generating PDF...\n\nYour Scope of Works PDF is being generated and will be available in your Documents section shortly.\n\nWould you like to proceed to the Work Breakdown Structure (WBS)? (yes/no)"
-      };
-      setMessages(prev => [...prev, response]);
-    } else if (message.includes('2') || message.toLowerCase().includes('word')) {
-      const response: Message = {
-        role: "ai",
-        text: "📄 Generating Word Document...\n\nYour Scope of Works Word document is being generated and will be available in your Documents section shortly.\n\nWould you like to proceed to the Work Breakdown Structure (WBS)? (yes/no)"
-      };
-      setMessages(prev => [...prev, response]);
-    } else if (message.includes('3') || message.toLowerCase().includes('proceed') || message.toLowerCase().includes('yes')) {
+    if (message.toLowerCase().includes('proceed') || message.toLowerCase().includes('wbs') || message.toLowerCase().includes('work breakdown') || message.toLowerCase().includes('continue') || message.toLowerCase().includes('next')) {
       setProjectPhase('wbs');
       await generateWorkBreakdownStructure();
-    } else if (message.includes('4') || message.toLowerCase().includes('revise')) {
+    } else if (message.toLowerCase().includes('revise') || message.toLowerCase().includes('change') || message.toLowerCase().includes('edit')) {
       const response: Message = {
         role: "ai",
-        text: "Let's revise the details. Which aspect would you like to change?\n\n1. Project type\n2. Location\n3. Budget\n4. Finish level\n5. Start over"
+        text: "Let's revise the details. Which aspect would you like to change?\n\n• Project type\n• Location\n• Budget\n• Finish level\n• Start over\n\nJust tell me what you'd like to modify!"
+      };
+      setMessages(prev => [...prev, response]);
+    } else {
+      const response: Message = {
+        role: "ai",
+        text: "I'm ready to help! You can:\n\n• Proceed to Work Breakdown Structure\n• Revise project details\n• Continue with the next phase\n\nWhat would you like to do?"
       };
       setMessages(prev => [...prev, response]);
     }
@@ -145,7 +176,7 @@ export default function GuidedProjectPage() {
     
     const wbsMessage: Message = {
       role: "ai",
-      text: `🔨 WORK BREAKDOWN STRUCTURE (WBS)\n\nHere's your detailed task breakdown:\n\nLevel 1 - Project Phases:\n1. Pre-Construction (Client)\n2. Design & Planning (Architect)\n3. Construction (Contractor)\n4. Completion (Client)\n\nLevel 2 - Key Tasks:\n\nPre-Construction:\n• Site survey and measurements (Architect)\n• Planning application submission (Architect)\n• Party wall agreements (Party Wall Surveyor)\n• Building regulations approval (Architect)\n\nDesign & Planning:\n• Architectural drawings (Architect)\n• Structural calculations (Structural Engineer)\n• MEP design (MEP Consultant)\n• Tender documentation (Architect)\n\nConstruction:\n• Site setup and demolition (Contractor)\n• Foundation works (Contractor) - *Depends on: Planning approval*\n• Structural works (Contractor) - *Depends on: Foundation completion*\n• MEP installation (Contractor) - *Depends on: Structural completion*\n• Finishes (Contractor) - *Depends on: MEP completion*\n\nCompletion:\n• Snagging and handover (Contractor)\n• Final inspections (Building Control)\n• Project closeout (Client)\n\n✅ Your Work Breakdown Structure is complete!\n\nWould you like to:\n1. Download as Excel spreadsheet\n2. Proceed to Project Schedule\n3. Revise WBS details\n\nPlease choose an option (1-3):`
+      text: `🔨 WORK BREAKDOWN STRUCTURE (WBS)\n\nHere's your detailed task breakdown:\n\nLevel 1 - Project Phases:\n1. Pre-Construction (Client)\n2. Design & Planning (Architect)\n3. Construction (Contractor)\n4. Completion (Client)\n\nLevel 2 - Key Tasks:\n\nPre-Construction:\n• Site survey and measurements (Architect)\n• Planning application submission (Architect)\n• Party wall agreements (Party Wall Surveyor)\n• Building regulations approval (Architect)\n\nDesign & Planning:\n• Architectural drawings (Architect)\n• Structural calculations (Structural Engineer)\n• MEP design (MEP Consultant)\n• Tender documentation (Architect)\n\nConstruction:\n• Site setup and demolition (Contractor)\n• Foundation works (Contractor) - *Depends on: Planning approval*\n• Structural works (Contractor) - *Depends on: Foundation completion*\n• MEP installation (Contractor) - *Depends on: Structural completion*\n• Finishes (Contractor) - *Depends on: MEP completion*\n\nCompletion:\n• Snagging and handover (Contractor)\n• Final inspections (Building Control)\n• Project closeout (Client)\n\n✅ Your Work Breakdown Structure is complete!\n\nWhat would you like to do next?\n• Proceed to Project Schedule\n• Revise WBS details\n• Continue with the next phase\n\nJust let me know what you'd prefer!`
     };
     
     setMessages(prev => [...prev, wbsMessage]);
@@ -153,19 +184,19 @@ export default function GuidedProjectPage() {
   };
 
   const handleWBSPhase = async (message: string) => {
-    if (message.includes('1') || message.toLowerCase().includes('excel')) {
-      const response: Message = {
-        role: "ai",
-        text: "📊 Generating Excel Spreadsheet...\n\nYour Work Breakdown Structure Excel file is being generated and will be available in your Documents section shortly.\n\nWould you like to proceed to the Project Schedule? (yes/no)"
-      };
-      setMessages(prev => [...prev, response]);
-    } else if (message.includes('2') || message.toLowerCase().includes('proceed') || message.toLowerCase().includes('yes')) {
+    if (message.toLowerCase().includes('proceed') || message.toLowerCase().includes('schedule') || message.toLowerCase().includes('continue') || message.toLowerCase().includes('next')) {
       setProjectPhase('schedule');
       await generateProjectSchedule();
-    } else if (message.includes('3') || message.toLowerCase().includes('revise')) {
+    } else if (message.toLowerCase().includes('revise') || message.toLowerCase().includes('change') || message.toLowerCase().includes('edit')) {
       const response: Message = {
         role: "ai",
-        text: "Let's revise the WBS. Which phase would you like to modify?\n\n1. Pre-Construction\n2. Design & Planning\n3. Construction\n4. Completion\n5. Start over"
+        text: "Let's revise the WBS. Which phase would you like to modify?\n\n• Pre-Construction\n• Design & Planning\n• Construction\n• Completion\n• Start over\n\nJust tell me what you'd like to change!"
+      };
+      setMessages(prev => [...prev, response]);
+    } else {
+      const response: Message = {
+        role: "ai",
+        text: "I'm ready to help! You can:\n\n• Proceed to Project Schedule\n• Revise WBS details\n• Continue with the next phase\n\nWhat would you like to do?"
       };
       setMessages(prev => [...prev, response]);
     }
@@ -177,7 +208,7 @@ export default function GuidedProjectPage() {
     const startDate = new Date();
     const scheduleMessage: Message = {
       role: "ai",
-      text: `📅 PROJECT SCHEDULE GENERATED\n\nProject Timeline: ${startDate.toLocaleDateString()} - ${new Date(startDate.getTime() + 180 * 24 * 60 * 60 * 1000).toLocaleDateString()}\n\nKey Milestones:\n\nPhase 1 - Pre-Construction (4 weeks):\n• Week 1-2: Site survey and planning application\n• Week 3-4: Party wall agreements and building regulations\n\nPhase 2 - Design & Planning (6 weeks):\n• Week 5-8: Architectural and structural design\n• Week 9-10: MEP design and tender documentation\n\nPhase 3 - Construction (20 weeks):\n• Week 11-12: Site setup and demolition\n• Week 13-16: Foundation works\n• Week 17-20: Structural works\n• Week 21-24: MEP installation\n• Week 25-30: Finishes and completion\n\nPhase 4 - Completion (2 weeks):\n• Week 31-32: Snagging and handover\n\nCritical Path: Planning approval → Foundation works → Structural works → MEP → Finishes\n\n✅ Your project schedule is ready!\n\nWould you like to:\n1. Download as Gantt chart (Excel)\n2. Download as PDF timeline\n3. Proceed to Cost Estimation\n4. Revise schedule\n\nPlease choose an option (1-4):`
+      text: `📅 PROJECT SCHEDULE GENERATED\n\nProject Timeline: ${startDate.toLocaleDateString()} - ${new Date(startDate.getTime() + 180 * 24 * 60 * 60 * 1000).toLocaleDateString()}\n\nKey Milestones:\n\nPhase 1 - Pre-Construction (4 weeks):\n• Week 1-2: Site survey and planning application\n• Week 3-4: Party wall agreements and building regulations\n\nPhase 2 - Design & Planning (6 weeks):\n• Week 5-8: Architectural and structural design\n• Week 9-10: MEP design and tender documentation\n\nPhase 3 - Construction (20 weeks):\n• Week 11-12: Site setup and demolition\n• Week 13-16: Foundation works\n• Week 17-20: Structural works\n• Week 21-24: MEP installation\n• Week 25-30: Finishes and completion\n\nPhase 4 - Completion (2 weeks):\n• Week 31-32: Snagging and handover\n\nCritical Path: Planning approval → Foundation works → Structural works → MEP → Finishes\n\n✅ Your project schedule is ready!\n\nWhat would you like to do next?\n• Proceed to Cost Estimation\n• Revise schedule details\n• Continue with the next phase\n\nJust let me know what you'd prefer!`
     };
     
     setMessages(prev => [...prev, scheduleMessage]);
@@ -185,25 +216,19 @@ export default function GuidedProjectPage() {
   };
 
   const handleSchedulePhase = async (message: string) => {
-    if (message.includes('1') || message.toLowerCase().includes('gantt')) {
-      const response: Message = {
-        role: "ai",
-        text: "📊 Generating Gantt Chart...\n\nYour project Gantt chart is being generated and will be available in your Documents section shortly.\n\nWould you like to proceed to Cost Estimation? (yes/no)"
-      };
-      setMessages(prev => [...prev, response]);
-    } else if (message.includes('2') || message.toLowerCase().includes('pdf')) {
-      const response: Message = {
-        role: "ai",
-        text: "📄 Generating PDF Timeline...\n\nYour project timeline PDF is being generated and will be available in your Documents section shortly.\n\nWould you like to proceed to Cost Estimation? (yes/no)"
-      };
-      setMessages(prev => [...prev, response]);
-    } else if (message.includes('3') || message.toLowerCase().includes('proceed') || message.toLowerCase().includes('yes')) {
+    if (message.toLowerCase().includes('proceed') || message.toLowerCase().includes('cost') || message.toLowerCase().includes('estimation') || message.toLowerCase().includes('continue') || message.toLowerCase().includes('next')) {
       setProjectPhase('cost');
       await generateCostEstimation();
-    } else if (message.includes('4') || message.toLowerCase().includes('revise')) {
+    } else if (message.toLowerCase().includes('revise') || message.toLowerCase().includes('change') || message.toLowerCase().includes('edit')) {
       const response: Message = {
         role: "ai",
-        text: "Let's revise the schedule. Which phase would you like to modify?\n\n1. Pre-Construction timeline\n2. Design & Planning timeline\n3. Construction timeline\n4. Completion timeline\n5. Start over"
+        text: "Let's revise the schedule. Which phase would you like to modify?\n\n• Pre-Construction timeline\n• Design & Planning timeline\n• Construction timeline\n• Completion timeline\n• Start over\n\nJust tell me what you'd like to change!"
+      };
+      setMessages(prev => [...prev, response]);
+    } else {
+      const response: Message = {
+        role: "ai",
+        text: "I'm ready to help! You can:\n\n• Proceed to Cost Estimation\n• Revise schedule details\n• Continue with the next phase\n\nWhat would you like to do?"
       };
       setMessages(prev => [...prev, response]);
     }
@@ -214,7 +239,7 @@ export default function GuidedProjectPage() {
     
     const costMessage: Message = {
       role: "ai",
-      text: `💰 COST ESTIMATION GENERATED\n\nProject: ${projectData.projectType || 'Extension'}\nLocation: ${projectData.location || 'UK'}\nEstimated Total: £${getCostEstimate(projectData.budget).toLocaleString()}\n\nItemized Breakdown:\n\nConstruction Costs:\n• Demolition & site prep: £8,000 - £12,000\n• Foundation works: £15,000 - £25,000\n• Structural works: £25,000 - £40,000\n• MEP installation: £12,000 - £18,000\n• Internal finishes: £20,000 - £35,000\n• External works: £5,000 - £10,000\n\nProfessional Fees:\n• Architect: £8,000 - £15,000\n• Structural Engineer: £3,000 - £6,000\n• Party Wall Surveyor: £1,500 - £3,000\n• Planning Consultant: £2,000 - £4,000\n\nAdditional Costs:\n• Building regulations: £1,500 - £3,000\n• Planning fees: £500 - £1,000\n• Party wall agreements: £1,000 - £2,000\n• Contingency (10%): £${Math.round(getCostEstimate(projectData.budget) * 0.1).toLocaleString()}\n\nFinish Tiers:\n• Basic: -20% from estimate\n• Standard: Current estimate\n• Premium: +30% from estimate\n\n✅ Your cost estimation is complete!\n\nWould you like to:\n1. Download detailed Excel spreadsheet\n2. Download PDF summary\n3. Create project and finish setup\n4. Revise cost assumptions\n\nPlease choose an option (1-4):`
+      text: `💰 COST ESTIMATION GENERATED\n\nProject: ${projectData.projectType || 'Extension'}\nLocation: ${projectData.location || 'UK'}\nEstimated Total: £${getCostEstimate(projectData.budget).toLocaleString()}\n\nItemized Breakdown:\n\nConstruction Costs:\n• Demolition & site prep: £8,000 - £12,000\n• Foundation works: £15,000 - £25,000\n• Structural works: £25,000 - £40,000\n• MEP installation: £12,000 - £18,000\n• Internal finishes: £20,000 - £35,000\n• External works: £5,000 - £10,000\n\nProfessional Fees:\n• Architect: £8,000 - £15,000\n• Structural Engineer: £3,000 - £6,000\n• Party Wall Surveyor: £1,500 - £3,000\n• Planning Consultant: £2,000 - £4,000\n\nAdditional Costs:\n• Building regulations: £1,500 - £3,000\n• Planning fees: £500 - £1,000\n• Party wall agreements: £1,000 - £2,000\n• Contingency (10%): £${Math.round(getCostEstimate(projectData.budget) * 0.1).toLocaleString()}\n\nFinish Tiers:\n• Basic: -20% from estimate\n• Standard: Current estimate\n• Premium: +30% from estimate\n\n✅ Your cost estimation is complete!\n\nWhat would you like to do next?\n• Create project and finish setup\n• Revise cost assumptions\n• Continue with project creation\n\nJust let me know what you'd prefer!`
     };
     
     setMessages(prev => [...prev, costMessage]);
@@ -222,42 +247,427 @@ export default function GuidedProjectPage() {
   };
 
   const handleCostPhase = async (message: string) => {
-    if (message.includes('1') || message.toLowerCase().includes('excel')) {
-      const response: Message = {
-        role: "ai",
-        text: "📊 Generating Detailed Excel Spreadsheet...\n\nYour comprehensive cost breakdown Excel file is being generated and will be available in your Documents section shortly.\n\nWould you like to create your project and finish setup? (yes/no)"
-      };
-      setMessages(prev => [...prev, response]);
-    } else if (message.includes('2') || message.toLowerCase().includes('pdf')) {
-      const response: Message = {
-        role: "ai",
-        text: "📄 Generating PDF Summary...\n\nYour cost estimate PDF summary is being generated and will be available in your Documents section shortly.\n\nWould you like to create your project and finish setup? (yes/no)"
-      };
-      setMessages(prev => [...prev, response]);
-    } else if (message.includes('3') || message.toLowerCase().includes('create') || message.toLowerCase().includes('yes')) {
+    if (message.toLowerCase().includes('create') || message.toLowerCase().includes('finish') || message.toLowerCase().includes('setup') || message.toLowerCase().includes('complete') || message.toLowerCase().includes('yes')) {
       setProjectPhase('complete');
       await completeProjectSetup();
-    } else if (message.includes('4') || message.toLowerCase().includes('revise')) {
+    } else if (message.toLowerCase().includes('revise') || message.toLowerCase().includes('change') || message.toLowerCase().includes('edit')) {
       const response: Message = {
         role: "ai",
-        text: "Let's revise the cost assumptions. Which aspect would you like to modify?\n\n1. Budget range\n2. Finish level\n3. Project scope\n4. Location factors\n5. Start over"
+        text: "Let's revise the cost assumptions. Which aspect would you like to modify?\n\n• Budget range\n• Finish level\n• Project scope\n• Location factors\n• Start over\n\nJust tell me what you'd like to change!"
+      };
+      setMessages(prev => [...prev, response]);
+    } else {
+      const response: Message = {
+        role: "ai",
+        text: "I'm ready to help! You can:\n\n• Create project and finish setup\n• Revise cost assumptions\n• Continue with project creation\n\nWhat would you like to do?"
       };
       setMessages(prev => [...prev, response]);
     }
   };
 
   const completeProjectSetup = async () => {
+    // Extract structured project data from AI responses
+    const projectData = extractProjectDataFromAI();
+    
     const completionMessage: Message = {
       role: "ai",
-      text: `🎉 PROJECT CREATION COMPLETE!\n\nYour comprehensive project plan has been generated and saved:\n\n✅ Scope of Works\n✅ Work Breakdown Structure\n✅ Project Schedule\n✅ Cost Estimation\n\nAll documents are available in your Documents section.\n\nRedirecting you to your dashboard in 3 seconds...`
+      text: `🎉 PROJECT CREATION COMPLETE!\n\nYour comprehensive project plan has been generated and saved:\n\n✅ Scope of Works\n✅ Work Breakdown Structure\n✅ Project Schedule\n✅ Cost Estimation\n\nCreating your project dashboard with all tasks and subtasks...\n\nRedirecting you to your dashboard in 3 seconds...`
     };
 
     setMessages(prev => [...prev, completionMessage]);
+    
+    // Create the project in the database with AI-generated data
+    try {
+      const result = await createProjectFromAIData(projectData);
+      console.log('Project creation result:', result);
+      
+      // Show success message
+      const successMessage: Message = {
+        role: "ai",
+        text: `✅ Project "${projectData.name}" created successfully!\n\nYour project is now ready with all phases, tasks, and subtasks. You can start tracking your progress immediately.`
+      };
+      setMessages(prev => [...prev, successMessage]);
+      
+    } catch (error) {
+      console.error('Error creating project from AI data:', error);
+      
+      // Try fallback project creation using regular API
+      try {
+        console.log('Attempting fallback project creation...');
+        const fallbackResponse = await fetch('/api/projects', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: projectData.name,
+            type: projectData.projectType,
+            location: projectData.location,
+            description: projectData.description,
+            workspace_id: 'default-workspace' // Fallback workspace
+          }),
+        });
+
+        if (fallbackResponse.ok) {
+          const fallbackResult = await fallbackResponse.json();
+          console.log('Fallback project created:', fallbackResult);
+          
+          const fallbackMessage: Message = {
+            role: "ai",
+            text: `✅ Project "${projectData.name}" created successfully using fallback method!\n\nYour project is ready, though some advanced features may not be available.`
+          };
+          setMessages(prev => [...prev, fallbackMessage]);
+        } else {
+          throw new Error('Fallback creation also failed');
+        }
+      } catch (fallbackError) {
+        console.error('Fallback project creation also failed:', fallbackError);
+        
+        // Show error message to user
+        const errorMessage: Message = {
+          role: "ai",
+          text: `❌ There was an error creating your project: ${error instanceof Error ? error.message : 'Unknown error'}\n\nDon't worry, your project data is saved. Please try refreshing the page or contact support if the issue persists.`
+        };
+        setMessages(prev => [...prev, errorMessage]);
+      }
+    }
     
     // Redirect to dashboard after 3 seconds
     setTimeout(() => {
       window.location.href = '/dashboard/homeowner';
     }, 3000);
+  };
+
+  const extractProjectDataFromAI = () => {
+    // Extract project details from the conversation
+    const projectType = projectData['What type of project is this?'] || 'Extension';
+    const location = projectData['Where is the project located?'] || 'UK';
+    const area = projectData['What\'s the approximate area/size?'] || '50-100m²';
+    const budget = projectData['What\'s your budget range?'] || '£100k-£250k';
+    const finishLevel = projectData['What\'s your preferred finish level?'] || 'Standard (good quality)';
+    
+    // Generate project name based on type and location
+    const projectName = `${projectType} - ${location}`;
+    
+    // Calculate estimated cost
+    const estimatedCost = getCostEstimate(budget);
+    
+    // Generate AI-driven project phases and tasks
+    const phases = generateProjectPhases(projectType);
+    
+    return {
+      name: projectName,
+      description: `AI-generated ${projectType.toLowerCase()} project in ${location}`,
+      projectType,
+      location,
+      area,
+      budget,
+      finishLevel,
+      estimatedCost,
+      phases,
+      status: 'planning' as const,
+      progress: 0
+    };
+  };
+
+  const generateProjectFromTemplate = async (template: {
+    id: string;
+    name: string;
+    description: string;
+    category: string;
+    estimatedDuration: string;
+    budgetRange: string;
+    phases: Array<{
+      id: string;
+      name: string;
+      description: string;
+      estimatedDuration: string;
+      tasks: Array<{
+        id: string;
+        name: string;
+        description: string;
+        assignee: string;
+        estimatedDuration: string;
+        subtasks: Array<{
+          id: string;
+          name: string;
+          description: string;
+        }>;
+      }>;
+    }>;
+  }) => {
+    setIsGenerating(true);
+    
+    // Convert template to project data format
+    const templateProjectData = {
+      name: template.name,
+      description: template.description,
+      projectType: template.category,
+      location: 'UK', // Default location
+      area: 'Standard',
+      budget: template.budgetRange,
+      finishLevel: 'Standard (good quality)',
+      estimatedCost: getCostEstimateFromRange(template.budgetRange),
+      phases: template.phases.map((phase) => ({
+        id: phase.id,
+        name: phase.name,
+        status: 'pending',
+        tasks: phase.tasks.map((task) => ({
+          id: task.id,
+          name: task.name,
+          status: 'pending',
+          assignee: task.assignee,
+          subtasks: task.subtasks.map((subtask) => ({
+            id: subtask.id,
+            name: subtask.name,
+            status: 'pending'
+          }))
+        }))
+      })),
+      status: 'planning',
+      progress: 0
+    };
+
+    const templateMessage: Message = {
+      role: "ai",
+      text: `🎯 **${template.name.toUpperCase()} PROJECT GENERATED**\n\nBased on the ${template.name} template, here's your comprehensive project plan:\n\n**Project Overview:**\n• Duration: ${template.estimatedDuration}\n• Budget: ${template.budgetRange}\n• Category: ${template.category.charAt(0).toUpperCase() + template.category.slice(1)}\n\n**Project Phases:**\n${template.phases.map((phase, index: number) => 
+        `${index + 1}. **${phase.name}** (${phase.estimatedDuration})\n   ${phase.description}\n   Tasks: ${phase.tasks.length}`
+      ).join('\n\n')}\n\n✅ Your project is ready with all phases, tasks, and subtasks!\n\nCreating your project dashboard...`
+    };
+    
+    setMessages(prev => [...prev, templateMessage]);
+    setIsGenerating(false);
+    
+    // Create the project in the database
+    try {
+      const result = await createProjectFromAIData(templateProjectData);
+      console.log('Template project created successfully:', result);
+      
+      const successMessage: Message = {
+        role: "ai",
+        text: `✅ Project "${template.name}" created successfully!\n\nYour project is now ready with all phases, tasks, and subtasks. You can start tracking your progress immediately.\n\nRedirecting you to your dashboard in 3 seconds...`
+      };
+      setMessages(prev => [...prev, successMessage]);
+      
+    } catch (error) {
+      console.error('Error creating template project:', error);
+      
+      const errorMessage: Message = {
+        role: "ai",
+        text: `❌ There was an error creating your project: ${error instanceof Error ? error.message : 'Unknown error'}\n\nDon't worry, your project data is saved. Please try refreshing the page or contact support if the issue persists.`
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    }
+    
+    // Redirect to dashboard after 3 seconds
+    setTimeout(() => {
+      window.location.href = '/dashboard/homeowner';
+    }, 3000);
+  };
+
+  const getCostEstimateFromRange = (budgetRange: string): number => {
+    const ranges: Record<string, number> = {
+      '£8,000 - £20,000': 14000,
+      '£15,000 - £35,000': 25000,
+      '£50,000 - £150,000': 100000
+    };
+    return ranges[budgetRange] || 50000;
+  };
+
+  const generateProjectPhases = (projectType: string) => {
+    const basePhases = [
+      {
+        id: 'pre-construction',
+        name: 'Pre-Construction',
+        status: 'pending' as const,
+        tasks: [
+          {
+            id: 'site-survey',
+            name: 'Site Survey and Measurements',
+            status: 'pending' as const,
+            assignee: 'Architect',
+            subtasks: [
+              { id: 'measure-site', name: 'Measure existing structure', status: 'pending' as const },
+              { id: 'assess-conditions', name: 'Assess site conditions', status: 'pending' as const },
+              { id: 'document-findings', name: 'Document findings', status: 'pending' as const }
+            ]
+          },
+          {
+            id: 'planning-application',
+            name: 'Planning Application Submission',
+            status: 'pending' as const,
+            assignee: 'Architect',
+            subtasks: [
+              { id: 'prepare-drawings', name: 'Prepare planning drawings', status: 'pending' as const },
+              { id: 'submit-application', name: 'Submit planning application', status: 'pending' as const },
+              { id: 'monitor-progress', name: 'Monitor application progress', status: 'pending' as const }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'design-planning',
+        name: 'Design & Planning',
+        status: 'pending' as const,
+        tasks: [
+          {
+            id: 'architectural-design',
+            name: 'Architectural Design',
+            status: 'pending' as const,
+            assignee: 'Architect',
+            subtasks: [
+              { id: 'concept-design', name: 'Develop concept design', status: 'pending' as const },
+              { id: 'detailed-drawings', name: 'Create detailed drawings', status: 'pending' as const },
+              { id: '3d-visualization', name: 'Create 3D visualization', status: 'pending' as const }
+            ]
+          },
+          {
+            id: 'structural-design',
+            name: 'Structural Design',
+            status: 'pending' as const,
+            assignee: 'Structural Engineer',
+            subtasks: [
+              { id: 'structural-calculations', name: 'Perform structural calculations', status: 'pending' as const },
+              { id: 'foundation-design', name: 'Design foundation system', status: 'pending' as const },
+              { id: 'structural-drawings', name: 'Prepare structural drawings', status: 'pending' as const }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'construction',
+        name: 'Construction',
+        status: 'pending' as const,
+        tasks: [
+          {
+            id: 'site-setup',
+            name: 'Site Setup and Demolition',
+            status: 'pending' as const,
+            assignee: 'Contractor',
+            subtasks: [
+              { id: 'site-preparation', name: 'Prepare site for construction', status: 'pending' as const },
+              { id: 'demolition-work', name: 'Perform demolition work', status: 'pending' as const },
+              { id: 'waste-removal', name: 'Remove construction waste', status: 'pending' as const }
+            ]
+          },
+          {
+            id: 'foundation-works',
+            name: 'Foundation Works',
+            status: 'pending' as const,
+            assignee: 'Contractor',
+            subtasks: [
+              { id: 'excavation', name: 'Excavate foundation area', status: 'pending' as const },
+              { id: 'concrete-pour', name: 'Pour foundation concrete', status: 'pending' as const },
+              { id: 'curing', name: 'Allow concrete to cure', status: 'pending' as const }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'completion',
+        name: 'Completion',
+        status: 'pending' as const,
+        tasks: [
+          {
+            id: 'snagging',
+            name: 'Snagging and Handover',
+            status: 'pending' as const,
+            assignee: 'Contractor',
+            subtasks: [
+              { id: 'final-inspection', name: 'Conduct final inspection', status: 'pending' as const },
+              { id: 'snag-list', name: 'Create snag list', status: 'pending' as const },
+              { id: 'handover', name: 'Handover to client', status: 'pending' as const }
+            ]
+          }
+        ]
+      }
+    ];
+
+    // Customize phases based on project type
+    if (projectType.toLowerCase().includes('loft')) {
+      basePhases[1].tasks.push({
+        id: 'loft-conversion',
+        name: 'Loft Conversion Design',
+        status: 'pending' as const,
+        assignee: 'Architect',
+        subtasks: [
+          { id: 'structural-assessment', name: 'Assess structural capacity', status: 'pending' as const },
+          { id: 'staircase-design', name: 'Design staircase access', status: 'pending' as const },
+          { id: 'fire-safety', name: 'Design fire safety measures', status: 'pending' as const }
+        ]
+      });
+    }
+
+    return basePhases;
+  };
+
+  const createProjectFromAIData = async (projectData: {
+    name: string;
+    description: string;
+    projectType: string;
+    location: string;
+    area: string;
+    budget: string;
+    finishLevel: string;
+    estimatedCost: number;
+    phases: Array<{
+      id: string;
+      name: string;
+      status: string;
+      tasks: Array<{
+        id: string;
+        name: string;
+        status: string;
+        assignee: string;
+        subtasks: Array<{
+          id: string;
+          name: string;
+          status: string;
+        }>;
+      }>;
+    }>;
+    status: string;
+    progress: number;
+  }) => {
+    try {
+      console.log('Creating AI project with data:', projectData);
+      
+      const response = await fetch('/api/projects', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: projectData.name,
+          description: projectData.description,
+          projectType: projectData.projectType,
+          location: projectData.location,
+          area: projectData.area,
+          budget: projectData.budget,
+          finishLevel: projectData.finishLevel,
+          estimatedCost: projectData.estimatedCost,
+          phases: projectData.phases,
+          status: projectData.status,
+          progress: projectData.progress
+        }),
+      });
+
+      console.log('API response status:', response.status);
+      console.log('API response headers:', response.headers);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API error response:', errorText);
+        throw new Error(`Failed to create project: ${response.status} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('Project created successfully:', result);
+      return result;
+    } catch (error) {
+      console.error('Error creating project:', error);
+      throw error;
+    }
   };
 
   const getCostEstimate = (budget: string) => {
@@ -318,10 +728,10 @@ export default function GuidedProjectPage() {
             
             {/* Progress Bar */}
             <div className="mt-4">
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                 <div 
                   className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${((currentStep + 1) / initialQuestions.length) * 100}%` }}
+                  style={{ width: `${Math.min(((currentStep + 1) / initialQuestions.length) * 100, 100)}%` }}
                 ></div>
               </div>
             </div>
@@ -365,6 +775,7 @@ export default function GuidedProjectPage() {
                 </div>
               </div>
             )}
+            <div ref={messagesEndRef} />
           </div>
 
           {/* Input */}

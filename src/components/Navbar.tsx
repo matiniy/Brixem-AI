@@ -18,7 +18,7 @@ export default function Navbar() {
     <header className="relative flex items-center px-3 sm:px-4 lg:px-6 xl:px-8 py-3 sm:py-4 lg:py-6 bg-white border-b border-gray-100">
       {/* Logo */}
       <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
-        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center">
+        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center">
           <span className="text-white font-bold text-xs sm:text-sm">B</span>
         </div>
         <span className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 group-hover:text-[#23c6e6] transition">brixem</span>

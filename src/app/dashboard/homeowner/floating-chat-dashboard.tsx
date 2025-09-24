@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Sidebar from '@/components/Sidebar';
 import FloatingChatOverlay from '@/components/FloatingChatOverlay';
 import LinearTaskFlow from '@/components/LinearTaskFlow';
 import { createProject, getProjects } from '../actions';
 import { sendChatMessage } from '@/lib/ai';
-import { useProjectStore } from '@/store/projectStore';
+import { useWebSocket, realtimeUpdates, setupRealtimeListeners } from '@/lib/websocket';
+import { trackAction, BUSINESS_EVENTS } from '@/lib/analytics';
+// import { useProjectStore } from '@/store/projectStore'; // Not needed for this component
 
 interface Project {
   id: string;
@@ -19,21 +21,30 @@ interface Project {
   created_at: string;
   updated_at: string;
   progress: number;
+  ai_data?: {
+    area?: string;
+    finishLevel?: string;
+    phases?: Array<{
+  id: string;
+      name: string;
+      status: string;
+      tasks: Array<{
+        id: string;
+        name: string;
+        status: string;
+        assignee: string;
+        subtasks: Array<{
+          id: string;
+          name: string;
+          status: string;
+        }>;
+      }>;
+    }>;
+  };
+  ai_generated?: boolean;
 }
 
-interface Task {
-  id: string;
-  title: string;
-  description?: string;
-  status: "todo" | "in-progress" | "completed";
-  priority: "high" | "medium" | "low";
-  progress: number;
-  assignedUsers: string[];
-  comments: number;
-  likes: number;
-  dueDate?: string;
-  estimatedHours?: number;
-}
+// Task interface removed as it's not used in this component
 
 interface ChatMessage {
   role: "user" | "ai";
@@ -94,12 +105,65 @@ export default function FloatingChatDashboard() {
       type: "normal"
     }
   ]);
-  // const [isGenerating, setIsGenerating] = useState(false); // Removed unused variable
   const [isChatExpanded, setIsChatExpanded] = useState(false);
   const [isEditingProjectName, setIsEditingProjectName] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [editingProjectName, setEditingProjectName] = useState('');
+  const [userId, setUserId] = useState<string | null>(null);
 
-  const { tasks, addTask, setAll } = useProjectStore();
+  // WebSocket connection
+  const { isConnected, subscribe } = useWebSocket(userId);
+
+  // Auto-scroll to bottom when new messages are added
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // Initialize WebSocket and real-time listeners
+  useEffect(() => {
+    // Get user ID from localStorage or auth
+    const storedUserId = localStorage.getItem('brixem_user_id');
+    if (storedUserId) {
+      setUserId(storedUserId);
+    }
+
+    // Setup real-time event listeners
+    setupRealtimeListeners();
+
+    // Subscribe to real-time updates
+    const unsubscribeProject = subscribe('project_update', (data) => {
+      console.log('Real-time project update:', data);
+      // Refresh projects when updated
+      loadProjects();
+    });
+
+    const unsubscribeTask = subscribe('task_update', (data) => {
+      console.log('Real-time task update:', data);
+      // Refresh projects when tasks are updated
+      loadProjects();
+    });
+
+    const unsubscribeChat = subscribe('chat_message', (data) => {
+      console.log('Real-time chat message:', data);
+      // Add new chat message to UI
+      if (data.role === 'ai' && data.text) {
+        setMessages(prev => [...prev, {
+          role: 'ai',
+          text: String(data.text),
+          type: 'normal'
+        }]);
+      }
+    });
+
+    return () => {
+      unsubscribeProject();
+      unsubscribeTask();
+      unsubscribeChat();
+    };
+  }, [subscribe]);
+
+  // Project store not needed for this component
+  // const { tasks, addTask, setAll } = useProjectStore();
 
   // Calculate task counts from LinearTaskFlow sub-tasks
   const getTaskCounts = () => {
@@ -109,7 +173,6 @@ export default function FloatingChatDashboard() {
 
     // Find current step (first incomplete step)
     const currentStepIndex = projectSteps.findIndex(step => step.status !== 'completed');
-    // const currentStep = currentStepIndex >= 0 ? projectSteps[currentStepIndex] : null;
 
     projectSteps.forEach((step, stepIndex) => {
       if (step.subTasks) {
@@ -128,370 +191,8 @@ export default function FloatingChatDashboard() {
     return { totalTasks, completedTasks, toDoTasks };
   };
 
-  // Sample project steps data with sub-tasks and details (Streamlined to 6 steps)
-  const [projectSteps, setProjectSteps] = useState<ProjectStep[]>([
-    {
-      id: '1',
-      title: 'Project Planning & Design',
-      description: 'Initial project planning, design development, and feasibility studies',
-      status: 'completed' as const,
-      stepNumber: 1,
-      estimatedDuration: '2-4 weeks',
-      dependencies: [],
-      subTasks: [
-        {
-          id: '1.1',
-          title: 'Site Survey & Design',
-          description: 'Complete site survey and develop architectural designs',
-          status: 'completed' as const,
-          estimatedDuration: '2 weeks',
-          assignedTo: 'Design Team',
-          notes: 'Site survey completed and architectural design approved by client.',
-          materials: ['Survey equipment', 'Design software', 'Drawing materials'],
-          requirements: ['Site access', 'Client approval', 'Planning compliance'],
-          deliverables: [
-            { id: 'd1', title: 'Site survey report', status: 'completed' as const },
-            { id: 'd2', title: 'Architectural drawings', status: 'completed' as const },
-            { id: 'd3', title: '3D visualization', status: 'completed' as const }
-          ],
-          documents: [
-            { id: '1', name: 'Site Survey Report', type: 'PDF', url: '/docs/site-survey.pdf' },
-            { id: '2', name: 'Architectural Drawings', type: 'PDF', url: '/docs/architectural-drawings.pdf' }
-          ]
-        },
-        {
-          id: '1.2',
-          title: 'Engineering Design',
-          description: 'Complete structural and MEP engineering design',
-          status: 'completed' as const,
-          estimatedDuration: '1 week',
-          assignedTo: 'Engineering Team',
-          notes: 'All engineering designs completed and approved.',
-          materials: ['Engineering software', 'Calculation tools'],
-          requirements: ['Design standards', 'Building regulations'],
-          deliverables: [
-            { id: 'd4', title: 'Structural calculations', status: 'completed' as const },
-            { id: 'd5', title: 'MEP design package', status: 'completed' as const }
-          ],
-          documents: [
-            { id: '3', name: 'Structural Calculations', type: 'PDF', url: '/docs/structural-calculations.pdf' },
-            { id: '4', name: 'MEP Drawings', type: 'PDF', url: '/docs/mep-drawings.pdf' }
-          ]
-        }
-      ],
-      details: {
-        materials: ['Survey equipment', 'Design software licenses', 'Drawing materials'],
-        requirements: ['Site access permission', 'Client brief', 'Planning constraints'],
-        deliverables: ['Site survey report', 'Concept drawings', 'Feasibility report'],
-        notes: 'All initial planning completed successfully. Client approved concept design.'
-      }
-    },
-    {
-      id: '2',
-      title: 'Permits & Approvals',
-      description: 'Obtain planning permission, building regulations approval, and other necessary permits',
-      status: 'completed' as const,
-      stepNumber: 2,
-      estimatedDuration: '4-8 weeks',
-      dependencies: ['Project Planning & Design'],
-      subTasks: [
-        {
-          id: '2.1',
-          title: 'Planning Permission',
-          description: 'Submit and obtain planning permission',
-          status: 'completed' as const,
-          estimatedDuration: '4 weeks',
-          assignedTo: 'Planning Consultant',
-          notes: 'Planning permission obtained with no objections.',
-          materials: ['Planning forms', 'Technical drawings', 'Application fees'],
-          requirements: ['Planning permission', 'Community consultation'],
-          deliverables: [
-            { id: 'd6', title: 'Planning permission certificate', status: 'completed' as const },
-            { id: 'd7', title: 'Approved drawings', status: 'completed' as const }
-          ],
-          documents: [
-            { id: '5', name: 'Planning Permission', type: 'PDF', url: '/docs/planning-permission.pdf' }
-          ]
-        },
-        {
-          id: '2.2',
-          title: 'Building Regulations & Utilities',
-          description: 'Obtain building regulations approval and utility connections',
-          status: 'completed' as const,
-          estimatedDuration: '3 weeks',
-          assignedTo: 'Compliance Team',
-          notes: 'All approvals and utility connections secured.',
-          materials: ['Compliance documentation', 'Utility applications'],
-          requirements: ['Building regulations', 'Utility connections'],
-          deliverables: [
-            { id: 'd8', title: 'Building regulations approval', status: 'completed' as const },
-            { id: 'd9', title: 'Utility connection agreements', status: 'completed' as const }
-          ],
-          documents: [
-            { id: '6', name: 'Building Regulations Approval', type: 'PDF', url: '/docs/building-regs.pdf' },
-            { id: '7', name: 'Utility Agreements', type: 'PDF', url: '/docs/utility-agreements.pdf' }
-          ]
-        }
-      ],
-      details: {
-        materials: ['Application forms', 'Technical drawings', 'Supporting documents'],
-        requirements: ['Planning permission', 'Building regulations approval', 'Utility NOCs'],
-        deliverables: ['Planning permission', 'Building regulations approval', 'Utility agreements'],
-        notes: 'All permits obtained within expected timeframe. No objections received.'
-      }
-    },
-    {
-      id: '3',
-      title: 'Site Preparation',
-      description: 'Site mobilization, hoarding, utility connections, and ground preparation',
-      status: 'in-progress' as const,
-      stepNumber: 3,
-      estimatedDuration: '1-2 weeks',
-      dependencies: ['Permits & Approvals'],
-      subTasks: [
-        {
-          id: '3.1',
-          title: 'Site Setup & Security',
-          description: 'Establish site facilities and install security hoarding',
-          status: 'completed' as const,
-          estimatedDuration: '3 days',
-          assignedTo: 'Site Manager',
-          notes: 'Site office and welfare facilities operational. Security hoarding installed.',
-          materials: ['Site office', 'Welfare facilities', 'Hoarding panels', 'Security systems'],
-          requirements: ['Site access', 'Safety compliance', 'Security certification'],
-          deliverables: [
-            { id: 'd10', title: 'Site office and facilities', status: 'completed' as const },
-            { id: 'd11', title: 'Security hoarding installed', status: 'completed' as const }
-          ],
-          documents: [
-            { id: '8', name: 'Site Setup Checklist', type: 'PDF', url: '/docs/site-setup.pdf' }
-          ]
-        },
-        {
-          id: '3.2',
-          title: 'Ground Preparation',
-          description: 'Clear site and prepare ground for construction',
-          status: 'in-progress' as const,
-          estimatedDuration: '4 days',
-          assignedTo: 'Groundworks Team',
-          notes: 'Site clearance in progress. Ground preparation will begin next week.',
-          materials: ['Excavation equipment', 'Demolition tools', 'Safety equipment'],
-          requirements: ['Clearance permits', 'Safety equipment', 'Environmental compliance'],
-          deliverables: [
-            { id: 'd12', title: 'Site cleared and leveled', status: 'pending' as const },
-            { id: 'd13', title: 'Ground prepared for construction', status: 'pending' as const }
-          ],
-          documents: [
-            { id: '9', name: 'Site Clearance Plan', type: 'PDF', url: '/docs/site-clearance.pdf' }
-          ]
-        }
-      ],
-      details: {
-        materials: ['Hoarding panels', 'Temporary utilities', 'Site office equipment'],
-        requirements: ['Site access', 'Utility connections', 'Safety equipment'],
-        deliverables: ['Secured site', 'Temporary facilities', 'Utility connections'],
-        notes: 'Site mobilization in progress. Hoarding installation started today.'
-      }
-    },
-    {
-      id: '4',
-      title: 'Construction',
-      description: 'Foundation, substructure, superstructure, and main building construction',
-      status: 'pending' as const,
-      stepNumber: 4,
-      estimatedDuration: '6-9 weeks',
-      dependencies: ['Site Preparation'],
-      subTasks: [
-        {
-          id: '4.1',
-          title: 'Foundation Work',
-          description: 'Excavate and construct foundations',
-          status: 'pending' as const,
-          estimatedDuration: '2 weeks',
-          assignedTo: 'Groundworks Team',
-          notes: 'Foundation work will begin after ground preparation is complete.',
-          materials: ['Excavation equipment', 'Concrete', 'Reinforcement steel'],
-          requirements: ['Excavation permits', 'Concrete delivery', 'Quality control'],
-          deliverables: [
-            { id: 'd14', title: 'Foundation trenches excavated', status: 'pending' as const },
-            { id: 'd15', title: 'Concrete foundations poured', status: 'pending' as const }
-          ],
-          documents: [
-            { id: '10', name: 'Foundation Plan', type: 'PDF', url: '/docs/foundation-plan.pdf' }
-          ]
-        },
-        {
-          id: '4.2',
-          title: 'Structural Frame',
-          description: 'Erect main structural frame and floors',
-          status: 'pending' as const,
-          estimatedDuration: '3 weeks',
-          assignedTo: 'Steel Erection Team',
-          notes: 'Steel frame erection requires crane access and careful sequencing.',
-          materials: ['Structural steel', 'Crane equipment', 'Concrete'],
-          requirements: ['Crane permits', 'Weather protection', 'Quality control'],
-          deliverables: [
-            { id: 'd16', title: 'Steel frame erected', status: 'pending' as const },
-            { id: 'd17', title: 'Floor slabs constructed', status: 'pending' as const }
-          ],
-          documents: [
-            { id: '11', name: 'Steel Erection Plan', type: 'PDF', url: '/docs/steel-erection.pdf' }
-          ]
-        },
-        {
-          id: '4.3',
-          title: 'External Envelope',
-          description: 'Construct external walls and roof',
-          status: 'pending' as const,
-          estimatedDuration: '2 weeks',
-          assignedTo: 'Envelope Team',
-          notes: 'External envelope construction requires weather protection.',
-          materials: ['Cladding panels', 'Roofing materials', 'Insulation'],
-          requirements: ['Weather conditions', 'Access equipment', 'Quality control'],
-          deliverables: [
-            { id: 'd18', title: 'External walls constructed', status: 'pending' as const },
-            { id: 'd19', title: 'Roof structure completed', status: 'pending' as const }
-          ],
-          documents: [
-            { id: '12', name: 'Envelope Installation Guide', type: 'PDF', url: '/docs/envelope-guide.pdf' }
-          ]
-        }
-      ],
-      details: {
-        materials: ['Concrete', 'Steel', 'Cladding', 'Roofing materials'],
-        requirements: ['Crane access', 'Weather protection', 'Quality control'],
-        deliverables: ['Foundation', 'Structural frame', 'External envelope'],
-        notes: 'Major construction phase - requires careful coordination and weather protection.'
-      }
-    },
-    {
-      id: '5',
-      title: 'Finishing Works',
-      description: 'Internal works, MEP installation, external works, and landscaping',
-      status: 'pending' as const,
-      stepNumber: 5,
-      estimatedDuration: '4-6 weeks',
-      dependencies: ['Construction'],
-      subTasks: [
-        {
-          id: '5.1',
-          title: 'MEP Installation',
-          description: 'Install electrical, plumbing, and HVAC systems',
-          status: 'pending' as const,
-          estimatedDuration: '2 weeks',
-          assignedTo: 'MEP Team',
-          notes: 'MEP installation requires coordination between electrical, plumbing, and HVAC trades.',
-          materials: ['Electrical cables', 'Water pipes', 'HVAC units', 'Testing equipment'],
-          requirements: ['MEP certification', 'Quality control', 'Safety protocols'],
-          deliverables: [
-            { id: 'd20', title: 'Electrical systems installed', status: 'pending' as const },
-            { id: 'd21', title: 'Plumbing systems installed', status: 'pending' as const },
-            { id: 'd22', title: 'HVAC systems installed', status: 'pending' as const }
-          ],
-          documents: [
-            { id: '13', name: 'MEP Installation Plan', type: 'PDF', url: '/docs/mep-installation.pdf' }
-          ]
-        },
-        {
-          id: '5.2',
-          title: 'Internal Finishes',
-          description: 'Complete internal partitions, finishes, and decoration',
-          status: 'pending' as const,
-          estimatedDuration: '2 weeks',
-          assignedTo: 'Finishing Team',
-          notes: 'Internal finishing requires clean environment and careful coordination.',
-          materials: ['Partition systems', 'Paint', 'Flooring', 'Decorative elements'],
-          requirements: ['Clean environment', 'Quality control', 'Color matching'],
-          deliverables: [
-            { id: 'd23', title: 'Internal partitions installed', status: 'pending' as const },
-            { id: 'd24', title: 'Wall finishes completed', status: 'pending' as const },
-            { id: 'd25', title: 'Flooring installed', status: 'pending' as const }
-          ],
-          documents: [
-            { id: '14', name: 'Finishing Specifications', type: 'PDF', url: '/docs/finishing-specs.pdf' }
-          ]
-        },
-        {
-          id: '5.3',
-          title: 'External Works',
-          description: 'Complete landscaping and external finishes',
-          status: 'pending' as const,
-          estimatedDuration: '1 week',
-          assignedTo: 'External Team',
-          notes: 'External works require good weather conditions.',
-          materials: ['Landscaping materials', 'External finishes', 'Cleaning supplies'],
-          requirements: ['Weather conditions', 'Final inspections'],
-          deliverables: [
-            { id: 'd26', title: 'Landscaping completed', status: 'pending' as const },
-            { id: 'd27', title: 'External finishes completed', status: 'pending' as const }
-          ],
-          documents: [
-            { id: '15', name: 'Landscaping Plan', type: 'PDF', url: '/docs/landscaping-plan.pdf' }
-          ]
-        }
-      ],
-      details: {
-        materials: ['MEP equipment', 'Partition materials', 'Finishing materials', 'Landscaping materials'],
-        requirements: ['MEP coordination', 'Quality control', 'Clean environment', 'Weather conditions'],
-        deliverables: ['MEP systems', 'Internal finishes', 'External works', 'Landscaping'],
-        notes: 'Finishing phase requires coordination between multiple trades and clean environment.'
-      }
-    },
-    {
-      id: '6',
-      title: 'Testing & Handover',
-      description: 'Final testing, commissioning, snagging, and project handover',
-      status: 'pending' as const,
-      stepNumber: 6,
-      estimatedDuration: '1-2 weeks',
-      dependencies: ['Finishing Works'],
-      subTasks: [
-        {
-          id: '6.1',
-          title: 'Systems Testing & Commissioning',
-          description: 'Test and commission all building systems',
-          status: 'pending' as const,
-          estimatedDuration: '3 days',
-          assignedTo: 'Commissioning Team',
-          notes: 'All building systems need to be tested and commissioned before handover.',
-          materials: ['Testing equipment', 'Commissioning procedures'],
-          requirements: ['System testing', 'Quality assurance', 'Safety compliance'],
-          deliverables: [
-            { id: 'd28', title: 'MEP systems commissioned', status: 'pending' as const },
-            { id: 'd29', title: 'Safety systems tested', status: 'pending' as const }
-          ],
-          documents: [
-            { id: '16', name: 'Commissioning Report', type: 'PDF', url: '/docs/commissioning-report.pdf' }
-          ]
-        },
-        {
-          id: '6.2',
-          title: 'Final Inspections & Handover',
-          description: 'Complete final inspections and project handover',
-          status: 'pending' as const,
-          estimatedDuration: '2 days',
-          assignedTo: 'Project Manager',
-          notes: 'Final inspections and handover to client with all documentation.',
-          materials: ['Inspection checklists', 'Handover documentation', 'Keys'],
-          requirements: ['Building control approval', 'Client approval', 'Documentation complete'],
-          deliverables: [
-            { id: 'd30', title: 'Final inspections passed', status: 'pending' as const },
-            { id: 'd31', title: 'Project handover completed', status: 'pending' as const }
-          ],
-          documents: [
-            { id: '17', name: 'Final Inspection Certificate', type: 'PDF', url: '/docs/final-inspection.pdf' },
-            { id: '18', name: 'Handover Documentation', type: 'PDF', url: '/docs/handover-docs.pdf' }
-          ]
-        }
-      ],
-      details: {
-        materials: ['Testing equipment', 'Documentation', 'Handover materials'],
-        requirements: ['System commissioning', 'Quality assurance', 'Client approval'],
-        deliverables: ['Tested systems', 'Snag-free building', 'Handover documentation'],
-        notes: 'Final phase - ensure everything is perfect for handover.'
-      }
-    }
-  ]);
+  // Project steps data - loaded from database or empty for new users
+  const [projectSteps, setProjectSteps] = useState<ProjectStep[]>([]);
 
   const taskCounts = getTaskCounts();
 
@@ -558,7 +259,6 @@ export default function FloatingChatDashboard() {
 
   // Handle step completion
   const handleStepComplete = (stepId: string) => {
-    console.log('Completing step:', stepId);
     setProjectSteps(prevSteps => 
       prevSteps.map(step => 
         step.id === stepId 
@@ -569,34 +269,16 @@ export default function FloatingChatDashboard() {
   };
 
   // Handle step advancement
-  const handleStepAdvance = (currentStepId: string, nextStepId: string) => {
-    console.log('Advancing from step:', currentStepId, 'to step:', nextStepId);
+  const handleStepAdvance = (stepId: string) => {
     setProjectSteps(prevSteps => 
       prevSteps.map(step => 
-        step.id === nextStepId 
+        step.id === stepId 
           ? { ...step, status: 'in-progress' as const }
           : step
       )
     );
-
-    // Update project progress
-    const completedSteps = projectSteps.filter(step => step.status === 'completed').length + 1; // +1 for the step we just completed
-    const totalSteps = projectSteps.length;
-    const newProgress = Math.round((completedSteps / totalSteps) * 100);
-
-    console.log('Updating progress:', completedSteps, 'of', totalSteps, '=', newProgress + '%');
-
-    // Update the project in the projects array
-    setProjects(prevProjects => 
-      prevProjects.map(project => 
-        project.id === activeProject 
-          ? { ...project, progress: newProgress }
-          : project
-      )
-    );
   };
 
-  // Handle project name editing
   const handleProjectNameEdit = () => {
     const currentProject = projects.find(p => p.id === activeProject);
     if (currentProject) {
@@ -655,46 +337,18 @@ export default function FloatingChatDashboard() {
         progress: project.progress || Math.floor(Math.random() * 100) // Use existing progress or calculate
       }));
       
-      // If no projects from API, add a sample project for demo
-      if (projectsWithProgress.length === 0) {
-        const sampleProject = {
-          id: 'demo-project-1',
-          name: 'Kitchen Renovation',
-          location: 'San Francisco, CA',
-          description: 'Complete kitchen renovation with modern appliances',
-          size_sqft: 150,
-          type: 'renovation',
-          status: 'in-progress',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          progress: 35
-        };
-        setProjects([sampleProject]);
-        setActiveProject(sampleProject.id);
-      } else {
+      // Set projects from database (no mock data)
       setProjects(projectsWithProgress);
+      
         // Set the first project as active if there are projects and no active project is set
         if (projectsWithProgress.length > 0 && !activeProject) {
           setActiveProject(projectsWithProgress[0].id);
-        }
       }
     } catch (error) {
       console.error('Error loading projects:', error);
-      // If API fails, add a sample project for demo
-      const sampleProject = {
-        id: 'demo-project-1',
-        name: 'Kitchen Renovation',
-        location: 'San Francisco, CA',
-        description: 'Complete kitchen renovation with modern appliances',
-        size_sqft: 150,
-        type: 'renovation',
-        status: 'in-progress',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        progress: 35
-      };
-      setProjects([sampleProject]);
-      setActiveProject(sampleProject.id);
+      // If API fails, show empty state (no mock data)
+      setProjects([]);
+      setActiveProject('');
     } finally {
       setIsLoading(false);
     }
@@ -705,86 +359,44 @@ export default function FloatingChatDashboard() {
     loadProjects();
   }, [loadProjects]);
 
-  // Initialize with sample tasks for demo
+  // Load real tasks from database when active project changes
   useEffect(() => {
-    if (tasks.length === 0) {
-      const sampleTasks: Task[] = [
-        {
-          id: '1',
-          title: 'Project Planning & Design',
-          description: 'Finalize project scope and design requirements',
-          status: 'todo',
-          priority: 'high',
-          progress: 0,
-          assignedUsers: [],
-          comments: 0,
-          likes: 0
-        },
-        {
-          id: '2',
-          title: 'Permit Applications',
-          description: 'Submit necessary permits and approvals',
-          status: 'todo',
-          priority: 'high',
-          progress: 0,
-          assignedUsers: [],
-          comments: 0,
-          likes: 0
-        },
-        {
-          id: '3',
-          title: 'Contractor Selection',
-          description: 'Interview and select contractors',
-          status: 'todo',
-          priority: 'medium',
-          progress: 0,
-          assignedUsers: [],
-          comments: 0,
-          likes: 0
+    if (activeProject && projects.length > 0) {
+      const currentProject = projects.find(p => p.id === activeProject);
+      if (currentProject) {
+        // Check if this is an AI-generated project
+        if (currentProject.ai_data && currentProject.ai_data.phases) {
+          // Convert AI-generated phases to project steps
+          const aiProjectSteps = currentProject.ai_data.phases.map((phase, index: number) => ({
+            id: phase.id,
+            title: phase.name,
+            description: `AI-generated ${phase.name.toLowerCase()} phase`,
+            status: phase.status as 'completed' | 'in-progress' | 'pending',
+            stepNumber: index + 1,
+            estimatedDuration: '30 days',
+            subTasks: phase.tasks.flatMap((task) => 
+              task.subtasks.map((subtask) => ({
+                id: subtask.id,
+                title: subtask.name,
+                description: `Task: ${subtask.name}`,
+                status: subtask.status as 'completed' | 'in-progress' | 'pending',
+                estimatedDuration: '2 days',
+                assignedTo: task.assignee
+              }))
+            )
+          }));
+          setProjectSteps(aiProjectSteps);
+        } else {
+          // Load regular project steps from database
+          // This will be implemented when we have the tasks API
+          console.log('Loading regular tasks for project:', activeProject);
+          setProjectSteps([]);
         }
-      ];
-
-      // Add sample milestones
-      const sampleMilestones = [
-        {
-          id: 'milestone-1',
-          title: 'Planning Phase',
-          status: 'doing' as const,
-          order: 1,
-          description: 'Complete project planning and design'
-        },
-        {
-          id: 'milestone-2', 
-          title: 'Permits & Approvals',
-          status: 'todo' as const,
-          order: 2,
-          description: 'Obtain all necessary permits'
-        },
-        {
-          id: 'milestone-3',
-          title: 'Contractor Selection',
-          status: 'todo' as const,
-          order: 3,
-          description: 'Choose and hire contractors'
-        }
-      ];
-
-      // Initialize the store with sample data
-      setAll(
-        { 
-          id: 'demo-project',
-          name: 'Kitchen Remodel',
-          percentComplete: 25, 
-          currentMilestoneId: 'milestone-1',
-          type: 'kitchen remodel',
-          location: 'San Francisco, CA',
-          status: 'in-progress'
-        },
-        sampleMilestones,
-        sampleTasks
-      );
+      }
+    } else {
+      setProjectSteps([]);
     }
-  }, [tasks.length, setAll]);
+  }, [activeProject, projects]);
 
   const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;
@@ -796,120 +408,114 @@ export default function FloatingChatDashboard() {
     };
 
     setMessages(prev => [...prev, userMessage]);
-    // setIsGenerating(true); // Removed unused variable
+
+    // Send real-time chat message
+    if (isConnected) {
+      realtimeUpdates.sendChatMessage({
+        role: 'user',
+        text: message,
+        timestamp: new Date().toISOString(),
+        userId: userId
+      });
+    }
 
     try {
-      // Get current project context
-      const currentProject = projects.find(p => p.id === activeProject);
-      const projectContext = currentProject ? 
-        `Current Project: ${currentProject.name} (${currentProject.type || 'renovation'}) - ${currentProject.location || 'Location not specified'}
-Project Status: ${currentProject.status || 'in-progress'}
-Project Progress: ${currentProject.progress || 0}%
-
-Current Project Steps:
-${projectSteps.map(step => 
-  `- ${step.title} (${step.status}) - ${step.estimatedDuration}`
-).join('\n')}
-
-Current Sub-tasks:
-${projectSteps.flatMap(step => 
-  step.subTasks?.map(subTask => 
-    `- ${subTask.title} (${subTask.status}) - ${subTask.estimatedDuration} - Assigned to: ${subTask.assignedTo || 'Not assigned'}`
-  ) || []
-).join('\n')}
-
-Task Counts:
-- Total Tasks: ${taskCounts.totalTasks}
-- Completed Tasks: ${taskCounts.completedTasks}
-- To Do Tasks: ${taskCounts.toDoTasks}
-
-When user asks about tasks, current stage, or what needs to be done, provide specific actionable items based on the current project state.` : 
-        'No active project selected';
-
-      const response = await sendChatMessage([userMessage], projectContext);
+      // Check if this is a project creation request
+        const projectName = extractProjectName(message);
       
-      const aiMessage: ChatMessage = {
-        role: "ai",
-        text: response.message,
-        type: "normal"
-      };
-
-      setMessages(prev => [...prev, aiMessage]);
-
-      // Handle task creation if detected
-      if (message.toLowerCase().includes('create task') || message.toLowerCase().includes('add task') || 
-          message.toLowerCase().includes('getting building permits') || message.toLowerCase().includes('building permits')) {
-        const taskTitle = extractProjectName(message);
-        if (taskTitle) {
-          addTask({
-            title: taskTitle,
-            status: 'todo',
-            priority: 'high',
-            progress: 0,
-            assignedUsers: [],
-            comments: 0,
-            likes: 0
+        if (projectName) {
+        // Create new project
+        try {
+          const newProject = await createProject({
+            name: projectName,
+            type: 'renovation', // Default type
+            location: 'TBD', // Will be updated by user
+            description: `Project created via chat: ${message}`,
+            size_sqft: 0 // Will be updated by user
           });
           
-          // Add confirmation message
-          const confirmMessage: ChatMessage = {
-            role: "ai",
-            text: `✅ Task created successfully! "${taskTitle}" has been added to your Kanban board.`,
-            type: "system"
-          };
-          setMessages(prev => [...prev, confirmMessage]);
-        }
-      }
-
-      // Handle project creation if detected
-      if (message.toLowerCase().includes('create project') || message.toLowerCase().includes('new project')) {
-        const projectName = extractProjectName(message);
-        if (projectName) {
-          const projectData = {
-            name: projectName,
-            location: "To be specified",
-            description: `Project created via AI: ${message}`,
-            type: "renovation"
-          };
-          
-          try {
-            const newProject = await createProject(projectData);
-            // Reload projects to show the new project in sidebar
-            await loadProjects();
-            
-            // Set the new project as active
-            if (newProject && newProject.id) {
+          // Add to local state
+          setProjects(prev => [...prev, newProject]);
               setActiveProject(newProject.id);
+            
+            // Send real-time project update
+            if (isConnected) {
+              realtimeUpdates.sendProjectUpdate(newProject.id, {
+                action: 'created',
+                project: newProject,
+                userId: userId
+              });
             }
+
+            // Track project creation
+            trackAction(BUSINESS_EVENTS.PROJECT_CREATED, 'business', 'chat');
             
             const successMessage: ChatMessage = {
               role: "ai",
-              text: `Great! I've created your project "${projectName}". You can now see it in your projects list in the left sidebar. Click on it to manage tasks and track progress.`,
-              type: "system"
+            text: `Great! I've created your project "${projectName}". You can now start adding tasks, milestones, and managing your construction project. What would you like to do next?`,
+            type: "normal"
             };
             setMessages(prev => [...prev, successMessage]);
+          return;
           } catch (error) {
             console.error('Error creating project:', error);
             const errorMessage: ChatMessage = {
               role: "ai",
-              text: "I encountered an error creating your project. Please try again or provide more specific details.",
-              type: "system"
+            text: "I apologize, but I couldn't create the project. Please try again or contact support if the issue persists.",
+            type: "normal"
             };
             setMessages(prev => [...prev, errorMessage]);
-          }
+          return;
         }
       }
 
+            // Regular AI chat
+            const projectContext = activeProject ? 
+              `Current Project: ${projects.find(p => p.id === activeProject)?.name || 'Unknown'}
+            Project Status: ${projects.find(p => p.id === activeProject)?.status || 'Unknown'}
+            Project Progress: ${projects.find(p => p.id === activeProject)?.progress || 0}%
+
+            Total Tasks: ${taskCounts.totalTasks}
+            Completed Tasks: ${taskCounts.completedTasks}
+            To Do Tasks: ${taskCounts.toDoTasks}
+
+            When user asks about tasks, current stage, or what needs to be done, provide specific actionable items based on the current project state.` : 
+              'No active project selected';
+
+            const response = await sendChatMessage([userMessage], projectContext);
+            
+            if (response.message) {
+              const aiResponse: ChatMessage = {
+                role: "ai",
+                text: response.message,
+                type: "normal"
+              };
+              setMessages(prev => [...prev, aiResponse]);
+            }
     } catch (error) {
       console.error('Error sending message:', error);
+      
+      // Provide more specific error messages
+      let errorText = "I apologize, but I encountered an error. Please try again.";
+      
+      if (error instanceof Error) {
+        if (error.message.includes('API key not configured')) {
+          errorText = "AI service is temporarily unavailable. Please try again later.";
+        } else if (error.message.includes('rate limit')) {
+          errorText = "I'm receiving too many requests. Please wait a moment and try again.";
+        } else if (error.message.includes('network')) {
+          errorText = "Network error. Please check your connection and try again.";
+        } else {
+          errorText = `Error: ${error.message}`;
+        }
+      }
+      
       const errorMessage: ChatMessage = {
         role: "ai",
-        text: "I apologize, but I encountered an error. Please try again.",
+        text: errorText,
         type: "normal"
       };
       setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      // setIsGenerating(false); // Removed unused variable
     }
   };
 
@@ -938,12 +544,10 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
     return null;
   };
 
-
   const handleProjectSelect = (projectId: string) => {
     setActiveProject(projectId);
     console.log('Selected project:', projectId);
   };
-
 
   if (isLoading) {
     return (
@@ -951,6 +555,92 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">Loading your workspace...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state for new users (no projects)
+  if (projects.length === 0) {
+    return (
+      <div className="flex h-screen overflow-hidden">
+        {/* Sidebar */}
+        <Sidebar
+          projects={projects}
+          activeProject={activeProject}
+          onProjectSelect={handleProjectSelect}
+          onProjectCreate={() => {}}
+          onProjectDelete={() => {}}
+          isMobileOpen={isMobileSidebarOpen}
+          onMobileToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+        />
+
+        {/* Main Content - Empty State */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Header */}
+          <header className="bg-white shadow-sm border-b flex-shrink-0">
+            <div className="px-3 sm:px-4 lg:px-6">
+              <div className="flex justify-between items-center h-14 sm:h-16">
+                <div className="flex items-center gap-3">
+                  {/* Mobile Menu Button */}
+                  <button
+                    onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                    className="lg:hidden p-2 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition"
+                  >
+                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                  </button>
+                  
+                  <h1 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900">
+                    Welcome to Brixem!
+                  </h1>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          {/* Empty State Content */}
+          <main className="flex-1 overflow-hidden bg-gray-50 relative">
+            <div className="h-full p-4 sm:p-6 overflow-y-auto">
+              <div className="max-w-4xl mx-auto">
+                <div className="text-center py-12">
+                  <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] rounded-full flex items-center justify-center">
+                    <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+                    Ready to Start Your First Project?
+                  </h2>
+                  <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+                    I&apos;m your AI construction assistant. I can help you create comprehensive project plans, 
+                    manage tasks, track progress, and provide cost estimates. Let&apos;s get started!
+                  </p>
+                  <div className="space-y-4">
+                    <button
+                      onClick={() => window.location.href = '/dashboard/homeowner/guided-project'}
+                      className="px-8 py-4 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold rounded-lg hover:opacity-90 active:scale-95 transition text-lg min-h-[48px]"
+                    >
+                      Start Guided Project
+                    </button>
+                    <p className="text-sm text-gray-500">
+                      Or chat with me below to create your first project
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </main>
+
+          {/* Floating Chat */}
+          <FloatingChatOverlay
+            messages={messages}
+            onSend={handleSendMessage}
+            isExpanded={isChatExpanded}
+            onToggleExpanded={setIsChatExpanded}
+            placeholder="Ask me to create a project or help with planning..."
+          />
         </div>
       </div>
     );
@@ -1070,7 +760,7 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
               </div>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 {/* Project Stats Cards */}
-                <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+                <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 mobile-card">
                   <div className="flex items-center">
                     <div className="p-1.5 bg-blue-100 rounded-lg">
                       <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1084,7 +774,7 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
                   </div>
                 </div>
 
-                       <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+                       <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 mobile-card">
                          <div className="flex items-center">
                            <div className="p-1.5 bg-yellow-100 rounded-lg">
                              <svg className="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1098,7 +788,7 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
                          </div>
                        </div>
 
-                <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+                <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 mobile-card">
                   <div className="flex items-center">
                     <div className="p-1.5 bg-green-100 rounded-lg">
                       <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1112,7 +802,7 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
                   </div>
             </div>
 
-                <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+                <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 mobile-card">
                   <div className="flex items-center">
                     <div className="p-1.5 bg-purple-100 rounded-lg">
                       <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1121,14 +811,12 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
                     </div>
                     <div className="ml-2 sm:ml-3">
                       <p className="text-xs font-medium text-gray-600">Documents</p>
-                      <p className="text-lg sm:text-xl font-bold text-gray-900">12</p>
+                      <p className="text-lg sm:text-xl font-bold text-gray-900">0</p>
                     </div>
                   </div>
                 </div>
             </div>
             </div>
-
-
 
             {/* Project Progress Section */}
             <div className="mb-6 sm:mb-8">
@@ -1147,27 +835,21 @@ When user asks about tasks, current stage, or what needs to be done, provide spe
                 onStepAdvance={handleStepAdvance}
                 onTaskUpdate={(taskId, updates) => {
                   console.log('Task updated:', taskId, updates);
-                  // TODO: Handle task updates from calendar view
-                }}
-                onAddTask={(task) => {
-                  console.log('Task added:', task);
-                  // TODO: Handle adding new tasks from calendar view
+                  // TODO: Update task in database
                 }}
               />
             </div>
-
           </div>
+        </main>
 
-          {/* Floating Chat Overlay */}
+        {/* Floating Chat */}
           <FloatingChatOverlay
-            onSend={handleSendMessage}
             messages={messages}
-            placeholder="Ask about your project tasks..."
+          onSend={handleSendMessage}
             isExpanded={isChatExpanded}
             onToggleExpanded={setIsChatExpanded}
+          placeholder="Ask me about your project or create new tasks..."
           />
-
-        </main>
       </div>
     </div>
   );

@@ -69,7 +69,7 @@ export default function AuthModal({ open, onClose, onSuccess }: AuthModalProps) 
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900 bg-white placeholder-gray-500 min-h-[48px]"
                 placeholder="Enter your full name"
                 required={!isLogin}
               />
@@ -84,7 +84,7 @@ export default function AuthModal({ open, onClose, onSuccess }: AuthModalProps) 
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition"
+              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900 bg-white placeholder-gray-500 min-h-[48px]"
               placeholder="Enter your email"
               required
             />
@@ -98,7 +98,7 @@ export default function AuthModal({ open, onClose, onSuccess }: AuthModalProps) 
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition"
+              className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900 bg-white placeholder-gray-500 min-h-[48px]"
               placeholder="Enter your password"
               required
             />

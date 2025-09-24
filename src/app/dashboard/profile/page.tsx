@@ -104,7 +104,7 @@ export default function ProfilePage() {
                     type="text"
                     value={user.name}
                     onChange={(e) => setUser({...user, name: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent text-gray-900 bg-white min-h-[44px] placeholder-gray-500"
                   />
                 </div>
                 
@@ -114,7 +114,7 @@ export default function ProfilePage() {
                     type="email"
                     value={user.email}
                     onChange={(e) => setUser({...user, email: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent text-gray-900 bg-white min-h-[44px] placeholder-gray-500"
                   />
                 </div>
                 
@@ -124,7 +124,7 @@ export default function ProfilePage() {
                     type="tel"
                     value={user.phone}
                     onChange={(e) => setUser({...user, phone: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent text-gray-900 bg-white min-h-[44px] placeholder-gray-500"
                   />
                 </div>
                 
@@ -134,7 +134,7 @@ export default function ProfilePage() {
                     type="text"
                     value={user.location}
                     onChange={(e) => setUser({...user, location: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent text-gray-900 bg-white min-h-[44px] placeholder-gray-500"
                   />
                 </div>
                 

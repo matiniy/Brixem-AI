@@ -321,7 +321,7 @@ function CheckoutPageInner() {
                     type="checkbox"
                     checked={sameAsShipping}
                     onChange={(e) => setSameAsShipping(e.target.checked)}
-                    className="w-4 h-4 text-[#23c6e6] border-gray-300 rounded focus:ring-[#23c6e6]"
+                    className="w-4 h-4 text-[#23c6e6] border-gray-300 rounded-sm focus:ring-[#23c6e6]"
                   />
                   <span className="ml-2 text-sm text-gray-700">Same as shipping address</span>
                 </label>
@@ -330,7 +330,7 @@ function CheckoutPageInner() {
                     type="checkbox"
                     checked={savePaymentMethod}
                     onChange={(e) => setSavePaymentMethod(e.target.checked)}
-                    className="w-4 h-4 text-[#23c6e6] border-gray-300 rounded focus:ring-[#23c6e6]"
+                    className="w-4 h-4 text-[#23c6e6] border-gray-300 rounded-sm focus:ring-[#23c6e6]"
                   />
                   <span className="ml-2 text-sm text-gray-700">Save this payment method for future purchases</span>
                 </label>

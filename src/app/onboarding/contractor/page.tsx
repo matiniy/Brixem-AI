@@ -90,7 +90,7 @@ export default function ContractorOnboarding() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Project Type</label>
               <div className="relative">
                 <select
-                  className="w-full px-5 py-3 pr-10 rounded-lg border border-gray-300 bg-white text-black appearance-none focus:outline-none focus:ring-2 focus:ring-[#23c6e6] focus:border-[#23c6e6] transition"
+                  className="w-full px-5 py-3 pr-10 rounded-lg border border-gray-300 bg-white text-black appearance-none focus:outline-none focus:ring-2 focus:ring-[#23c6e6] focus:border-[#23c6e6] transition min-h-[48px]"
                   value={form.projectType}
                   onChange={e => handleChange("projectType", e.target.value)}
                 >
@@ -112,21 +112,21 @@ export default function ContractorOnboarding() {
             <div className="space-y-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">Location (City, Zip)</label>
               <input
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 bg-white min-h-[48px] placeholder-gray-500"
                 value={form.location}
                 onChange={e => handleChange("location", e.target.value)}
                 placeholder="e.g. Dubai, 00000"
               />
               <label className="block text-sm font-medium text-gray-700 mb-1">Area (sqft or sqm)</label>
               <input
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 bg-white min-h-[48px] placeholder-gray-500"
                 value={form.area}
                 onChange={e => handleChange("area", e.target.value)}
                 placeholder="e.g. 2500 sqft"
               />
               <label className="block text-sm font-medium text-gray-700 mb-1">Site Condition</label>
               <select
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-black"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-black min-h-[48px]"
                 value={form.siteCondition}
                 onChange={e => handleChange("siteCondition", e.target.value)}
               >
@@ -140,7 +140,7 @@ export default function ContractorOnboarding() {
             <div className="space-y-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">Type of Work</label>
               <select
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-black"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-black min-h-[48px]"
                 value={form.workType}
                 onChange={e => handleChange("workType", e.target.value)}
               >
@@ -151,21 +151,21 @@ export default function ContractorOnboarding() {
               </select>
               <label className="block text-sm font-medium text-gray-700 mb-1">Area Size (per unit, if applicable)</label>
               <input
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 bg-white min-h-[48px] placeholder-gray-500"
                 value={form.areaSize}
                 onChange={e => handleChange("areaSize", e.target.value)}
                 placeholder="e.g. 120 sqm"
               />
               <label className="block text-sm font-medium text-gray-700 mb-1">Number of Units</label>
               <input
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 bg-white min-h-[48px] placeholder-gray-500"
                 value={form.units}
                 onChange={e => handleChange("units", e.target.value)}
                 placeholder="e.g. 3"
               />
               <label className="block text-sm font-medium text-gray-700 mb-1">Number of Floors</label>
               <input
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 bg-white min-h-[48px] placeholder-gray-500"
                 value={form.floors}
                 onChange={e => handleChange("floors", e.target.value)}
                 placeholder="e.g. 2"
@@ -176,14 +176,14 @@ export default function ContractorOnboarding() {
             <div className="space-y-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">Budget Range</label>
               <input
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 bg-white min-h-[48px] placeholder-gray-500"
                 value={form.budget}
                 onChange={e => handleChange("budget", e.target.value)}
                 placeholder="e.g. $100,000 - $200,000"
               />
               <label className="block text-sm font-medium text-gray-700 mb-1">Material Quality</label>
               <select
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-black"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-black min-h-[48px]"
                 value={form.materialQuality}
                 onChange={e => handleChange("materialQuality", e.target.value)}
               >
@@ -198,7 +198,7 @@ export default function ContractorOnboarding() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Upload Documents (optional)</label>
               <input
                 type="file"
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 bg-white min-h-[48px] placeholder-gray-500"
                 onChange={handleFile}
               />
               {form.upload && <div className="text-sm text-gray-600 mt-2">Uploaded: {form.upload.name}</div>}
@@ -208,7 +208,7 @@ export default function ContractorOnboarding() {
             <div className="space-y-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
               <input
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 bg-white min-h-[48px] placeholder-gray-500"
                 value={form.email}
                 onChange={e => handleChange("email", e.target.value)}
                 placeholder="Enter your email"
@@ -216,7 +216,7 @@ export default function ContractorOnboarding() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
               <input
                 type="password"
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-gray-900 bg-white min-h-[48px] placeholder-gray-500"
                 value={form.password}
                 onChange={e => handleChange("password", e.target.value)}
                 placeholder="Create a password"

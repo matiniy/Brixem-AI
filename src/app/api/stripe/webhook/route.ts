@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase-server';
+import { createServiceClient } from '@/lib/supabase-server';
 
 interface StripeSubscription {
   id: string;
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
 
 async function handleSubscriptionUpdate(subscription: StripeSubscription) {
   try {
-    const supabase = createServerClient();
+    const supabase = createServiceClient();
     
     // Extract relevant data from Stripe subscription
     const stripeCustomerId = subscription.customer;
@@ -106,7 +106,7 @@ async function handleSubscriptionUpdate(subscription: StripeSubscription) {
 
 async function handleSubscriptionCancellation(subscription: StripeSubscription) {
   try {
-    const supabase = createServerClient();
+    const supabase = createServiceClient();
     
     const stripeCustomerId = subscription.customer;
 

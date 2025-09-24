@@ -52,7 +52,7 @@ export default function ChatFirstHomeownerDashboard() {
       const projectsData = await getProjects();
       const projectsWithProgress = projectsData.map(project => ({
         ...project,
-        progress: Math.floor(Math.random() * 100) // Random progress for demo
+        progress: project.progress || 0 // Use actual progress from database
       }));
       setProjects(projectsWithProgress);
     } catch (error) {

@@ -258,6 +258,7 @@ export async function POST(request: NextRequest) {
     });
     
     // Generate detailed itemized cost breakdown aligned with WBS
+    const wbsTemplate = WBS_TEMPLATE.projectTypes[projectType as keyof typeof WBS_TEMPLATE.projectTypes] || WBS_TEMPLATE.projectTypes['new-build'];
     const detailedCostBreakdown = generateDetailedCostBreakdown({
       projectType,
       location,
@@ -266,7 +267,7 @@ export async function POST(request: NextRequest) {
       includeKitchen,
       includeBathroom,
       includeMEP
-    }, WBS_TEMPLATE.projectTypes[projectType as keyof typeof WBS_TEMPLATE.projectTypes] || WBS_TEMPLATE.projectTypes['new-build'] as WbsTemplate);
+    }, wbsTemplate as WbsTemplate);
     
     return NextResponse.json({
       projectType,
@@ -305,8 +306,16 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Cost estimation error:', error);
+    console.error('Error details:', {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined
+    });
     return NextResponse.json(
-      { error: 'Failed to calculate cost estimation' },
+      { 
+        error: 'Failed to calculate cost estimation',
+        details: error instanceof Error ? error.message : String(error)
+      },
       { status: 500 }
     );
   }

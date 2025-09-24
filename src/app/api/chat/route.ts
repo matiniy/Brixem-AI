@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
 
 // Initialize Groq client
 const getGroqClient = () => {
@@ -218,12 +219,20 @@ function formatCostEstimation(costData: {
 }
 
 export async function POST(request: NextRequest) {
+  let messageContent: string | undefined;
+  let isCostRequest = false;
+  
   try {
+    console.log('Chat API called');
+    
     // Parse request body
     const body = await request.json();
     const { messages, projectContext } = body;
 
+    console.log('Request body:', { messagesCount: messages?.length, hasProjectContext: !!projectContext });
+
     if (!messages || !Array.isArray(messages)) {
+      console.error('Invalid messages array');
       return NextResponse.json(
         { error: 'Messages array is required' },
         { status: 400 }
@@ -232,14 +241,27 @@ export async function POST(request: NextRequest) {
 
     // Check if this is a cost estimation request
     const lastMessage = messages[messages.length - 1];
-    const messageContent = lastMessage?.content || lastMessage?.text;
+    messageContent = lastMessage?.content || lastMessage?.text;
+    
+    // Check if this is a cost estimation request
     if (lastMessage && messageContent) {
-      const costKeywords = ['cost estimate', 'pricing', 'budget', 'cost estimation', 'how much', 'price', 'estimate'];
-      const isCostRequest = costKeywords.some(keyword => 
-        messageContent.toLowerCase().includes(keyword)
+      const costKeywords = [
+        'cost estimate', 'pricing', 'budget', 'cost estimation', 'how much', 'price', 'estimate',
+        'estimate a', 'cost of', 'what will it cost', 'total cost', 'renovation cost',
+        'bathroom renovation', 'kitchen renovation', 'extension cost', 'loft conversion cost'
+      ];
+      isCostRequest = costKeywords.some(keyword => 
+        messageContent!.toLowerCase().includes(keyword)
+      ) || messageContent!.toLowerCase().includes('estimate') && (
+        messageContent!.toLowerCase().includes('renovation') ||
+        messageContent!.toLowerCase().includes('bathroom') ||
+        messageContent!.toLowerCase().includes('kitchen') ||
+        messageContent!.toLowerCase().includes('extension') ||
+        messageContent!.toLowerCase().includes('loft')
       );
-
-      if (isCostRequest) {
+    }
+    
+    if (lastMessage && messageContent && isCostRequest) {
         // Extract project details from the message
         const projectDetails = extractProjectDetails(messageContent);
         
@@ -261,10 +283,11 @@ export async function POST(request: NextRequest) {
           });
         }
       }
-    }
 
     // Get Groq client (this will throw if API key is not configured)
+    console.log('Getting Groq client...');
     const groq = getGroqClient();
+    console.log('Groq client created successfully');
 
     // Create system prompt for construction project context
     const systemPrompt = `You are Brixem AI, a specialized AI assistant for construction and renovation project management. You help homeowners and contractors manage their projects effectively.
@@ -321,12 +344,14 @@ Always be helpful, professional, and construction-focused. When users ask to cre
     ];
 
     // Call Groq API
+    console.log('Calling Groq API with model:', process.env.GROQ_MODEL || 'llama-3.3-70b-versatile');
     const completion = await groq.chat.completions.create({
       model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
       messages: groqMessages,
       max_tokens: parseInt(process.env.GROQ_MAX_TOKENS || '1000'),
       temperature: parseFloat(process.env.GROQ_TEMPERATURE || '0.7'),
     });
+    console.log('Groq API response received');
 
     const aiResponse = completion.choices[0]?.message?.content;
 
@@ -344,22 +369,42 @@ Always be helpful, professional, and construction-focused. When users ask to cre
 
   } catch (error) {
     console.error('Groq API error:', error);
+    console.error('Error details:', {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined
+    });
+
+    // Report to Sentry
+    Sentry.captureException(error, {
+      tags: {
+        component: 'chat_api',
+        operation: 'groq_api_call'
+      },
+      extra: {
+        messageContent: messageContent || 'unknown',
+        isCostRequest: isCostRequest || false
+      }
+    });
     
     // Handle specific Groq errors
     if (error instanceof Error) {
       if (error.message.includes('API key not configured')) {
+        console.error('API key not configured error');
         return NextResponse.json(
           { error: 'Groq API key not configured' },
           { status: 500 }
         );
       }
       if (error.message.includes('API key')) {
+        console.error('Invalid API key error');
         return NextResponse.json(
           { error: 'Invalid Groq API key' },
           { status: 401 }
         );
       }
       if (error.message.includes('quota') || error.message.includes('rate limit')) {
+        console.error('Rate limit error');
         return NextResponse.json(
           { error: 'Groq API rate limit exceeded' },
           { status: 429 }
@@ -367,6 +412,7 @@ Always be helpful, professional, and construction-focused. When users ask to cre
       }
     }
 
+    console.error('Generic error, returning 500');
     return NextResponse.json(
       { error: 'Failed to get AI response' },
       { status: 500 }

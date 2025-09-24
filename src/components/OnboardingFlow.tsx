@@ -150,7 +150,7 @@ export default function OnboardingFlow({ open, onClose, onComplete }: Onboarding
                     setUserData(prev => ({ ...prev, goals: prev.goals.filter(g => g !== goal) }));
                   }
                 }}
-                className="w-4 h-4 text-[#23c6e6] border-gray-300 rounded focus:ring-[#23c6e6]"
+                className="w-4 h-4 text-[#23c6e6] border-gray-300 rounded-sm focus:ring-[#23c6e6]"
               />
               <span className="text-gray-900">{goal}</span>
             </label>

@@ -91,7 +91,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }: LoginM
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent ${
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent text-gray-900 bg-white placeholder-gray-500 min-h-[48px] ${
                 errors.email ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Enter your email"
@@ -110,7 +110,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }: LoginM
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent ${
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#23c6e6] focus:border-transparent text-gray-900 bg-white placeholder-gray-500 min-h-[48px] ${
                 errors.password ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Enter your password"
@@ -122,7 +122,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }: LoginM
 
           <div className="flex items-center justify-between">
             <label className="flex items-center">
-              <input type="checkbox" className="w-4 h-4 text-[#23c6e6] border-gray-300 rounded focus:ring-[#23c6e6]" />
+              <input type="checkbox" className="w-4 h-4 text-[#23c6e6] border-gray-300 rounded-sm focus:ring-[#23c6e6]" />
               <span className="ml-2 text-sm text-gray-600">Remember me</span>
             </label>
             <button type="button" className="text-sm text-[#23c6e6] hover:text-[#4b1fa7]">

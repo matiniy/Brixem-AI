@@ -55,8 +55,16 @@ export async function sendChatMessage(
     });
 
     if (!response.ok) {
-      const errorData: AIError = await response.json();
-      const error = handleApiError(new Error(errorData.error || `HTTP error! status: ${response.status}`));
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      try {
+        const errorData: AIError = await response.json();
+        errorMessage = errorData.error || errorMessage;
+      } catch {
+        // If we can't parse the error response, use the status text
+        errorMessage = response.statusText || errorMessage;
+      }
+      
+      const error = handleApiError(new Error(errorMessage));
       logError(error, { endpoint: '/api/chat', status: response.status });
       throw error;
     }

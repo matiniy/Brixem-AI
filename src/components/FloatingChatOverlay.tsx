@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import { trackAction, trackFeatureUsage, BUSINESS_EVENTS, FEATURES } from "@/lib/analytics";
 
 interface Message {
   role: "user" | "ai";
@@ -63,6 +64,10 @@ export default function FloatingChatOverlay({
     const message = inputValue.trim();
     setInputValue("");
 
+    // Track chat usage
+    trackFeatureUsage(FEATURES.AI_CHAT, 'message_sent');
+    trackAction('chat_message', 'engagement', 'floating_chat');
+
     // Check if this is a task creation request
     const detectedTask = detectTask(message);
     if (detectedTask) {
@@ -72,8 +77,14 @@ export default function FloatingChatOverlay({
         { role: "user", text: message },
         { role: "ai", text: `Would you like me to create a task: "${detectedTask}"?`, type: "task-confirm", taskText: detectedTask }
       ]);
+      
+      // Track task creation attempt
+      trackAction('task_creation_attempt', 'engagement', 'floating_chat');
     } else {
       onSend(message);
+      
+      // Track AI chat started
+      trackAction(BUSINESS_EVENTS.AI_CHAT_STARTED, 'business', 'floating_chat');
     }
   };
 
@@ -97,11 +108,18 @@ export default function FloatingChatOverlay({
         ...prev,
         { role: "ai", text: `Task "${pendingTask}" created and added to your Kanban board!`, type: "system" }
       ]);
+      
+      // Track successful task creation
+      trackAction('task_created', 'engagement', 'floating_chat');
+      trackFeatureUsage(FEATURES.TASK_MANAGEMENT, 'task_created');
     } else {
       setLocalMessages(prev => [
         ...prev,
         { role: "ai", text: `Task creation cancelled.`, type: "system" }
       ]);
+      
+      // Track task creation cancellation
+      trackAction('task_creation_cancelled', 'engagement', 'floating_chat');
     }
     setPendingTask(null);
   };
@@ -109,9 +127,9 @@ export default function FloatingChatOverlay({
   // Collapsed state - centered at bottom
   if (!isExpanded) {
     return (
-      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+      <div className="fixed bottom-4 left-4 right-4 sm:bottom-6 sm:left-1/2 sm:right-auto sm:transform sm:-translate-x-1/2 z-50">
         <div 
-          className="bg-white rounded-2xl shadow-2xl border border-gray-200 cursor-pointer transition-all duration-300 hover:shadow-3xl hover:scale-105 active:scale-95 w-80 touch-manipulation"
+          className="bg-white rounded-2xl shadow-2xl border border-gray-200 cursor-pointer transition-all duration-300 hover:shadow-3xl hover:scale-105 active:scale-95 w-full sm:w-80 touch-manipulation"
           onClick={handleChatClick}
         >
           <div className="flex items-center gap-3 px-4 py-3">
@@ -130,7 +148,7 @@ export default function FloatingChatOverlay({
                 onKeyPress={handleKeyPress}
                 onFocus={handleChatClick}
                 placeholder={placeholder}
-                className="w-full bg-transparent text-gray-900 placeholder-gray-500 text-sm focus:outline-none cursor-pointer"
+                className="w-full bg-transparent text-gray-900 placeholder-gray-500 text-sm focus:outline-none cursor-pointer min-h-[44px] px-3 py-2"
               />
             </div>
 
@@ -153,8 +171,8 @@ export default function FloatingChatOverlay({
 
   // Expanded state - centered at bottom
   return (
-    <div className="fixed inset-0 z-50 bg-black/20 flex items-end justify-center p-4 pb-6">
-      <div className="w-full max-w-md h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden animate-in zoom-in-95 duration-300">
+    <div className="fixed inset-0 z-50 bg-black/20 flex items-end justify-center p-2 sm:p-4 pb-2 sm:pb-6">
+      <div className="w-full max-w-md h-[70vh] sm:h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white">
           <div className="flex items-center gap-2">
@@ -178,7 +196,7 @@ export default function FloatingChatOverlay({
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-4 py-3 h-[320px]">
+        <div className="flex-1 overflow-y-auto px-4 py-3 h-[calc(70vh-120px)] sm:h-[320px]">
           <div className="space-y-4">
             {localMessages.length === 0 ? (
               <div className="text-center text-gray-500 py-6">
@@ -246,7 +264,7 @@ export default function FloatingChatOverlay({
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder={placeholder}
-                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30 focus:border-[#23c6e6] text-sm text-gray-900"
+                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#23c6e6]/30 focus:border-[#23c6e6] text-sm text-gray-900 min-h-[44px] placeholder-gray-500"
               />
             </div>
             <button

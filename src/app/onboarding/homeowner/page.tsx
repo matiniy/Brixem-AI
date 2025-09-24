@@ -34,7 +34,7 @@ export default function HomeownerOnboarding() {
                 type="text"
                 value={userData.firstName}
                 onChange={(e) => setUserData(prev => ({ ...prev, firstName: e.target.value }))}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900 bg-white min-h-[48px] placeholder-gray-500"
                 placeholder="Enter your first name"
               />
             </div>
@@ -46,7 +46,7 @@ export default function HomeownerOnboarding() {
                 type="text"
                 value={userData.lastName}
                 onChange={(e) => setUserData(prev => ({ ...prev, lastName: e.target.value }))}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900 bg-white min-h-[48px] placeholder-gray-500"
                 placeholder="Enter your last name"
               />
             </div>
@@ -72,7 +72,7 @@ export default function HomeownerOnboarding() {
                 type="password"
                 value={userData.password}
                 onChange={(e) => setUserData(prev => ({ ...prev, password: e.target.value }))}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900 bg-white min-h-[48px] placeholder-gray-500"
                 placeholder="Create a password"
               />
             </div>
@@ -84,7 +84,7 @@ export default function HomeownerOnboarding() {
                 type="password"
                 value={userData.confirmPassword}
                 onChange={(e) => setUserData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-[#23c6e6] focus:ring-2 focus:ring-[#23c6e6]/20 transition text-gray-900 bg-white min-h-[48px] placeholder-gray-500"
                 placeholder="Confirm your password"
               />
             </div>
