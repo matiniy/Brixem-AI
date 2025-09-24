@@ -75,10 +75,11 @@ export default function ChatPanel({ messages, onSend, onTaskConfirm, pendingTask
         />
         <button
           type="submit"
-          className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-medium text-base touch-manipulation min-h-[44px] hover:opacity-90 transition"
+          className="px-4 sm:px-6 py-3 rounded-xl bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-medium text-sm sm:text-base touch-manipulation min-h-[44px] hover:opacity-90 transition flex-shrink-0 w-16 sm:w-auto"
           disabled={disableInput}
         >
-          Send
+          <span className="hidden sm:inline">Send</span>
+          <span className="sm:hidden">→</span>
         </button>
       </form>
     </div>
