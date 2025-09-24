@@ -301,9 +301,9 @@ function LandingPageContent() {
             </span>
           </h1>
           {/* Smaller Subheadline */}
-          <h2 className={`font-normal text-gray-900 transition-all duration-500 mb-8 sm:mb-10 ${isChatActive ? 'text-sm sm:text-base mb-6 sm:mb-8' : 'text-base sm:text-lg md:text-xl mb-8 sm:mb-10'}`} style={{fontWeight: 'normal'}}>
+          <p className={`font-normal text-gray-600 transition-all duration-500 mb-8 sm:mb-10 ${isChatActive ? 'text-xs sm:text-sm mb-6 sm:mb-8' : 'text-sm sm:text-base md:text-lg mb-8 sm:mb-10'}`} style={{fontWeight: '400'}}>
             Brixem gives homeowners and teams instant clarity across renovation and construction projects — from scoping to costing, scheduling, and contractor collaboration.
-          </h2>
+          </p>
           {/* AI Chat Card with mobile-optimized spacing */}
           <div className={`flex flex-col justify-center items-center transition-all duration-500 w-full max-w-2xl mx-auto ${isChatActive ? 'mt-6 sm:mt-8' : 'mt-8 sm:mt-10'}`}>
             <div className="w-full">
