@@ -280,7 +280,7 @@ function LandingPageContent() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 text-center relative z-10 w-full">
           {/* Subtitle */}
           <div className={`mb-4 sm:mb-6 transition-all duration-500 ${isChatActive ? 'mb-2' : 'mb-4 sm:mb-6'}`}>
-            <span className={`font-semibold tracking-wider text-gray-500 uppercase transition-all duration-500 ${
+            <span className={`font-normal tracking-wider text-gray-500 uppercase transition-all duration-500 ${
               isChatActive ? 'text-xs' : 'text-xs sm:text-sm'
             }`}>
               BRIXEM AI FOR EVERY PROJECT
@@ -301,7 +301,7 @@ function LandingPageContent() {
             </span>
           </h1>
           {/* Smaller Subheadline */}
-          <h2 className={`font-normal text-gray-900 transition-all duration-500 mb-8 sm:mb-10 ${isChatActive ? 'text-sm sm:text-base mb-6 sm:mb-8' : 'text-base sm:text-lg md:text-xl mb-8 sm:mb-10'}`}>
+          <h2 className={`font-normal text-gray-900 transition-all duration-500 mb-8 sm:mb-10 ${isChatActive ? 'text-sm sm:text-base mb-6 sm:mb-8' : 'text-base sm:text-lg md:text-xl mb-8 sm:mb-10'}`} style={{fontWeight: 'normal'}}>
             Brixem gives homeowners and teams instant clarity across renovation and construction projects — from scoping to costing, scheduling, and contractor collaboration.
           </h2>
           {/* AI Chat Card with mobile-optimized spacing */}
