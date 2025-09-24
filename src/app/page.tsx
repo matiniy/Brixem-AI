@@ -301,11 +301,11 @@ function LandingPageContent() {
             </span>
           </h1>
           {/* Smaller Subheadline */}
-          <p className={`font-normal text-gray-600 transition-all duration-500 mb-8 sm:mb-10 ${isChatActive ? 'text-xs sm:text-sm mb-6 sm:mb-8' : 'text-sm sm:text-base md:text-lg mb-8 sm:mb-10'}`} style={{fontWeight: '400'}}>
+          <p className={`font-normal text-gray-600 transition-all duration-500 mb-2 sm:mb-3 ${isChatActive ? 'text-xs sm:text-sm mb-1 sm:mb-2' : 'text-sm sm:text-base md:text-lg mb-2 sm:mb-3'}`} style={{fontWeight: '400'}}>
             Brixem gives homeowners and teams instant clarity across renovation and construction projects — from scoping to costing, scheduling, and contractor collaboration.
           </p>
           {/* AI Chat Card with mobile-optimized spacing */}
-          <div className={`flex flex-col justify-center items-center transition-all duration-500 w-full max-w-2xl mx-auto ${isChatActive ? 'mt-6 sm:mt-8' : 'mt-8 sm:mt-10'}`}>
+          <div className={`flex flex-col justify-center items-center transition-all duration-500 w-full max-w-2xl mx-auto ${isChatActive ? 'mt-2 sm:mt-3' : 'mt-2 sm:mt-3'}`}>
             <div className="w-full">
               {/* Chat Area Only - no card styling */}
               <div className="px-2 pb-2 pt-0">
