@@ -287,7 +287,7 @@ function LandingPageContent() {
             </span>
           </div>
           {/* Main Headline with animated gradient */}
-          <h1 className={`font-bold mb-6 sm:mb-8 leading-tight max-w-4xl mx-auto text-center transition-all duration-500 ${isChatActive ? 'text-lg sm:text-xl md:text-2xl lg:text-3xl mb-4 sm:mb-6' : 'text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 sm:mb-8'}`}>
+          <h1 className={`font-bold mb-2 sm:mb-3 leading-tight max-w-4xl mx-auto text-center transition-all duration-500 ${isChatActive ? 'text-lg sm:text-xl md:text-2xl lg:text-3xl mb-1 sm:mb-2' : 'text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-2 sm:mb-3'}`}>
             <span className="block">
               <span className="text-black">Smarter projects, </span>
               <GradientText
