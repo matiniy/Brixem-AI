@@ -279,7 +279,7 @@ function LandingPageContent() {
         </div>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 text-center relative z-10 w-full">
           {/* Subtitle */}
-          <div className={`mb-4 sm:mb-6 transition-all duration-500 ${isChatActive ? 'mb-2' : 'mb-4 sm:mb-6'}`}>
+          <div className={`mb-1 sm:mb-2 transition-all duration-500 ${isChatActive ? 'mb-0' : 'mb-1 sm:mb-2'}`}>
             <span className={`font-normal tracking-wider text-gray-500 uppercase transition-all duration-500 ${
               isChatActive ? 'text-xs' : 'text-xs sm:text-sm'
             }`}>
