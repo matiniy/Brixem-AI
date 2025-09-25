@@ -101,7 +101,7 @@ export default function FloatingChatDashboard() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "ai",
-      text: "Welcome to Brixem! I'm your AI construction assistant. I can help you create new projects, manage tasks, and guide you through your construction journey. What would you like to work on today?",
+      text: "Welcome to Brixem! 🎉 I'm your AI construction assistant. I'll guide you through creating a comprehensive project plan with detailed scope, timeline, and cost estimates.\n\n**Ready to start your project?**\n\nI'll walk you through:\n• Initial project assessment\n• Scope of Works generation\n• Work Breakdown Structure\n• Project Schedule with Gantt charts\n• Detailed Cost Estimation\n\nLet's begin! Please tell me about your construction project - what are you planning to build or renovate?",
       type: "normal"
     }
   ]);
@@ -421,9 +421,9 @@ export default function FloatingChatDashboard() {
 
     try {
       // Check if this is a project creation request
-        const projectName = extractProjectName(message);
+      const projectName = extractProjectName(message);
       
-        if (projectName) {
+      if (projectName) {
         // Create new project
         try {
           const newProject = await createProject({
@@ -436,62 +436,62 @@ export default function FloatingChatDashboard() {
           
           // Add to local state
           setProjects(prev => [...prev, newProject]);
-              setActiveProject(newProject.id);
-            
-            // Send real-time project update
-            if (isConnected) {
-              realtimeUpdates.sendProjectUpdate(newProject.id, {
-                action: 'created',
-                project: newProject,
-                userId: userId
-              });
-            }
+          setActiveProject(newProject.id);
+          
+          // Send real-time project update
+          if (isConnected) {
+            realtimeUpdates.sendProjectUpdate(newProject.id, {
+              action: 'created',
+              project: newProject,
+              userId: userId
+            });
+          }
 
-            // Track project creation
-            trackAction(BUSINESS_EVENTS.PROJECT_CREATED, 'business', 'chat');
-            
-            const successMessage: ChatMessage = {
-              role: "ai",
+          // Track project creation
+          trackAction(BUSINESS_EVENTS.PROJECT_CREATED, 'business', 'chat');
+          
+          const successMessage: ChatMessage = {
+            role: "ai",
             text: `Great! I've created your project "${projectName}". You can now start adding tasks, milestones, and managing your construction project. What would you like to do next?`,
             type: "normal"
-            };
-            setMessages(prev => [...prev, successMessage]);
+          };
+          setMessages(prev => [...prev, successMessage]);
           return;
-          } catch (error) {
-            console.error('Error creating project:', error);
-            const errorMessage: ChatMessage = {
-              role: "ai",
+        } catch (error) {
+          console.error('Error creating project:', error);
+          const errorMessage: ChatMessage = {
+            role: "ai",
             text: "I apologize, but I couldn't create the project. Please try again or contact support if the issue persists.",
             type: "normal"
-            };
-            setMessages(prev => [...prev, errorMessage]);
+          };
+          setMessages(prev => [...prev, errorMessage]);
           return;
         }
       }
 
-            // Regular AI chat
-            const projectContext = activeProject ? 
-              `Current Project: ${projects.find(p => p.id === activeProject)?.name || 'Unknown'}
-            Project Status: ${projects.find(p => p.id === activeProject)?.status || 'Unknown'}
-            Project Progress: ${projects.find(p => p.id === activeProject)?.progress || 0}%
+      // Regular AI chat
+      const projectContext = activeProject ? 
+        `Current Project: ${projects.find(p => p.id === activeProject)?.name || 'Unknown'}
+        Project Status: ${projects.find(p => p.id === activeProject)?.status || 'Unknown'}
+        Project Progress: ${projects.find(p => p.id === activeProject)?.progress || 0}%
 
-            Total Tasks: ${taskCounts.totalTasks}
-            Completed Tasks: ${taskCounts.completedTasks}
-            To Do Tasks: ${taskCounts.toDoTasks}
+        Total Tasks: ${taskCounts.totalTasks}
+        Completed Tasks: ${taskCounts.completedTasks}
+        To Do Tasks: ${taskCounts.toDoTasks}
 
-            When user asks about tasks, current stage, or what needs to be done, provide specific actionable items based on the current project state.` : 
-              'No active project selected';
+        When user asks about tasks, current stage, or what needs to be done, provide specific actionable items based on the current project state.` : 
+        'No active project selected';
 
-            const response = await sendChatMessage([userMessage], projectContext);
-            
-            if (response.message) {
-              const aiResponse: ChatMessage = {
-                role: "ai",
-                text: response.message,
-                type: "normal"
-              };
-              setMessages(prev => [...prev, aiResponse]);
-            }
+      const response = await sendChatMessage([userMessage], projectContext);
+      
+      if (response.message) {
+        const aiResponse: ChatMessage = {
+          role: "ai",
+          text: response.message,
+          type: "normal"
+        };
+        setMessages(prev => [...prev, aiResponse]);
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       
@@ -622,7 +622,7 @@ export default function FloatingChatDashboard() {
                       onClick={() => window.location.href = '/dashboard/homeowner/guided-project'}
                       className="px-8 py-4 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white font-semibold rounded-lg hover:opacity-90 active:scale-95 transition text-lg min-h-[48px]"
                     >
-                      Start Guided Project
+                      Start Project Planning
                     </button>
                     <p className="text-sm text-gray-500">
                       Or chat with me below to create your first project

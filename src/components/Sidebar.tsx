@@ -151,11 +151,11 @@ export default function Sidebar({
             <div className="flex items-center justify-between mb-3 sm:mb-4">
               <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Projects</h2>
               <button
-                onClick={() => window.location.href = '/dashboard/homeowner/guided-project'}
-                className="w-6 h-6 rounded-full bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center text-white hover:opacity-80 transition-all duration-200 shadow-lg hover:shadow-xl touch-manipulation"
+                onClick={() => window.location.href = '/dashboard/homeowner/floating-chat-dashboard'}
+                className="w-8 h-8 rounded-full bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center text-white hover:opacity-80 transition-all duration-200 shadow-lg hover:shadow-xl touch-manipulation"
                 title="Add New Project"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                 </svg>
               </button>
