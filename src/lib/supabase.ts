@@ -128,7 +128,7 @@ export async function getUserProjects(userId: string): Promise<Project[]> {
     if (cached) return cached;
 
     const { data, error } = await supabase
-      .from('projects_new')
+      .from('projects')
       .select('*')
       .eq('created_by', userId)
       .order('created_at', { ascending: false });
@@ -150,7 +150,7 @@ export async function getUserProjects(userId: string): Promise<Project[]> {
 export async function createProject(projectData: Omit<Project, 'id' | 'created_at' | 'updated_at'>): Promise<Project | null> {
   try {
     const { data, error } = await supabase
-      .from('projects_new')
+      .from('projects')
       .insert([projectData])
       .select()
       .single();
@@ -172,7 +172,7 @@ export async function createProject(projectData: Omit<Project, 'id' | 'created_a
 export async function updateProject(projectId: string, updates: Partial<Project>): Promise<Project | null> {
   try {
     const { data, error } = await supabase
-      .from('projects_new')
+      .from('projects')
       .update(updates)
       .eq('id', projectId)
       .select()
@@ -360,7 +360,7 @@ export function subscribeToUserProjects(userId: string, callback: (payload: unkn
     .on('postgres_changes', {
       event: '*',
       schema: 'public',
-      table: 'projects_new',
+      table: 'projects',
       filter: `created_by=eq.${userId}`
     }, callback)
     .subscribe();

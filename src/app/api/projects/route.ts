@@ -15,7 +15,7 @@ export async function GET() {
     }
 
     const { data: projects, error } = await supabase
-      .from('projects_new')
+      .from('projects')
       .select(`
         *,
         milestones (
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { data: project, error } = await supabase
-      .from('projects_new')
+      .from('projects')
       .insert({
         workspace_id,
         name,
@@ -172,7 +172,7 @@ async function createAIGeneratedProject(supabase: SupabaseClient, userId: string
 
     // Create the main project
     const { data: project, error: projectError } = await supabase
-      .from('projects_new')
+      .from('projects')
       .insert({
         workspace_id: workspaceMember.workspace_id,
         name: projectData.name,

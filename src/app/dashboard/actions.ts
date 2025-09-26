@@ -37,7 +37,7 @@ export async function createProject(formData: CreateProjectData) {
     
     // Create project in Supabase
     const { data: project, error } = await supabase
-      .from('projects_new')
+      .from('projects')
       .insert({
         workspace_id: workspaceMember.workspace_id,
         name: formData.name,
@@ -45,7 +45,7 @@ export async function createProject(formData: CreateProjectData) {
         location: formData.location,
         description: formData.description,
         size_sqft: formData.size_sqft,
-        status: 'draft',
+        status: 'planning',
         created_by: user.id
       })
       .select()
@@ -97,7 +97,7 @@ export async function getProjects() {
     
     // Get projects from the user's workspace
     const { data: projects, error } = await supabase
-      .from('projects_new')
+      .from('projects')
       .select('*')
       .eq('workspace_id', workspaceMember.workspace_id)
       .order('created_at', { ascending: false });

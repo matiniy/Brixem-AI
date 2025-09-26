@@ -51,7 +51,7 @@ export default function TestAuthFlowPage() {
         // Test 3: Check projects access
         if (session?.user) {
           const { data: projects, error: projectsError } = await supabase
-            .from('projects_new')
+            .from('projects')
             .select('*')
             .eq('created_by', session.user.id);
 

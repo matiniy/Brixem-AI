@@ -21,7 +21,7 @@ export async function POST(request: Request) {
 
     // Verify user has access to this project
     const { data: project, error: projectError } = await supabase
-      .from('projects_new')
+      .from('projects')
       .select(`
         id,
         name,

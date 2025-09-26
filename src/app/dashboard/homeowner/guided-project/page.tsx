@@ -123,8 +123,12 @@ export default function GuidedProjectPage() {
   };
 
   const createProjectInDashboard = async () => {
-    if (!projectData) return;
+    if (!projectData) {
+      console.error('No project data available for creation');
+      return;
+    }
 
+    console.log('Creating project with data:', projectData);
     setIsCreatingProject(true);
     
     const creatingMessage: Message = {
@@ -135,7 +139,9 @@ export default function GuidedProjectPage() {
 
     try {
       // Create the project using the server action
+      console.log('Calling createProject with:', projectData);
       const newProject = await createProject(projectData);
+      console.log('Project created successfully:', newProject);
       
       const successMessage: Message = {
         role: "ai",
@@ -150,9 +156,14 @@ export default function GuidedProjectPage() {
 
     } catch (error) {
       console.error('Error creating project:', error);
+      console.error('Project data that failed:', projectData);
+      
+      // Get more specific error information
+      const errorDetails = error instanceof Error ? error.message : String(error);
+      
       const errorMessage: Message = {
         role: "ai",
-        text: "❌ **Error creating project**\n\nI encountered an error while creating your project. Please try again or contact support if the issue persists.\n\nYou can manually create a project from your dashboard."
+        text: `❌ **Error creating project**\n\nI encountered an error while creating your project: ${errorDetails}\n\n**Project data attempted:**\n• Name: ${projectData.name}\n• Type: ${projectData.type}\n• Location: ${projectData.location}\n\nPlease try again or contact support if the issue persists. You can also manually create a project from your dashboard.`
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
@@ -191,6 +202,7 @@ export default function GuidedProjectPage() {
       setMessages(prev => [...prev, powComplete]);
 
       // Set project data for potential creation
+      console.log('Extracted project data:', extractedData);
       setProjectData(extractedData);
 
     } catch (error) {
