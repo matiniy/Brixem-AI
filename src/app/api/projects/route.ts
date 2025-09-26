@@ -96,14 +96,30 @@ export async function POST(request: NextRequest) {
     const { name, type, location, description, size_sqft, start_date, end_date, budget, workspace_id } = body;
 
     // Validate required fields
-    if (!name || !workspace_id) {
-      return NextResponse.json({ error: 'Name and workspace_id are required' }, { status: 400 });
+    if (!name) {
+      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+    }
+
+    // Get user's workspace if not provided
+    let finalWorkspaceId = workspace_id;
+    if (!finalWorkspaceId) {
+      const { data: workspaceMember } = await supabase
+        .from('workspace_members')
+        .select('workspace_id')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (!workspaceMember) {
+        return NextResponse.json({ error: 'No workspace found for user' }, { status: 400 });
+      }
+      
+      finalWorkspaceId = workspaceMember.workspace_id;
     }
 
     const { data: project, error } = await supabase
       .from('projects')
       .insert({
-        workspace_id,
+        workspace_id: finalWorkspaceId,
         name,
         type,
         location,
@@ -113,7 +129,7 @@ export async function POST(request: NextRequest) {
         end_date,
         budget,
         created_by: user.id,
-        status: 'draft'
+        status: 'planning'
       })
       .select()
       .single();

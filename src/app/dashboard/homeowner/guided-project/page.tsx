@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { sendChatMessage } from '@/lib/ai';
-import { createProject } from '@/app/dashboard/actions';
 
 interface Message {
   role: 'user' | 'ai';
@@ -138,9 +137,23 @@ export default function GuidedProjectPage() {
     setMessages(prev => [...prev, creatingMessage]);
 
     try {
-      // Create the project using the server action
-      console.log('Calling createProject with:', projectData);
-      const newProject = await createProject(projectData);
+      // Create the project using the API route instead of server action
+      console.log('Calling createProject API with:', projectData);
+      
+      const response = await fetch('/api/projects', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(projectData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const newProject = await response.json();
       console.log('Project created successfully:', newProject);
       
       const successMessage: Message = {
@@ -220,10 +233,12 @@ export default function GuidedProjectPage() {
     const conversationText = messages.map(m => m.text).join(' ');
     
     // Basic extraction logic - in a real implementation, this would be more sophisticated
-    const projectName = extractProjectName(conversationText) || 'My Construction Project';
+    const projectName = extractProjectName(conversationText) || extractProjectType(conversationText) || 'Construction Project';
     const projectType = extractProjectType(conversationText) || 'renovation';
     const location = extractLocation(conversationText) || 'To be specified';
     const description = `AI-generated project based on conversation: ${conversationText.substring(0, 200)}...`;
+    
+    console.log('Extracted project data:', { projectName, projectType, location });
     
     return {
       name: projectName,
@@ -239,13 +254,18 @@ export default function GuidedProjectPage() {
     const patterns = [
       /(?:project|build|renovate|construct|remodel)\s+(?:a\s+)?(?:new\s+)?(.+?)(?:\s|$)/i,
       /(?:my|our)\s+(.+?)\s+(?:project|build|renovation|construction)/i,
-      /(?:building|renovating|constructing|remodeling)\s+(?:a\s+)?(.+?)(?:\s|$)/i
+      /(?:building|renovating|constructing|remodeling)\s+(?:a\s+)?(.+?)(?:\s|$)/i,
+      /(?:kitchen|bathroom|basement|addition|deck|patio|roof|flooring)/i
     ];
     
     for (const pattern of patterns) {
       const match = text.match(pattern);
       if (match && match[1]) {
-        return match[1].trim();
+        const name = match[1].trim();
+        // Filter out very short or generic names
+        if (name.length > 2 && !['a', 'an', 'the', 'my', 'our'].includes(name.toLowerCase())) {
+          return name;
+        }
       }
     }
     
