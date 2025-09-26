@@ -491,6 +491,48 @@ export default function FloatingChatDashboard() {
           type: "normal"
         };
         setMessages(prev => [...prev, aiResponse]);
+
+        // Check if AI is suggesting project creation and user responds positively
+        if (isProjectCreationSuggestion(aiResponse.text) && isPositiveResponse(message)) {
+          // Extract project details from conversation
+          const projectData = extractProjectDataFromConversation();
+          if (projectData) {
+            try {
+              const newProject = await createProject(projectData);
+              
+              // Add to local state
+              setProjects(prev => [...prev, newProject]);
+              setActiveProject(newProject.id);
+              
+              // Send real-time project update
+              if (isConnected) {
+                realtimeUpdates.sendProjectUpdate(newProject.id, {
+                  action: 'created',
+                  project: newProject,
+                  userId: userId
+                });
+              }
+
+              // Track project creation
+              trackAction(BUSINESS_EVENTS.PROJECT_CREATED, 'business', 'chat');
+              
+              const successMessage: ChatMessage = {
+                role: "ai",
+                text: `Perfect! I've created your project "${projectData.name}" in your dashboard. You can now start managing tasks, tracking progress, and collaborating with contractors. Let me know what you'd like to work on first!`,
+                type: "normal"
+              };
+              setMessages(prev => [...prev, successMessage]);
+            } catch (error) {
+              console.error('Error creating project:', error);
+              const errorMessage: ChatMessage = {
+                role: "ai",
+                text: "I encountered an error creating your project. Please try again or contact support if the issue persists.",
+                type: "normal"
+              };
+              setMessages(prev => [...prev, errorMessage]);
+            }
+          }
+        }
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -853,4 +895,68 @@ export default function FloatingChatDashboard() {
       </div>
     </div>
   );
+}
+
+// Helper function to extract project name from user message
+function extractProjectName(message: string): string | null {
+  // Look for common project name patterns
+  const patterns = [
+    /(?:project|build|renovate|construct|remodel)\s+(?:a\s+)?(?:new\s+)?(.+?)(?:\s|$)/i,
+    /(?:my|our)\s+(.+?)\s+(?:project|build|renovation|construction)/i,
+    /(?:building|renovating|constructing|remodeling)\s+(?:a\s+)?(.+?)(?:\s|$)/i
+  ];
+  
+  for (const pattern of patterns) {
+    const match = message.match(pattern);
+    if (match && match[1]) {
+      return match[1].trim();
+    }
+  }
+  
+  return null;
+}
+
+// Helper function to detect if AI is suggesting project creation
+function isProjectCreationSuggestion(aiText: string): boolean {
+  const lowerText = aiText.toLowerCase();
+  return lowerText.includes('create a project') ||
+         lowerText.includes('create project') ||
+         lowerText.includes('set up a project') ||
+         lowerText.includes('start a project') ||
+         lowerText.includes('project in your dashboard') ||
+         lowerText.includes('create this project') ||
+         lowerText.includes('would you like me to create') ||
+         lowerText.includes('shall i create') ||
+         lowerText.includes('let me create');
+}
+
+// Helper function to detect positive responses
+function isPositiveResponse(message: string): boolean {
+  const lowerMessage = message.toLowerCase().trim();
+  return lowerMessage === 'yes' || 
+         lowerMessage === 'y' || 
+         lowerMessage === 'yeah' || 
+         lowerMessage === 'yep' || 
+         lowerMessage === 'sure' || 
+         lowerMessage === 'ok' || 
+         lowerMessage === 'okay' ||
+         lowerMessage === 'create project' ||
+         lowerMessage === 'create' ||
+         lowerMessage === 'go ahead' ||
+         lowerMessage === 'please' ||
+         lowerMessage.includes('yes') ||
+         lowerMessage.includes('create project');
+}
+
+// Helper function to extract project data from conversation
+function extractProjectDataFromConversation(): any {
+  // This would extract project details from the conversation history
+  // For now, return a default project structure
+  return {
+    name: 'My Construction Project',
+    type: 'renovation',
+    location: 'To be specified',
+    description: 'Project created via AI chat conversation',
+    size_sqft: 0
+  };
 }
