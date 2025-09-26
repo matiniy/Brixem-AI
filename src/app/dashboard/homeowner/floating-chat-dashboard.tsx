@@ -897,24 +897,6 @@ export default function FloatingChatDashboard() {
   );
 }
 
-// Helper function to extract project name from user message
-function extractProjectName(message: string): string | null {
-  // Look for common project name patterns
-  const patterns = [
-    /(?:project|build|renovate|construct|remodel)\s+(?:a\s+)?(?:new\s+)?(.+?)(?:\s|$)/i,
-    /(?:my|our)\s+(.+?)\s+(?:project|build|renovation|construction)/i,
-    /(?:building|renovating|constructing|remodeling)\s+(?:a\s+)?(.+?)(?:\s|$)/i
-  ];
-  
-  for (const pattern of patterns) {
-    const match = message.match(pattern);
-    if (match && match[1]) {
-      return match[1].trim();
-    }
-  }
-  
-  return null;
-}
 
 // Helper function to detect if AI is suggesting project creation
 function isProjectCreationSuggestion(aiText: string): boolean {
@@ -949,7 +931,13 @@ function isPositiveResponse(message: string): boolean {
 }
 
 // Helper function to extract project data from conversation
-function extractProjectDataFromConversation(): any {
+function extractProjectDataFromConversation(): {
+  name: string;
+  type: string;
+  location: string;
+  description: string;
+  size_sqft: number;
+} {
   // This would extract project details from the conversation history
   // For now, return a default project structure
   return {

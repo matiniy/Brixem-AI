@@ -21,7 +21,13 @@ export default function GuidedProjectPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isCreatingProject, setIsCreatingProject] = useState(false);
-  const [projectData, setProjectData] = useState<any>(null);
+  const [projectData, setProjectData] = useState<{
+    name: string;
+    type: string;
+    location: string;
+    description: string;
+    size_sqft: number;
+  } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Check authentication on mount
