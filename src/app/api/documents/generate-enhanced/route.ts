@@ -2,6 +2,25 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 import { generateDocumentContent } from '@/lib/ai-documents';
 
+interface ProjectData {
+  projectType?: string;
+  location?: {
+    city?: string;
+    country?: string;
+  };
+  description?: string;
+  size?: number;
+  goals?: string[];
+  knownIssues?: string[];
+  conservationArea?: boolean;
+  greenBelt?: boolean;
+  listedBuilding?: boolean;
+  budgetMin?: number;
+  budgetMax?: number;
+  preferredStartDate?: string;
+  preferredCompletionDate?: string;
+}
+
 export async function POST(request: Request) {
   try {
     const supabase = await createClient();
@@ -66,8 +85,8 @@ export async function POST(request: Request) {
   }
 }
 
-async function generateSOW(projectData: any): Promise<string> {
-  const { projectType, location, description, size, goals, knownIssues, conservationArea, greenBelt, listedBuilding } = projectData;
+async function generateSOW(projectData: ProjectData): Promise<string> {
+  const { projectType, location, description, size, knownIssues, conservationArea, greenBelt, listedBuilding } = projectData;
   
   let sow = `# SCOPE OF WORKS\n\n`;
   sow += `**Project:** ${projectType}\n`;
@@ -130,7 +149,7 @@ async function generateSOW(projectData: any): Promise<string> {
   return sow;
 }
 
-async function generateWBS(projectData: any): Promise<string> {
+async function generateWBS(projectData: ProjectData): Promise<string> {
   const { projectType, size } = projectData;
   
   let wbs = `# WORK BREAKDOWN STRUCTURE\n\n`;
@@ -188,7 +207,7 @@ async function generateWBS(projectData: any): Promise<string> {
   return wbs;
 }
 
-async function generateSchedule(projectData: any): Promise<string> {
+async function generateSchedule(projectData: ProjectData): Promise<string> {
   const { projectType, preferredStartDate, preferredCompletionDate } = projectData;
   const startDate = preferredStartDate || new Date().toISOString().split('T')[0];
   const endDate = preferredCompletionDate || new Date(Date.now() + 6 * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
@@ -243,7 +262,7 @@ async function generateSchedule(projectData: any): Promise<string> {
   return schedule;
 }
 
-async function generateCostEstimate(projectData: any): Promise<string> {
+async function generateCostEstimate(projectData: ProjectData): Promise<string> {
   const { projectType, size, budgetMin, budgetMax, location } = projectData;
   const sizeNum = size || 50;
   const budget = budgetMin && budgetMax ? (budgetMin + budgetMax) / 2 : 100000;
@@ -314,7 +333,7 @@ async function generateCostEstimate(projectData: any): Promise<string> {
   return cost;
 }
 
-async function generateProfessionalList(projectData: any): Promise<string> {
+async function generateProfessionalList(projectData: ProjectData): Promise<string> {
   const { location, projectType } = projectData;
   
   let professionals = `# VERIFIED LOCAL PROFESSIONALS\n\n`;
@@ -363,7 +382,7 @@ async function generateProfessionalList(projectData: any): Promise<string> {
   return professionals;
 }
 
-async function generateProjectPack(projectData: any): Promise<string> {
+async function generateProjectPack(projectData: ProjectData): Promise<string> {
   const { projectType, location, size } = projectData;
   
   let pack = `# COMPLETE PROJECT PACK\n\n`;

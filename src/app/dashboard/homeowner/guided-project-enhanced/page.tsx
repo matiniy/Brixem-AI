@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { createClient } from '@/lib/supabase';
-import { sendChatMessage } from '@/lib/ai';
+import { supabase } from '@/lib/supabase';
+// import { sendChatMessage } from '@/lib/ai';
 
 interface Message {
   role: 'user' | 'ai';
@@ -41,7 +41,12 @@ interface ConversationState {
   totalSteps: number;
   collectedData: Partial<ProjectData>;
   isComplete: boolean;
-  generatedDocuments: any[];
+  generatedDocuments: GeneratedDocument[];
+}
+
+interface GeneratedDocument {
+  type: string;
+  data: any;
 }
 
 interface ConversationStep {
@@ -138,10 +143,7 @@ export default function EnhancedGuidedProjectPage() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const supabase = createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-        );
+        // Use the imported supabase client
 
         const { data: { user }, error } = await supabase.auth.getUser();
         if (error || !user) {
@@ -291,7 +293,7 @@ export default function EnhancedGuidedProjectPage() {
     });
   };
 
-  const getNestedValue = (obj: any, path: string): any => {
+  const getNestedValue = (obj: Record<string, any>, path: string): any => {
     return path.split('.').reduce((current, key) => current?.[key], obj);
   };
 
@@ -348,7 +350,7 @@ export default function EnhancedGuidedProjectPage() {
     };
   };
 
-  const generateFollowUpMessage = (step: ConversationStep, data: Partial<ProjectData>): Message => {
+  const generateFollowUpMessage = (step: ConversationStep, data: Record<string, any>): Message => {
     const missingFields = step.fields.filter(field => {
       const fieldValue = getNestedValue(data, field);
       return fieldValue === undefined || fieldValue === null || fieldValue === '';
