@@ -114,6 +114,35 @@ export default function FloatingChatDashboard() {
   // WebSocket connection
   const { isConnected, subscribe } = useWebSocket(userId);
 
+  // Load projects function - moved before useEffect to avoid hoisting issues
+  const loadProjects = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const projectsData = await getProjects();
+      
+      // Use actual projects from database with calculated progress
+      const projectsWithProgress = projectsData.map(project => ({
+        ...project,
+        progress: project.progress || Math.floor(Math.random() * 100) // Use existing progress or calculate
+      }));
+      
+      // Set projects from database (no mock data)
+      setProjects(projectsWithProgress);
+      
+        // Set the first project as active if there are projects and no active project is set
+        if (projectsWithProgress.length > 0 && !activeProject) {
+          setActiveProject(projectsWithProgress[0].id);
+      }
+    } catch (error) {
+      console.error('Error loading projects:', error);
+      // If API fails, show empty state (no mock data)
+      setProjects([]);
+      setActiveProject('');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [activeProject]);
+
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -325,34 +354,6 @@ export default function FloatingChatDashboard() {
       handleProjectNameCancel();
     }
   };
-
-  const loadProjects = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const projectsData = await getProjects();
-      
-      // Use actual projects from database with calculated progress
-      const projectsWithProgress = projectsData.map(project => ({
-        ...project,
-        progress: project.progress || Math.floor(Math.random() * 100) // Use existing progress or calculate
-      }));
-      
-      // Set projects from database (no mock data)
-      setProjects(projectsWithProgress);
-      
-        // Set the first project as active if there are projects and no active project is set
-        if (projectsWithProgress.length > 0 && !activeProject) {
-          setActiveProject(projectsWithProgress[0].id);
-      }
-    } catch (error) {
-      console.error('Error loading projects:', error);
-      // If API fails, show empty state (no mock data)
-      setProjects([]);
-      setActiveProject('');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [activeProject]);
 
   // Load projects on component mount
   useEffect(() => {
