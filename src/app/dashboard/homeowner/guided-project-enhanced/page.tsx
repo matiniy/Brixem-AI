@@ -381,7 +381,7 @@ export default function EnhancedGuidedProjectPage() {
 
     try {
       // Generate documents in sequence
-      const documents = [];
+      const documents: GeneratedDocument[] = [];
       
       // Generate SOW
       const sowResponse = await fetch('/api/documents/generate-enhanced', {
