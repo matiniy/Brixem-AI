@@ -240,7 +240,8 @@ export default function EnhancedGuidedProjectPage() {
         data.description = lines[0] || '';
         
         // Extract size from description
-        const sizeMatch = data.description.match(/(\d+)\s*(sqm|sqft|m²|ft²)/i);
+        const description = typeof data.description === 'string' ? data.description : '';
+        const sizeMatch = description.match(/(\d+)\s*(sqm|sqft|m²|ft²)/i);
         if (sizeMatch) {
           data.size = parseInt(sizeMatch[1]);
         }

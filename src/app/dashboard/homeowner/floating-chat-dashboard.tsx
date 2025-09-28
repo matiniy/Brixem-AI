@@ -357,6 +357,7 @@ export default function FloatingChatDashboard() {
   // Load projects on component mount
   useEffect(() => {
     loadProjects();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Load real tasks from database when active project changes
