@@ -46,7 +46,7 @@ interface ConversationState {
 
 interface GeneratedDocument {
   type: string;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
 }
 
 interface ConversationStep {
@@ -211,7 +211,7 @@ export default function EnhancedGuidedProjectPage() {
   };
 
   const processStepResponse = (step: ConversationStep, response: string): Partial<ProjectData> => {
-    const data: Record<string, any> = {};
+    const data: Record<string, unknown> = {};
     
     switch (step.type) {
       case 'multiple_choice':
@@ -286,14 +286,14 @@ export default function EnhancedGuidedProjectPage() {
     return data;
   };
 
-  const isStepComplete = (step: ConversationStep, data: Record<string, any>): boolean => {
+  const isStepComplete = (step: ConversationStep, data: Record<string, unknown>): boolean => {
     return step.fields.every(field => {
       const fieldValue = getNestedValue(data, field);
       return fieldValue !== undefined && fieldValue !== null && fieldValue !== '';
     });
   };
 
-  const getNestedValue = (obj: Record<string, any>, path: string): any => {
+  const getNestedValue = (obj: Record<string, unknown>, path: string): unknown => {
     return path.split('.').reduce((current, key) => current?.[key], obj);
   };
 
@@ -350,7 +350,7 @@ export default function EnhancedGuidedProjectPage() {
     };
   };
 
-  const generateFollowUpMessage = (step: ConversationStep, data: Record<string, any>): Message => {
+  const generateFollowUpMessage = (step: ConversationStep, data: Record<string, unknown>): Message => {
     const missingFields = step.fields.filter(field => {
       const fieldValue = getNestedValue(data, field);
       return fieldValue === undefined || fieldValue === null || fieldValue === '';

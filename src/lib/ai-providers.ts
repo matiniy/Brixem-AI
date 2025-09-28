@@ -129,7 +129,7 @@ export class AIClient {
     model?: string;
     maxTokens?: number;
     temperature?: number;
-  }) {
+  }): Promise<{content: string; usage: Record<string, unknown>}> {
     const model = options?.model || this.provider.models.chat;
     const maxTokens = options?.maxTokens || this.provider.maxTokens;
     const temperature = options?.temperature || this.provider.temperature;
@@ -143,7 +143,7 @@ export class AIClient {
     return this.parseResponse(response);
   }
   
-  private formatMessages(messages: Array<{role: string; content: string}>) {
+  private formatMessages(messages: Array<{role: string; content: string}>): Record<string, unknown> {
     const providerName = this.provider.name.toLowerCase();
     
     if (providerName.includes('anthropic')) {
@@ -175,10 +175,10 @@ export class AIClient {
     }
   }
   
-  private async makeAPICall(model: string, payload: any, maxTokens: number, temperature: number) {
+  private async makeAPICall(model: string, payload: Record<string, unknown>, maxTokens: number, temperature: number): Promise<Record<string, unknown>> {
     const providerName = this.provider.name.toLowerCase();
     let url: string;
-    let body: any;
+    let body: Record<string, unknown>;
     
     if (providerName.includes('anthropic')) {
       url = `${this.provider.baseUrl}/messages`;
@@ -224,7 +224,7 @@ export class AIClient {
     return response.json();
   }
   
-  private parseResponse(response: any) {
+  private parseResponse(response: Record<string, unknown>): {content: string; usage: Record<string, unknown>} {
     const providerName = this.provider.name.toLowerCase();
     
     if (providerName.includes('anthropic')) {
