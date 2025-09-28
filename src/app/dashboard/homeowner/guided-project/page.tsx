@@ -13,7 +13,7 @@ export default function GuidedProjectPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "ai",
-      text: "Welcome to Brixem! 🎉 I'm your AI construction assistant. I'll guide you through creating a comprehensive project plan with detailed scope, timeline, and cost estimates.\n\n**Ready to start your project?**\n\nI'll walk you through:\n• Initial project assessment\n• Scope of Works generation\n• Work Breakdown Structure\n• Project Schedule with Gantt charts\n• Detailed Cost Estimation\n\nLet's begin! Please tell me about your construction project - what are you planning to build or renovate?"
+      text: "Welcome to Brixem! 🎉 I'm your AI construction assistant. I'll guide you through creating a comprehensive project plan with detailed scope, timeline, and cost estimates.\n\n**Ready to start your project?**\n\nI'll walk you through:\n• Initial project assessment\n• Scope of Works generation\n• Work Breakdown Structure\n• Project Schedule with Gantt charts\n• Detailed Cost Estimation\n\n**For the enhanced guided experience with structured questions, click here:**\n[Start Enhanced Guided Project](/dashboard/homeowner/guided-project-enhanced)\n\nOr tell me about your construction project - what are you planning to build or renovate?"
     }
   ]);
   const [currentInput, setCurrentInput] = useState("");
