@@ -229,25 +229,29 @@ export class AIClient {
     const providerName = this.provider.name.toLowerCase();
     
     if (providerName.includes('anthropic')) {
+      const content = response.content as Array<{text: string}>;
       return {
-        content: response.content[0].text,
-        usage: response.usage
+        content: content[0].text,
+        usage: response.usage as Record<string, unknown>
       };
     } else if (providerName.includes('google')) {
+      const candidates = response.candidates as Array<{content: {parts: Array<{text: string}>}}>;
       return {
-        content: response.candidates[0].content.parts[0].text,
-        usage: response.usageMetadata
+        content: candidates[0].content.parts[0].text,
+        usage: response.usageMetadata as Record<string, unknown>
       };
     } else if (providerName.includes('huggingface')) {
+      const hfResponse = response as Array<{generated_text: string}>;
       return {
-        content: response[0].generated_text,
+        content: hfResponse[0].generated_text,
         usage: { total_tokens: 0 }
       };
     } else {
       // OpenAI, Groq
+      const choices = response.choices as Array<{message: {content: string}}>;
       return {
-        content: response.choices[0].message.content,
-        usage: response.usage
+        content: choices[0].message.content,
+        usage: response.usage as Record<string, unknown>
       };
     }
   }
