@@ -46,7 +46,7 @@ interface ConversationState {
 
 interface GeneratedDocument {
   type: string;
-  data: any;
+  data: Record<string, any>;
 }
 
 interface ConversationStep {
@@ -211,7 +211,7 @@ export default function EnhancedGuidedProjectPage() {
   };
 
   const processStepResponse = (step: ConversationStep, response: string): Partial<ProjectData> => {
-    const data: Partial<ProjectData> = {};
+    const data: Record<string, any> = {};
     
     switch (step.type) {
       case 'multiple_choice':
@@ -286,7 +286,7 @@ export default function EnhancedGuidedProjectPage() {
     return data;
   };
 
-  const isStepComplete = (step: ConversationStep, data: Partial<ProjectData>): boolean => {
+  const isStepComplete = (step: ConversationStep, data: Record<string, any>): boolean => {
     return step.fields.every(field => {
       const fieldValue = getNestedValue(data, field);
       return fieldValue !== undefined && fieldValue !== null && fieldValue !== '';

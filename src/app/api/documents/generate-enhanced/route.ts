@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
-import { generateDocumentContent } from '@/lib/ai-documents';
+// import { generateDocumentContent } from '@/lib/ai-documents';
 
 interface ProjectData {
   projectType?: string;
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { projectData, documentType } = await request.json();
+    const { projectData, documentType }: { projectData: ProjectData; documentType: string } = await request.json();
 
     if (!projectData || !documentType) {
       return NextResponse.json({ error: 'Missing projectData or documentType' }, { status: 400 });

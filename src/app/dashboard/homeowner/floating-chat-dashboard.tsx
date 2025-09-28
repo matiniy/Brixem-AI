@@ -357,7 +357,7 @@ export default function FloatingChatDashboard() {
   // Load projects on component mount
   useEffect(() => {
     loadProjects();
-  }, [loadProjects]);
+  }, []);
 
   // Load real tasks from database when active project changes
   useEffect(() => {
