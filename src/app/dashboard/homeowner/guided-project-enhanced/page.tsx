@@ -295,7 +295,12 @@ export default function EnhancedGuidedProjectPage() {
   };
 
   const getNestedValue = (obj: Record<string, unknown>, path: string): unknown => {
-    return path.split('.').reduce((current, key) => current?.[key], obj);
+    return path.split('.').reduce((current: unknown, key: string) => {
+      if (current && typeof current === 'object' && current !== null) {
+        return (current as Record<string, unknown>)[key];
+      }
+      return undefined;
+    }, obj);
   };
 
   const moveToNextStep = async () => {

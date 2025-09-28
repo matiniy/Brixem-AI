@@ -160,7 +160,7 @@ export default function FloatingChatDashboard() {
       unsubscribeTask();
       unsubscribeChat();
     };
-  }, [subscribe]);
+  }, [subscribe, loadProjects]);
 
   // Project store not needed for this component
   // const { tasks, addTask, setAll } = useProjectStore();
