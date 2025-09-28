@@ -241,7 +241,7 @@ export class AIClient {
         usage: response.usageMetadata as Record<string, unknown>
       };
     } else if (providerName.includes('huggingface')) {
-      const hfResponse = response as Array<{generated_text: string}>;
+      const hfResponse = response as unknown as Array<{generated_text: string}>;
       return {
         content: hfResponse[0].generated_text,
         usage: { total_tokens: 0 }
