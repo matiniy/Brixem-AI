@@ -8,7 +8,7 @@ interface Message {
   role: 'user' | 'ai';
   text: string;
   type?: 'question' | 'response' | 'document' | 'download';
-  data?: any;
+  data?: Record<string, unknown>;
 }
 
 interface ProjectData {
@@ -219,7 +219,7 @@ export default function EnhancedGuidedProjectPage() {
           response.toLowerCase().includes(option.toLowerCase())
         );
         if (selectedOption) {
-          data[step.fields[0] as keyof ProjectData] = selectedOption as any;
+          data[step.fields[0] as keyof ProjectData] = selectedOption as string;
         }
         break;
         
