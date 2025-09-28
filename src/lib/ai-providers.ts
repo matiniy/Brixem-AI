@@ -192,8 +192,9 @@ export class AIClient {
       body = payload;
     } else if (providerName.includes('huggingface')) {
       url = `${this.provider.baseUrl}/${model}`;
+      const messages = payload.messages as Array<{role: string; content: string}>;
       body = {
-        inputs: payload.messages[payload.messages.length - 1].content,
+        inputs: messages[messages.length - 1].content,
         parameters: {
           max_new_tokens: maxTokens,
           temperature: temperature,
