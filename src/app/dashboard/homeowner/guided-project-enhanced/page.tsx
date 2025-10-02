@@ -34,22 +34,102 @@ interface ProjectData {
   additionalChallenges: string[];
 }
 
+interface ChatStep {
+  id: number;
+  title: string;
+  question: string;
+  suggestions: string[];
+  placeholder: string;
+  completed: boolean;
+}
+
+// 8-Step Guided Flow Configuration
+const CHAT_STEPS: ChatStep[] = [
+  {
+    id: 1,
+    title: "Project Type",
+    question: "What type of project are you planning?",
+    suggestions: ["Kitchen Renovation", "Bathroom Renovation", "Extension", "Loft Conversion", "Whole House Renovation", "Garden Room"],
+    placeholder: "e.g., Kitchen renovation, Extension, etc.",
+    completed: false
+  },
+  {
+    id: 2,
+    title: "Location",
+    question: "Where is your project located?",
+    suggestions: ["London", "Manchester", "Birmingham", "Leeds", "Bristol", "Other UK City"],
+    placeholder: "e.g., London, Manchester, etc.",
+    completed: false
+  },
+  {
+    id: 3,
+    title: "Size & Scope",
+    question: "What's the size or scope of your project?",
+    suggestions: ["Small (under 20m²)", "Medium (20-50m²)", "Large (50-100m²)", "Very Large (100m²+)"],
+    placeholder: "e.g., 30m² kitchen, 2-story extension, etc.",
+    completed: false
+  },
+  {
+    id: 4,
+    title: "Budget Range",
+    question: "What's your budget range?",
+    suggestions: ["Under £25k", "£25k - £50k", "£50k - £100k", "£100k - £200k", "£200k+"],
+    placeholder: "e.g., £50k - £75k",
+    completed: false
+  },
+  {
+    id: 5,
+    title: "Timeline",
+    question: "When would you like to start and finish?",
+    suggestions: ["ASAP", "Next 3 months", "Next 6 months", "Next year", "Flexible"],
+    placeholder: "e.g., Start in March, finish by summer",
+    completed: false
+  },
+  {
+    id: 6,
+    title: "Goals & Priorities",
+    question: "What are your main goals for this project?",
+    suggestions: ["More Space", "Modern Design", "Energy Efficiency", "Increased Value", "Better Functionality"],
+    placeholder: "e.g., More space, modern look, energy efficient",
+    completed: false
+  },
+  {
+    id: 7,
+    title: "Challenges",
+    question: "Are there any specific challenges or requirements?",
+    suggestions: ["Planning Permission", "Party Wall Issues", "Access Problems", "Listed Building", "Conservation Area"],
+    placeholder: "e.g., Need planning permission, tight access",
+    completed: false
+  },
+  {
+    id: 8,
+    title: "Additional Details",
+    question: "Any other important details we should know?",
+    suggestions: ["Specific Materials", "Design Preferences", "Contractor Preferences", "Special Requirements"],
+    placeholder: "e.g., Want eco-friendly materials, specific style",
+    completed: false
+  }
+];
+
 export default function GuidedProjectEnhanced() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [projectData, setProjectData] = useState<Partial<ProjectData>>({});
   const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [, setCompletedSteps] = useState<number[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initialize with welcome message
+  // Initialize with welcome message and first step
   useEffect(() => {
     const welcomeMessage: Message = {
       role: 'ai',
-        text: "Hello! I&apos;m your Brixem AI assistant. I&apos;m here to help you create a comprehensive construction project plan. \n\nTell me about your project - what are you planning to build or renovate? You can describe it in your own words, and I&apos;ll ask follow-up questions to gather all the details we need.",
+      text: "Hello! I&apos;m your Brixem AI assistant. I&apos;m here to help you create a comprehensive construction project plan through 8 simple steps. Let&apos;s get started!",
       type: 'question'
     };
     setMessages([welcomeMessage]);
+    setCurrentStep(0);
   }, []);
 
   const scrollToBottom = () => {
@@ -61,81 +141,47 @@ export default function GuidedProjectEnhanced() {
   }, [messages]);
 
   const handleSend = async () => {
-    if (!inputText.trim() || isLoading) return;
+    if (!inputText.trim() || isLoading || isCreatingProject) return;
 
     const userMessage: Message = {
       role: 'user',
-      text: inputText.trim()
+      text: inputText.trim(),
+      type: 'response'
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = inputText.trim();
     setInputText('');
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: inputText.trim(),
-          conversationHistory: messages.map(msg => ({
-            role: msg.role,
-            content: msg.text
-          })),
-          projectData: projectData
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to get AI response');
-      }
-
-      const data = await response.json();
+      // Process the current step
+      await processStepResponse(currentInput);
       
-      const aiMessage: Message = {
-        role: 'ai',
-        text: data.response,
-        type: 'response'
-      };
-
-      setMessages(prev => [...prev, aiMessage]);
-
-      // Check if AI suggests creating a project or if user confirms
-      const responseText = data.response.toLowerCase();
-      const userText = inputText.toLowerCase();
-      
-      if (responseText.includes('create project') || 
-          responseText.includes('ready to create') ||
-          responseText.includes('let\'s create your project') ||
-          responseText.includes('i\'ll create your project') ||
-          userText.includes('yes') ||
-          userText.includes('create project') ||
-          userText.includes('let\'s do it') ||
-          userText.includes('go ahead')) {
+      // Move to next step or create project
+      if (currentStep < CHAT_STEPS.length - 1) {
+        setCurrentStep(prev => prev + 1);
+        setCompletedSteps(prev => [...prev, currentStep]);
         
-        // Extract project data from conversation
-        const extractedData = extractProjectDataFromConversation([...messages, userMessage, aiMessage]);
-        if (extractedData) {
-          setProjectData(extractedData);
-          await createProjectInDashboard(extractedData);
-        } else {
-          // If we can't extract data, ask for more information
-          const clarificationMessage: Message = {
-            role: 'ai',
-            text: "I'd love to create your project! Could you tell me a bit more about what you're planning to build or renovate? For example, is it a kitchen renovation, bathroom update, extension, or something else?",
-            type: 'question'
-          };
-          setMessages(prev => [...prev, clarificationMessage]);
-        }
+        // Add AI response for next step
+        const nextStep = CHAT_STEPS[currentStep + 1];
+        const nextStepMessage: Message = {
+          role: 'ai',
+          text: `Great! Now let's move to step ${nextStep.id}: ${nextStep.title}\n\n${nextStep.question}`,
+          type: 'question'
+        };
+        setMessages(prev => [...prev, nextStepMessage]);
+      } else {
+        // All steps completed, create project
+        setCompletedSteps(prev => [...prev, currentStep]);
+        await createProjectFromSteps();
       }
 
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('Error processing step:', error);
       const errorMessage: Message = {
         role: 'ai',
-        text: "I&apos;m sorry, I encountered an error. Please try again or refresh the page.",
+        text: "I&apos;m sorry, I encountered an error. Please try again.",
         type: 'response'
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -144,117 +190,81 @@ export default function GuidedProjectEnhanced() {
     }
   };
 
-  const extractProjectDataFromConversation = (conversation: Message[]): Partial<ProjectData> | null => {
-    const fullText = conversation.map(msg => msg.text).join(' ');
+  const processStepResponse = async (response: string) => {
+    const step = CHAT_STEPS[currentStep];
     
-    // Extract basic project information using simple patterns
-    const projectType = extractProjectType(fullText);
-    const description = extractDescription(fullText);
-    const location = extractLocation(fullText);
-    const budget = extractBudget(fullText);
+    // Update project data based on current step
+    const updatedData = { ...projectData };
     
-    // If we don't have enough info, try to create a basic project
-    if (!projectType && !description) {
-      return null;
+    switch (step.id) {
+      case 1: // Project Type
+        updatedData.projectType = response;
+        updatedData.description = response;
+        break;
+      case 2: // Location
+        updatedData.location = { city: response, country: 'UK' };
+        break;
+      case 3: // Size & Scope
+        const sizeMatch = response.match(/(\d+)/);
+        if (sizeMatch) {
+          updatedData.size = parseInt(sizeMatch[1]);
+        }
+        break;
+      case 4: // Budget Range
+        const budgetMatch = response.match(/(\d+)(?:k|,000)?\s*(?:to|-)?\s*(\d+)?(?:k|,000)?/i);
+        if (budgetMatch) {
+          const min = parseInt(budgetMatch[1]) * (budgetMatch[1].includes('k') ? 1000 : 1);
+          const max = budgetMatch[2] ? parseInt(budgetMatch[2]) * (budgetMatch[2].includes('k') ? 1000 : 1) : min * 1.5;
+          updatedData.budgetMin = min;
+          updatedData.budgetMax = max;
+          updatedData.budgetRange = `${min.toLocaleString()} - ${max.toLocaleString()}`;
+        }
+        break;
+      case 5: // Timeline
+        updatedData.preferredStartDate = response;
+        break;
+      case 6: // Goals
+        updatedData.goals = [response];
+        break;
+      case 7: // Challenges
+        updatedData.knownIssues = [response];
+        break;
+      case 8: // Additional Details
+        updatedData.additionalChallenges = [response];
+        break;
     }
-
-    // Create a more robust project data object
-    const projectData: Partial<ProjectData> = {
-      projectType: projectType || 'Renovation',
-      description: description || 'Construction project',
-      location: location || { city: 'Unknown', country: 'UK' },
-      budgetRange: budget?.range || 'Not specified',
-      budgetMin: budget?.min || 0,
-      budgetMax: budget?.max || 0,
-      intendedUse: 'Residential',
-      size: extractSize(fullText) || 0,
-      goals: extractGoals(fullText),
-      knownIssues: extractKnownIssues(fullText),
-      preferredStartDate: extractStartDate(fullText) || '',
-      preferredCompletionDate: extractCompletionDate(fullText) || '',
-      conservationArea: false,
-      greenBelt: false,
-      listedBuilding: false,
-      partyWallIssues: false,
-      accessChallenges: false,
-      planningChallenges: false,
-      additionalChallenges: []
-    };
-
-    return projectData;
+    
+    setProjectData(updatedData);
   };
 
-  const extractProjectType = (text: string): string => {
-    const lowerText = text.toLowerCase();
-    if (lowerText.includes('kitchen')) return 'Kitchen';
-    if (lowerText.includes('bathroom')) return 'Bathroom';
-    if (lowerText.includes('extension')) return 'Extension';
-    if (lowerText.includes('loft')) return 'Loft Conversion';
-    if (lowerText.includes('renovation')) return 'Renovation';
-    if (lowerText.includes('new build')) return 'New Build';
-    return 'Renovation'; // Default
-  };
-
-  const extractDescription = (text: string): string => {
-    // Find the most descriptive part of the conversation
-    const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 10);
-    return sentences[0]?.trim() || 'Construction project';
-  };
-
-  const extractLocation = (text: string): { city: string; country: string } | null => {
-    // Simple location extraction - in a real app, you'd use a more sophisticated approach
-    const locationMatch = text.match(/(?:in|at|located in)\s+([A-Za-z\s]+)/i);
-    if (locationMatch) {
-      return { city: locationMatch[1].trim(), country: 'UK' };
+  const createProjectFromSteps = async () => {
+    try {
+      setIsCreatingProject(true);
+      
+      // Add completion message
+      const completionMessage: Message = {
+        role: 'ai',
+        text: "Perfect! I have all the information I need. Let me create your project now...",
+        type: 'response'
+      };
+      setMessages(prev => [...prev, completionMessage]);
+      
+      // Create project with collected data
+      await createProjectInDashboard(projectData);
+      
+    } catch (error) {
+      console.error('Error creating project:', error);
+      const errorMessage: Message = {
+        role: 'ai',
+        text: "I&apos;m sorry, there was an error creating your project. Please try again.",
+        type: 'response'
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsCreatingProject(false);
     }
-    return null;
   };
 
-  const extractBudget = (text: string): { range: string; min: number; max: number } | null => {
-    const budgetMatch = text.match(/(\d+)(?:k|,000)?\s*(?:to|-)?\s*(\d+)?(?:k|,000)?/i);
-    if (budgetMatch) {
-      const min = parseInt(budgetMatch[1]) * (budgetMatch[1].includes('k') ? 1000 : 1);
-      const max = budgetMatch[2] ? parseInt(budgetMatch[2]) * (budgetMatch[2].includes('k') ? 1000 : 1) : min * 1.5;
-      return { range: `${min.toLocaleString()} - ${max.toLocaleString()}`, min, max };
-    }
-    return null;
-  };
-
-  const extractSize = (text: string): number => {
-    const sizeMatch = text.match(/(\d+)\s*(?:sqm|m²|square\s*meters?|sq\s*ft|sqft)/i);
-    if (sizeMatch) {
-      return parseInt(sizeMatch[1]);
-    }
-    return 0;
-  };
-
-  const extractGoals = (text: string): string[] => {
-    const goals: string[] = [];
-    if (text.toLowerCase().includes('modern')) goals.push('Modern design');
-    if (text.toLowerCase().includes('energy')) goals.push('Energy efficiency');
-    if (text.toLowerCase().includes('storage')) goals.push('More storage');
-    if (text.toLowerCase().includes('space')) goals.push('More space');
-    return goals;
-  };
-
-  const extractKnownIssues = (text: string): string[] => {
-    const issues: string[] = [];
-    if (text.toLowerCase().includes('damp')) issues.push('Damp issues');
-    if (text.toLowerCase().includes('structural')) issues.push('Structural concerns');
-    if (text.toLowerCase().includes('plumbing')) issues.push('Plumbing issues');
-    if (text.toLowerCase().includes('electrical')) issues.push('Electrical issues');
-    return issues;
-  };
-
-  const extractStartDate = (text: string): string => {
-    const dateMatch = text.match(/(?:start|begin|commence).*?(\d{1,2}\/\d{1,2}\/\d{4}|\d{4}-\d{2}-\d{2})/i);
-    return dateMatch ? dateMatch[1] : '';
-  };
-
-  const extractCompletionDate = (text: string): string => {
-    const dateMatch = text.match(/(?:finish|complete|end).*?(\d{1,2}\/\d{1,2}\/\d{4}|\d{4}-\d{2}-\d{2})/i);
-    return dateMatch ? dateMatch[1] : '';
-  };
 
   const createProjectInDashboard = async (data: Partial<ProjectData>) => {
     try {
@@ -334,12 +344,15 @@ export default function GuidedProjectEnhanced() {
     }
   };
 
+  const currentStepData = CHAT_STEPS[currentStep];
+  const progress = ((currentStep + 1) / CHAT_STEPS.length) * 100;
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Header with Progress */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => window.location.href = '/dashboard/homeowner'}
@@ -351,7 +364,7 @@ export default function GuidedProjectEnhanced() {
               </button>
               <div>
                 <h1 className="text-xl font-semibold text-gray-900">Guided Project Creation</h1>
-                <p className="text-sm text-gray-500">Tell me about your project and I&apos;ll help you create a comprehensive plan</p>
+                <p className="text-sm text-gray-500">Step {currentStep + 1} of {CHAT_STEPS.length}: {currentStepData?.title}</p>
               </div>
             </div>
             {isCreatingProject && (
@@ -361,33 +374,41 @@ export default function GuidedProjectEnhanced() {
               </div>
             )}
           </div>
+          
+          {/* Progress Bar */}
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-gradient-to-r from-blue-600 to-green-500 h-2 rounded-full transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
       </div>
 
       {/* Chat Interface */}
       <div className="max-w-4xl mx-auto px-4 py-6">
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-lg">
           {/* Messages */}
-          <div className="h-96 overflow-y-auto p-4 space-y-4">
+          <div className="h-96 overflow-y-auto p-6 space-y-4">
             {messages.map((message, index) => (
               <div
                 key={index}
                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                  className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
                     message.role === 'user'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-900'
+                      ? 'bg-blue-600 text-white rounded-br-md'
+                      : 'bg-gray-100 text-gray-900 rounded-bl-md'
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+                  <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.text}</p>
                 </div>
               </div>
             ))}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-gray-100 text-gray-900 max-w-xs lg:max-w-md px-4 py-2 rounded-lg">
+                <div className="bg-gray-100 text-gray-900 max-w-xs lg:max-w-md px-4 py-3 rounded-2xl rounded-bl-md">
                   <div className="flex items-center space-x-2">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
                     <span className="text-sm">Thinking...</span>
@@ -398,55 +419,53 @@ export default function GuidedProjectEnhanced() {
             <div ref={messagesEndRef} />
           </div>
 
+          {/* Current Step Question & Suggestions */}
+          {currentStepData && !isCreatingProject && (
+            <div className="border-t border-gray-200 p-6 bg-blue-50">
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{currentStepData.question}</h3>
+                <p className="text-sm text-gray-600">You can choose from the suggestions below or type your own answer.</p>
+              </div>
+              
+              {/* Suggestion Boxes */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
+                {currentStepData.suggestions.map((suggestion, index) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      setInputText(suggestion);
+                      handleSend();
+                    }}
+                    className="px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all text-left"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Input */}
-          <div className="border-t border-gray-200 p-4">
+          <div className="border-t border-gray-200 p-6">
             <div className="flex space-x-3">
               <input
                 type="text"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Type your response here..."
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white"
+                placeholder={currentStepData?.placeholder || "Type your response here..."}
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white"
                 disabled={isLoading || isCreatingProject}
                 style={{ color: '#111827' }}
               />
               <button
                 onClick={handleSend}
                 disabled={!inputText.trim() || isLoading || isCreatingProject}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium"
               >
-                Send
+                {currentStep < CHAT_STEPS.length - 1 ? 'Next' : 'Finish'}
               </button>
             </div>
-            
-            {/* Manual Create Project Button */}
-            {messages.length > 2 && !isCreatingProject && (
-              <div className="mt-3 pt-3 border-t border-gray-100">
-                <button
-                  onClick={async () => {
-                    const extractedData = extractProjectDataFromConversation(messages);
-                    if (extractedData) {
-                      setProjectData(extractedData);
-                      await createProjectInDashboard(extractedData);
-                    } else {
-                      const clarificationMessage: Message = {
-                        role: 'ai',
-                        text: "I'd love to create your project! Could you tell me a bit more about what you're planning to build or renovate? For example, is it a kitchen renovation, bathroom update, extension, or something else?",
-                        type: 'question'
-                      };
-                      setMessages(prev => [...prev, clarificationMessage]);
-                    }
-                  }}
-                  className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center justify-center space-x-2"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  <span>Create Project Now</span>
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>

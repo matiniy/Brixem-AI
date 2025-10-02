@@ -257,5 +257,11 @@ export class AIClient {
   }
 }
 
-// Export a default client instance
-export const aiClient = new AIClient();
+// Export a lazy-initialized client instance
+let _aiClient: AIClient | null = null;
+export function getAIClient(): AIClient {
+  if (!_aiClient) {
+    _aiClient = new AIClient();
+  }
+  return _aiClient;
+}

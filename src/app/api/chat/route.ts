@@ -1,35 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as Sentry from '@sentry/nextjs';
-
-// Initialize Groq client
-const getGroqClient = () => {
-  if (!process.env.GROQ_API_KEY) {
-    throw new Error('Groq API key not configured');
-  }
-  return {
-    chat: {
-      completions: {
-        create: async (params: { model: string; messages: { role: string; content: string }[]; max_tokens: number; temperature: number }) => {
-          const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(params),
-          });
-          
-          if (!response.ok) {
-            const error = await response.text();
-            throw new Error(`Groq API error: ${response.status} ${error}`);
-          }
-          
-          return response.json();
-        }
-      }
-    }
-  };
-};
+import { getAIClient, getActiveProvider } from '@/lib/ai-providers';
 
 // Helper function to extract project details from user message
 function extractProjectDetails(message: string) {
@@ -284,10 +255,11 @@ export async function POST(request: NextRequest) {
         }
       }
 
-    // Get Groq client (this will throw if API key is not configured)
-    console.log('Getting Groq client...');
-    const groq = getGroqClient();
-    console.log('Groq client created successfully');
+    // Get AI client (this will use the configured provider)
+    console.log('Getting AI client...');
+    const client = getAIClient();
+    const provider = getActiveProvider();
+    console.log(`AI client created successfully with provider: ${provider.name}`);
 
     // Create system prompt for construction project context
     const systemPrompt = `You are Brixem AI, a construction project management assistant. Help users create and manage construction projects through natural conversation.
@@ -339,17 +311,15 @@ Remember: This is a conversation, not a form. Let users express themselves natur
       }))
     ];
 
-    // Call Groq API
-    console.log('Calling Groq API with model:', process.env.GROQ_MODEL || 'llama-3.3-70b-versatile');
-    const completion = await groq.chat.completions.create({
-      model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
-      messages: groqMessages,
-      max_tokens: parseInt(process.env.GROQ_MAX_TOKENS || '1000'),
+    // Call AI API
+    console.log('Calling AI API with provider:', provider.name);
+    const completion = await client.chatCompletion(groqMessages, {
+      maxTokens: parseInt(process.env.GROQ_MAX_TOKENS || '1000'),
       temperature: parseFloat(process.env.GROQ_TEMPERATURE || '0.7'),
     });
-    console.log('Groq API response received');
+    console.log('AI API response received');
 
-    const aiResponse = completion.choices[0]?.message?.content;
+    const aiResponse = completion.content;
 
     if (!aiResponse) {
       return NextResponse.json(
@@ -359,12 +329,12 @@ Remember: This is a conversation, not a form. Let users express themselves natur
     }
 
     return NextResponse.json({
-      message: aiResponse,
-      usage: completion.usage
+      response: aiResponse,
+      usage: completion.usage || { total_tokens: 0 }
     });
 
   } catch (error) {
-    console.error('Groq API error:', error);
+    console.error('AI API error:', error);
     console.error('Error details:', {
       name: error instanceof Error ? error.name : 'Unknown',
       message: error instanceof Error ? error.message : String(error),
@@ -375,7 +345,7 @@ Remember: This is a conversation, not a form. Let users express themselves natur
     Sentry.captureException(error, {
       tags: {
         component: 'chat_api',
-        operation: 'groq_api_call'
+        operation: 'ai_api_call'
       },
       extra: {
         messageContent: messageContent || 'unknown',
@@ -383,26 +353,26 @@ Remember: This is a conversation, not a form. Let users express themselves natur
       }
     });
     
-    // Handle specific Groq errors
+    // Handle specific AI provider errors
     if (error instanceof Error) {
       if (error.message.includes('API key not configured')) {
         console.error('API key not configured error');
         return NextResponse.json(
-          { error: 'Groq API key not configured' },
+          { error: 'AI API key not configured' },
           { status: 500 }
         );
       }
       if (error.message.includes('API key')) {
         console.error('Invalid API key error');
         return NextResponse.json(
-          { error: 'Invalid Groq API key' },
+          { error: 'Invalid AI API key' },
           { status: 401 }
         );
       }
       if (error.message.includes('quota') || error.message.includes('rate limit')) {
         console.error('Rate limit error');
         return NextResponse.json(
-          { error: 'Groq API rate limit exceeded' },
+          { error: 'AI API rate limit exceeded' },
           { status: 429 }
         );
       }
