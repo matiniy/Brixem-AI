@@ -37,7 +37,7 @@ const MOCK_CONTRACTORS: Contractor[] = [
     id: '1',
     name: 'Premier Construction Ltd',
     logo: '🏗️',
-    image: '/api/placeholder/300/200',
+    image: 'https://images.unsplash.com/photo-1581578731548-c6a0c3f2f4c4?w=400&h=200&fit=crop&crop=center',
     rating: 4.8,
     reviewCount: 127,
     priceRange: '£25k - £75k',
@@ -53,7 +53,7 @@ const MOCK_CONTRACTORS: Contractor[] = [
     id: '2',
     name: 'Elite Home Improvements',
     logo: '🏠',
-    image: '/api/placeholder/300/200',
+    image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=200&fit=crop&crop=center',
     rating: 4.9,
     reviewCount: 89,
     priceRange: '£40k - £120k',
@@ -69,7 +69,7 @@ const MOCK_CONTRACTORS: Contractor[] = [
     id: '3',
     name: 'Swift Build Solutions',
     logo: '⚡',
-    image: '/api/placeholder/300/200',
+    image: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=400&h=200&fit=crop&crop=center',
     rating: 4.7,
     reviewCount: 203,
     priceRange: '£20k - £60k',
@@ -85,7 +85,7 @@ const MOCK_CONTRACTORS: Contractor[] = [
     id: '4',
     name: 'Luxury Living Builders',
     logo: '✨',
-    image: '/api/placeholder/300/200',
+    image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=200&fit=crop&crop=center',
     rating: 4.9,
     reviewCount: 156,
     priceRange: '£60k - £200k+',
@@ -262,8 +262,13 @@ function ContractorSelectionContent() {
               onClick={() => handleContractorSelect(contractor.id)}
             >
               {/* Contractor Image */}
-              <div className="relative h-40 sm:h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-xl overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+              <div className="relative h-40 sm:h-48 rounded-t-xl overflow-hidden">
+                <img 
+                  src={contractor.image} 
+                  alt={contractor.name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                 <div className="absolute top-4 right-4">
                   {contractor.verified && (
                     <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">

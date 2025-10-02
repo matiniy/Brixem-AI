@@ -171,11 +171,14 @@ export default function GuidedProjectEnhanced() {
           type: 'question'
         };
         setMessages(prev => [...prev, nextStepMessage]);
-      } else {
-        // All steps completed, create project
-        setCompletedSteps(prev => [...prev, currentStep]);
-        await createProjectFromSteps();
-      }
+              } else {
+                // All steps completed, create project
+                setCompletedSteps(prev => [...prev, currentStep]);
+                // Add a small delay to show the completion message
+                setTimeout(() => {
+                  createProjectFromSteps();
+                }, 500);
+              }
 
     } catch (error) {
       console.error('Error processing step:', error);
@@ -399,9 +402,9 @@ export default function GuidedProjectEnhanced() {
 
       {/* Chat Interface */}
       <div className="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-lg">
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-lg flex flex-col h-[calc(100vh-200px)]">
           {/* Messages */}
-          <div className="h-80 sm:h-96 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4">
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -433,10 +436,10 @@ export default function GuidedProjectEnhanced() {
 
           {/* Current Step Question & Suggestions */}
           {currentStepData && !isCreatingProject && (
-            <div className="border-t border-gray-200 p-4 sm:p-6 bg-blue-50">
+            <div className="border-t border-gray-200 p-4 sm:p-6 bg-blue-50 flex-shrink-0">
               <div className="mb-3 sm:mb-4">
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">{currentStepData.question}</h3>
-                <p className="text-xs sm:text-sm text-gray-600">You can choose from the suggestions below or type your own answer.</p>
+                <h3 className="text-sm sm:text-base font-medium text-gray-900 mb-1">{currentStepData.question}</h3>
+                <p className="text-xs text-gray-600">You can choose from the suggestions below or type your own answer.</p>
               </div>
               
               {/* Suggestion Boxes */}
@@ -458,7 +461,7 @@ export default function GuidedProjectEnhanced() {
           )}
 
           {/* Input */}
-          <div className="border-t border-gray-200 p-4 sm:p-6">
+          <div className="border-t border-gray-200 p-4 sm:p-6 flex-shrink-0">
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
               <input
                 type="text"
