@@ -207,17 +207,17 @@ function ContractorSelectionContent() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Choose Your Contractor</h1>
-              <p className="text-gray-600 mt-1">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Choose Your Contractor</h1>
+              <p className="text-sm sm:text-base text-gray-600 mt-1 truncate">
                 Based on your {projectData?.projectType} project in {projectData?.location}
               </p>
             </div>
             <button
               onClick={handleSkipSelection}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+              className="px-3 sm:px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors text-sm sm:text-base flex-shrink-0"
             >
               Skip for now
             </button>
@@ -226,10 +226,10 @@ function ContractorSelectionContent() {
       </div>
 
       {/* Project Summary */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Project Summary</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+        <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Your Project Summary</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div>
               <span className="text-sm text-gray-500">Project Type</span>
               <p className="font-medium text-gray-900">{projectData?.projectType}</p>
@@ -250,7 +250,7 @@ function ContractorSelectionContent() {
         </div>
 
         {/* Contractors Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {MOCK_CONTRACTORS.map((contractor) => (
             <div
               key={contractor.id}
@@ -262,7 +262,7 @@ function ContractorSelectionContent() {
               onClick={() => handleContractorSelect(contractor.id)}
             >
               {/* Contractor Image */}
-              <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-xl overflow-hidden">
+              <div className="relative h-40 sm:h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-xl overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                 <div className="absolute top-4 right-4">
                   {contractor.verified && (
@@ -280,34 +280,34 @@ function ContractorSelectionContent() {
               </div>
 
               {/* Contractor Details */}
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-1">{contractor.name}</h3>
-                    <p className="text-gray-600 text-sm">{contractor.location}</p>
+              <div className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-3 space-y-2 sm:space-y-0">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 truncate">{contractor.name}</h3>
+                    <p className="text-gray-600 text-xs sm:text-sm truncate">{contractor.location}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-left sm:text-right">
                     <div className="flex items-center mb-1">
-                      <svg className="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
-                      <span className="font-semibold text-gray-900">{contractor.rating}</span>
-                      <span className="text-gray-500 text-sm ml-1">({contractor.reviewCount} reviews)</span>
+                      <span className="font-semibold text-gray-900 text-sm sm:text-base">{contractor.rating}</span>
+                      <span className="text-gray-500 text-xs sm:text-sm ml-1">({contractor.reviewCount} reviews)</span>
                     </div>
                   </div>
                 </div>
 
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{contractor.description}</p>
+                <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">{contractor.description}</p>
 
                 {/* Price Range */}
-                <div className="mb-4">
-                  <span className="text-sm text-gray-500">Price Range:</span>
-                  <p className="font-semibold text-green-600 text-lg">{contractor.priceRange}</p>
+                <div className="mb-3 sm:mb-4">
+                  <span className="text-xs sm:text-sm text-gray-500">Price Range:</span>
+                  <p className="font-semibold text-green-600 text-base sm:text-lg">{contractor.priceRange}</p>
                 </div>
 
                 {/* Specialties */}
-                <div className="mb-4">
-                  <span className="text-sm text-gray-500 block mb-2">Specialties:</span>
+                <div className="mb-3 sm:mb-4">
+                  <span className="text-xs sm:text-sm text-gray-500 block mb-2">Specialties:</span>
                   <div className="flex flex-wrap gap-1">
                     {contractor.specialties.map((specialty, index) => (
                       <span
@@ -321,7 +321,7 @@ function ContractorSelectionContent() {
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm mb-3 sm:mb-4">
                   <div>
                     <span className="text-gray-500">Experience:</span>
                     <p className="font-medium text-gray-900">{contractor.experience}</p>
@@ -342,7 +342,7 @@ function ContractorSelectionContent() {
 
                 {/* Select Button */}
                 <button
-                  className={`w-full mt-4 py-3 px-4 rounded-lg font-medium transition-colors ${
+                  className={`w-full mt-3 sm:mt-4 py-2 sm:py-3 px-3 sm:px-4 rounded-lg font-medium transition-colors text-sm sm:text-base ${
                     selectedContractor === contractor.id
                       ? 'bg-green-600 text-white'
                       : 'bg-blue-600 text-white hover:bg-blue-700'
@@ -356,13 +356,13 @@ function ContractorSelectionContent() {
         </div>
 
         {/* Bottom CTA */}
-        <div className="mt-8 text-center">
-          <p className="text-gray-600 mb-4">
+        <div className="mt-6 sm:mt-8 text-center">
+          <p className="text-sm sm:text-base text-gray-600 mb-4 px-4">
             Don&apos;t see the right contractor? We&apos;ll help you find more options in your project dashboard.
           </p>
           <button
             onClick={handleSkipSelection}
-            className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            className="px-4 sm:px-6 py-2 sm:py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm sm:text-base"
           >
             Continue to Project Dashboard
           </button>

@@ -362,26 +362,27 @@ export default function GuidedProjectEnhanced() {
     <div className="min-h-screen bg-gray-50">
       {/* Header with Progress */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-3">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
               <button
                 onClick={() => window.location.href = '/dashboard/homeowner'}
-                className="p-2 hover:bg-gray-100 rounded-lg transition"
+                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition flex-shrink-0"
               >
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">Guided Project Creation</h1>
-                <p className="text-sm text-gray-500">Step {currentStep + 1} of {CHAT_STEPS.length}: {currentStepData?.title}</p>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">Guided Project Creation</h1>
+                <p className="text-xs sm:text-sm text-gray-500 truncate">Step {currentStep + 1} of {CHAT_STEPS.length}: {currentStepData?.title}</p>
               </div>
             </div>
             {isCreatingProject && (
-              <div className="flex items-center space-x-2 text-blue-600">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                <span className="text-sm">Creating project...</span>
+              <div className="flex items-center space-x-2 text-blue-600 flex-shrink-0">
+                <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-blue-600"></div>
+                <span className="text-xs sm:text-sm hidden sm:inline">Creating project...</span>
+                <span className="text-xs sm:hidden">Creating...</span>
               </div>
             )}
           </div>
@@ -397,23 +398,23 @@ export default function GuidedProjectEnhanced() {
       </div>
 
       {/* Chat Interface */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      <div className="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-lg">
           {/* Messages */}
-          <div className="h-96 overflow-y-auto p-6 space-y-4">
+          <div className="h-80 sm:h-96 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4">
             {messages.map((message, index) => (
               <div
                 key={index}
                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
+                  className={`max-w-xs sm:max-w-sm lg:max-w-md px-3 sm:px-4 py-2 sm:py-3 rounded-2xl ${
                     message.role === 'user'
                       ? 'bg-blue-600 text-white rounded-br-md'
                       : 'bg-gray-100 text-gray-900 rounded-bl-md'
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.text}</p>
+                  <p className="text-xs sm:text-sm whitespace-pre-wrap leading-relaxed">{message.text}</p>
                 </div>
               </div>
             ))}
@@ -432,14 +433,14 @@ export default function GuidedProjectEnhanced() {
 
           {/* Current Step Question & Suggestions */}
           {currentStepData && !isCreatingProject && (
-            <div className="border-t border-gray-200 p-6 bg-blue-50">
-              <div className="mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{currentStepData.question}</h3>
-                <p className="text-sm text-gray-600">You can choose from the suggestions below or type your own answer.</p>
+            <div className="border-t border-gray-200 p-4 sm:p-6 bg-blue-50">
+              <div className="mb-3 sm:mb-4">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">{currentStepData.question}</h3>
+                <p className="text-xs sm:text-sm text-gray-600">You can choose from the suggestions below or type your own answer.</p>
               </div>
               
               {/* Suggestion Boxes */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mb-3 sm:mb-4">
                 {currentStepData.suggestions.map((suggestion, index) => (
                   <button
                     key={index}
@@ -447,7 +448,7 @@ export default function GuidedProjectEnhanced() {
                       setInputText(suggestion);
                       handleSend();
                     }}
-                    className="px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all text-left text-gray-900 hover:text-gray-900"
+                    className="px-3 py-2 text-xs sm:text-sm bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all text-left text-gray-900 hover:text-gray-900"
                   >
                     {suggestion}
                   </button>
@@ -457,22 +458,22 @@ export default function GuidedProjectEnhanced() {
           )}
 
           {/* Input */}
-          <div className="border-t border-gray-200 p-6">
-            <div className="flex space-x-3">
+          <div className="border-t border-gray-200 p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
               <input
                 type="text"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder={currentStepData?.placeholder || "Type your response here..."}
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white"
+                className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white text-sm sm:text-base"
                 disabled={isLoading || isCreatingProject}
                 style={{ color: '#111827' }}
               />
               <button
                 onClick={handleSend}
                 disabled={!inputText.trim() || isLoading || isCreatingProject}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium"
+                className="px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium text-sm sm:text-base"
               >
                 {currentStep < CHAT_STEPS.length - 1 ? 'Next' : 'Finish'}
               </button>
