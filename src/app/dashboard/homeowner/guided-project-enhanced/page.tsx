@@ -173,6 +173,7 @@ export default function GuidedProjectEnhanced() {
         setMessages(prev => [...prev, nextStepMessage]);
               } else {
                 // All steps completed, create project
+                console.log('All steps completed, creating project...', { currentStep, projectData });
                 setCompletedSteps(prev => [...prev, currentStep]);
                 // Add a small delay to show the completion message
                 setTimeout(() => {
@@ -242,6 +243,7 @@ export default function GuidedProjectEnhanced() {
 
           const createProjectFromSteps = async () => {
             try {
+              console.log('createProjectFromSteps called with projectData:', projectData);
               setIsCreatingProject(true);
               
               // Add completion message
@@ -253,6 +255,7 @@ export default function GuidedProjectEnhanced() {
               setMessages(prev => [...prev, completionMessage]);
               
               // Create project with collected data
+              console.log('Calling createProjectInDashboard...');
               await createProjectInDashboard(projectData);
               
             } catch (error) {
@@ -263,7 +266,6 @@ export default function GuidedProjectEnhanced() {
                 type: 'response'
               };
               setMessages(prev => [...prev, errorMessage]);
-            } finally {
               setIsCreatingProject(false);
             }
           };
@@ -271,12 +273,14 @@ export default function GuidedProjectEnhanced() {
 
   const createProjectInDashboard = async (data: Partial<ProjectData>) => {
     try {
-      setIsCreatingProject(true);
+      console.log('createProjectInDashboard called with data:', data);
       
       // Create a more robust project name
       const projectName = data.projectType && data.description 
         ? `${data.projectType} - ${data.description}`.substring(0, 100)
         : data.projectType || data.description || 'New Construction Project';
+      
+      console.log('Project name:', projectName);
       
       const projectPayload = {
         name: projectName,
@@ -299,6 +303,8 @@ export default function GuidedProjectEnhanced() {
         additional_challenges: data.additionalChallenges || []
       };
 
+      console.log('Sending project payload:', projectPayload);
+      
       const response = await fetch('/api/projects', {
         method: 'POST',
         headers: {
@@ -307,11 +313,16 @@ export default function GuidedProjectEnhanced() {
         body: JSON.stringify(projectPayload),
       });
 
+      console.log('API response status:', response.status);
+
       if (!response.ok) {
-        throw new Error('Failed to create project');
+        const errorText = await response.text();
+        console.error('API error response:', errorText);
+        throw new Error(`Failed to create project: ${response.status} ${errorText}`);
       }
 
       const newProject = await response.json();
+      console.log('Project created successfully:', newProject);
       
               // Add success message
               const successMessage: Message = {
