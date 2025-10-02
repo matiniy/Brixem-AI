@@ -88,21 +88,21 @@ export default function HomeownerDashboard() {
     <div className="bg-white rounded-lg p-5 mt-4 border border-gray-100">
       <div className="grid grid-cols-3 gap-4 mb-4">
         <div className="text-center">
-          <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-2">
+          <div className="w-12 h-12 aspect-square bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-2">
             <TrendingUp className="w-6 h-6 text-blue-600" />
           </div>
           <div className="text-2xl font-bold text-gray-900">{project.progress}%</div>
           <div className="text-xs text-gray-500 mt-1">Complete</div>
         </div>
         <div className="text-center">
-          <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-2">
+          <div className="w-12 h-12 aspect-square bg-green-50 rounded-full flex items-center justify-center mx-auto mb-2">
             <DollarSign className="w-6 h-6 text-green-600" />
           </div>
           <div className="text-2xl font-bold text-gray-900">53%</div>
           <div className="text-xs text-gray-500 mt-1">Budget Used</div>
         </div>
         <div className="text-center">
-          <div className="w-12 h-12 bg-purple-50 rounded-full flex items-center justify-center mx-auto mb-2">
+          <div className="w-12 h-12 aspect-square bg-purple-50 rounded-full flex items-center justify-center mx-auto mb-2">
             <CheckCircle className="w-6 h-6 text-purple-600" />
           </div>
           <div className="text-2xl font-bold text-gray-900">2</div>
@@ -189,7 +189,7 @@ export default function HomeownerDashboard() {
 
         {/* Create New Project Card */}
         <div className="bg-white border-2 border-dashed border-gray-300 rounded-2xl p-6 hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer flex flex-col items-center justify-center min-h-[300px]">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+          <div className="w-16 h-16 aspect-square bg-blue-100 rounded-full flex items-center justify-center mb-4">
             <Plus className="w-8 h-8 text-blue-600" />
           </div>
           <h3 className="font-semibold text-gray-900 mb-2">Start New Project</h3>

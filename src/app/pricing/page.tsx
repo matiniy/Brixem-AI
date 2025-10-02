@@ -125,7 +125,7 @@ export default function Pricing() {
               
               <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 aspect-square rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                       <path fillRule="evenodd" d="M20.707 6.293a1 1 0 010 1.414l-10 10a1 1 0 01-1.414 0l-5-5a1 1 0 011.414-1.414L10 15.586l9.293-9.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
@@ -133,7 +133,7 @@ export default function Pricing() {
                   <span className="text-gray-700 text-sm sm:text-base">1,000 Brixem Tokens to try key features</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 aspect-square rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                       <path fillRule="evenodd" d="M20.707 6.293a1 1 0 010 1.414l-10 10a1 1 0 01-1.414 0l-5-5a1 1 0 011.414-1.414L10 15.586l9.293-9.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
@@ -141,7 +141,7 @@ export default function Pricing() {
                   <span className="text-gray-700 text-sm sm:text-base">1 active project slot</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 aspect-square rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                       <path fillRule="evenodd" d="M6.293 6.293a1 1 0 011.414 0L12 11.586l4.293-4.293a1 1 0 111.414 1.414L13.414 13l4.293 4.293a1 1 0 01-1.414 1.414L12 14.414l-4.293 4.293a1 1 0 01-1.414-1.414L10.586 13 6.293 8.707a1 1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
@@ -149,7 +149,7 @@ export default function Pricing() {
                   <span className="text-gray-500 text-sm sm:text-base">Preview AI-generated documents (read-only)</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 aspect-square rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                       <path fillRule="evenodd" d="M6.293 6.293a1 1 0 011.414 0L12 11.586l4.293-4.293a1 1 0 111.414 1.414L13.414 13l4.293 4.293a1 1 0 01-1.414 1.414L12 14.414l-4.293 4.293a1 1 0 01-1.414-1.414L10.586 13 6.293 8.707a1 1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
@@ -157,7 +157,7 @@ export default function Pricing() {
                   <span className="text-gray-500 text-sm sm:text-base">Export documents (PDF/Word)</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 aspect-square rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                       <path fillRule="evenodd" d="M6.293 6.293a1 1 0 011.414 0L12 11.586l4.293-4.293a1 1 0 111.414 1.414L13.414 13l4.293 4.293a1 1 0 01-1.414 1.414L12 14.414l-4.293 4.293a1 1 0 01-1.414-1.414L10.586 13 6.293 8.707a1 1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
@@ -165,7 +165,7 @@ export default function Pricing() {
                   <span className="text-gray-500 text-sm sm:text-base">Access to contractor finder</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 aspect-square rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                       <path fillRule="evenodd" d="M6.293 6.293a1 1 0 011.414 0L12 11.586l4.293-4.293a1 1 0 111.414 1.414L13.414 13l4.293 4.293a1 1 0 01-1.414 1.414L12 14.414l-4.293 4.293a1 1 0 01-1.414-1.414L10.586 13 6.293 8.707a1 1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
@@ -209,7 +209,7 @@ export default function Pricing() {
               
               <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 aspect-square rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                       <path fillRule="evenodd" d="M20.707 6.293a1 1 0 010 1.414l-10 10a1 1 0 01-1.414 0l-5-5a1 1 0 011.414-1.414L10 15.586l9.293-9.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
@@ -217,7 +217,7 @@ export default function Pricing() {
                   <span className="text-gray-700 text-sm sm:text-base">50,000 Brixem Tokens every month</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 aspect-square rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                       <path fillRule="evenodd" d="M20.707 6.293a1 1 0 010 1.414l-10 10a1 1 0 01-1.414 0l-5-5a1 1 0 011.414-1.414L10 15.586l9.293-9.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
@@ -225,7 +225,7 @@ export default function Pricing() {
                   <span className="text-gray-700 text-sm sm:text-base">Up to 3 active project slots</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 aspect-square rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                       <path fillRule="evenodd" d="M20.707 6.293a1 1 0 010 1.414l-10 10a1 1 0 01-1.414 0l-5-5a1 1 0 011.414-1.414L10 15.586l9.293-9.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
@@ -233,7 +233,7 @@ export default function Pricing() {
                   <span className="text-gray-700 text-sm sm:text-base">Full access to all tools: Document generation, Scheduling + cost estimation</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 aspect-square rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                       <path fillRule="evenodd" d="M20.707 6.293a1 1 0 010 1.414l-10 10a1 1 0 01-1.414 0l-5-5a1 1 0 011.414-1.414L10 15.586l9.293-9.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
@@ -241,7 +241,7 @@ export default function Pricing() {
                   <span className="text-gray-700 text-sm sm:text-base">Export documents (PDF/Word)</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 aspect-square rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                       <path fillRule="evenodd" d="M20.707 6.293a1 1 0 010 1.414l-10 10a1 1 0 01-1.414 0l-5-5a1 1 0 011.414-1.414L10 15.586l9.293-9.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
@@ -279,7 +279,7 @@ export default function Pricing() {
               
               <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 aspect-square rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                       <path fillRule="evenodd" d="M20.707 6.293a1 1 0 010 1.414l-10 10a1 1 0 01-1.414 0l-5-5a1 1 0 011.414-1.414L10 15.586l9.293-9.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
@@ -287,7 +287,7 @@ export default function Pricing() {
                   <span className="text-gray-700 text-sm sm:text-base">Unlimited Brixem Tokens for one full project</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 aspect-square rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                       <path fillRule="evenodd" d="M20.707 6.293a1 1 0 010 1.414l-10 10a1 1 0 01-1.414 0l-5-5a1 1 0 011.414-1.414L10 15.586l9.293-9.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
@@ -295,7 +295,7 @@ export default function Pricing() {
                   <span className="text-gray-700 text-sm sm:text-base">All premium tools unlocked: Scope of Works, Cost Estimation, Timeline, Contract generator (JCT, FIDIC, NEC4), Project readiness checklist</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 aspect-square rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                       <path fillRule="evenodd" d="M20.707 6.293a1 1 0 010 1.414l-10 10a1 1 0 01-1.414 0l-5-5a1 1 0 011.414-1.414L10 15.586l9.293-9.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
@@ -303,7 +303,7 @@ export default function Pricing() {
                   <span className="text-gray-700 text-sm sm:text-base">Export unlimited documents</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 aspect-square rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                       <path fillRule="evenodd" d="M20.707 6.293a1 1 0 010 1.414l-10 10a1 1 0 01-1.414 0l-5-5a1 1 0 011.414-1.414L10 15.586l9.293-9.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
@@ -311,7 +311,7 @@ export default function Pricing() {
                   <span className="text-gray-700 text-sm sm:text-base">Access compliance checkers</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 aspect-square rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                       <path fillRule="evenodd" d="M20.707 6.293a1 1 0 010 1.414l-10 10a1 1 0 01-1.414 0l-5-5a1 1 0 011.414-1.414L10 15.586l9.293-9.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
@@ -342,7 +342,7 @@ export default function Pricing() {
         <section className="py-12 sm:py-16 lg:py-20 bg-white">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 text-center">
             <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 sm:p-12">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-6 sm:mb-8 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 aspect-square mx-auto mb-6 sm:mb-8 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center">
                 <svg className="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -473,7 +473,7 @@ export default function Pricing() {
               ×
             </button>
             <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center">
+              <div className="w-16 h-16 aspect-square mx-auto mb-4 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center">
                 <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>

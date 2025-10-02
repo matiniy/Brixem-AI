@@ -113,7 +113,7 @@ function CheckoutPageInner() {
                     <div className="space-y-1">
                       {planDetails.features.map((feature, index) => (
                         <div key={index} className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                          <div className="w-2 h-2 aspect-square rounded-full bg-green-500"></div>
                           <span className="text-sm text-gray-600">{feature}</span>
                         </div>
                       ))}
@@ -151,7 +151,7 @@ function CheckoutPageInner() {
               {/* Guarantees */}
               <div className="grid grid-cols-3 gap-4 pt-6 border-t">
                 <div className="text-center">
-                  <div className="w-8 h-8 mx-auto mb-2 rounded-full bg-green-100 flex items-center justify-center">
+                  <div className="w-8 h-8 aspect-square mx-auto mb-2 rounded-full bg-green-100 flex items-center justify-center">
                     <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -159,7 +159,7 @@ function CheckoutPageInner() {
                   <span className="text-xs text-gray-600">30-Day Returns</span>
                 </div>
                 <div className="text-center">
-                  <div className="w-8 h-8 mx-auto mb-2 rounded-full bg-blue-100 flex items-center justify-center">
+                  <div className="w-8 h-8 aspect-square mx-auto mb-2 rounded-full bg-blue-100 flex items-center justify-center">
                     <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
@@ -167,7 +167,7 @@ function CheckoutPageInner() {
                   <span className="text-xs text-gray-600">Free Setup</span>
                 </div>
                 <div className="text-center">
-                  <div className="w-8 h-8 mx-auto mb-2 rounded-full bg-purple-100 flex items-center justify-center">
+                  <div className="w-8 h-8 aspect-square mx-auto mb-2 rounded-full bg-purple-100 flex items-center justify-center">
                     <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>

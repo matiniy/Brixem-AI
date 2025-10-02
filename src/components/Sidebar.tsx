@@ -129,7 +129,7 @@ export default function Sidebar({
           <div className="px-3 sm:px-4 lg:px-6 mb-4 sm:mb-6 lg:mb-8">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center text-white font-bold text-sm sm:text-lg shadow-md">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 aspect-square rounded-lg bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center text-white font-bold text-sm sm:text-lg shadow-md">
                   B
                 </div>
                 <span className="text-white font-bold text-lg sm:text-xl">Brixem</span>
@@ -212,7 +212,7 @@ export default function Sidebar({
                     {hoveredProject === project.id && (
                       <button
                         onClick={(e) => handleDeleteClick(e, project)}
-                        className="absolute top-1 sm:top-2 right-1 sm:right-2 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center text-white text-xs transition opacity-0 group-hover:opacity-100 touch-manipulation"
+                        className="absolute top-1 sm:top-2 right-1 sm:right-2 w-4 h-4 sm:w-5 sm:h-5 aspect-square rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center text-white text-xs transition opacity-0 group-hover:opacity-100 touch-manipulation"
                         title="Delete Project"
                       >
                         <svg className="w-2 h-2 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -278,7 +278,7 @@ export default function Sidebar({
           
           {/* User Section */}
           <div className="flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center">
+            <div className="w-6 h-6 sm:w-8 sm:h-8 aspect-square rounded-full bg-gradient-to-br from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center">
               <span className="text-white font-medium text-xs sm:text-sm">N</span>
             </div>
             <div className="flex flex-col">
