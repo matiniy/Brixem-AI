@@ -237,33 +237,33 @@ export default function GuidedProjectEnhanced() {
     setProjectData(updatedData);
   };
 
-  const createProjectFromSteps = async () => {
-    try {
-      setIsCreatingProject(true);
-      
-      // Add completion message
-      const completionMessage: Message = {
-        role: 'ai',
-        text: "Perfect! I have all the information I need. Let me create your project now...",
-        type: 'response'
-      };
-      setMessages(prev => [...prev, completionMessage]);
-      
-      // Create project with collected data
-      await createProjectInDashboard(projectData);
-      
-    } catch (error) {
-      console.error('Error creating project:', error);
-      const errorMessage: Message = {
-        role: 'ai',
-        text: "I&apos;m sorry, there was an error creating your project. Please try again.",
-        type: 'response'
-      };
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsCreatingProject(false);
-    }
-  };
+          const createProjectFromSteps = async () => {
+            try {
+              setIsCreatingProject(true);
+              
+              // Add completion message
+              const completionMessage: Message = {
+                role: 'ai',
+                text: "Perfect! I have all the information I need. Let me create your project and find the best contractors for you...",
+                type: 'response'
+              };
+              setMessages(prev => [...prev, completionMessage]);
+              
+              // Create project with collected data
+              await createProjectInDashboard(projectData);
+              
+            } catch (error) {
+              console.error('Error creating project:', error);
+              const errorMessage: Message = {
+                role: 'ai',
+                text: "I&apos;m sorry, there was an error creating your project. Please try again.",
+                type: 'response'
+              };
+              setMessages(prev => [...prev, errorMessage]);
+            } finally {
+              setIsCreatingProject(false);
+            }
+          };
 
 
   const createProjectInDashboard = async (data: Partial<ProjectData>) => {
@@ -310,19 +310,30 @@ export default function GuidedProjectEnhanced() {
 
       const newProject = await response.json();
       
-      // Add success message
-      const successMessage: Message = {
-        role: 'ai',
-        text: `🎉 Great! I've created your project "${newProject.name}". You can now view it in your dashboard and I'll help you create detailed project plans, timelines, and documents.`,
-        type: 'response'
-      };
-      
-      setMessages(prev => [...prev, successMessage]);
+              // Add success message
+              const successMessage: Message = {
+                role: 'ai',
+                text: `🎉 Great! I've created your project "${newProject.name}". Now let me find the best contractors for your project...`,
+                type: 'response'
+              };
+              
+              setMessages(prev => [...prev, successMessage]);
 
-      // Redirect to dashboard after a short delay
-      setTimeout(() => {
-        window.location.href = '/dashboard/homeowner';
-      }, 2000);
+              // Redirect to contractor selection page with project data
+              setTimeout(() => {
+                const params = new URLSearchParams({
+                  type: data.projectType || 'Renovation',
+                  location: data.location?.city || 'London',
+                  budget: data.budgetRange || '£25k - £75k',
+                  size: data.size?.toString() || 'Medium',
+                  timeline: data.preferredStartDate || 'Next 3 months',
+                  goals: (data.goals || []).join(','),
+                  challenges: (data.knownIssues || []).join(','),
+                  details: (data.additionalChallenges || []).join(',')
+                });
+                
+                window.location.href = `/dashboard/homeowner/contractor-selection?${params.toString()}`;
+              }, 2000);
 
     } catch (error) {
       console.error('Error creating project:', error);
