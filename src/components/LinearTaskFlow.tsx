@@ -329,9 +329,9 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                     
                     {/* Today Marker for Current Phase */}
                     {isCurrentPhase && (
-                      <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 z-20">
+                      <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 z-20">
                         <div className="w-0.5 h-5 bg-blue-500 rounded-full"></div>
-                        <div className="text-xs text-blue-600 font-medium mt-1 whitespace-nowrap">Today</div>
+                        <div className="text-xs text-blue-600 font-medium mt-2 whitespace-nowrap">Today</div>
                       </div>
                     )}
                     
@@ -350,8 +350,8 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                       )}
                     </div>
                     
-                    {/* Step Label - Improved Layout */}
-                    <div className="mt-2 sm:mt-3 lg:mt-4 text-center px-1 sm:px-2 min-w-0 w-full">
+                    {/* Step Label - Improved Layout with Better Spacing */}
+                    <div className="mt-3 sm:mt-4 lg:mt-5 text-center px-1 sm:px-2 min-w-0 w-full">
                       <div className={`text-xs font-medium leading-tight ${
                         step.status === 'in-progress' ? 'text-blue-700' :
                         step.status === 'completed' ? 'text-green-700' : 'text-gray-600'
@@ -360,7 +360,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                           {step.title}
                         </div>
                       </div>
-                      <div className={`text-xs mt-1 font-medium ${
+                      <div className={`text-xs mt-2 font-medium ${
                         step.status === 'in-progress' ? 'text-blue-500' :
                         step.status === 'completed' ? 'text-green-500' : 'text-gray-400'
                       }`}>
@@ -368,7 +368,7 @@ const LinearTaskFlow: React.FC<LinearTaskFlowProps> = ({
                       </div>
                       {/* Progress indicator for current phase */}
                       {isCurrentPhase && step.subTasks && (
-                        <div className="text-xs text-blue-600 mt-1 font-medium">
+                        <div className="text-xs text-blue-600 mt-2 font-medium">
                           {completedTasks}/{totalTasks} tasks
                         </div>
                       )}
