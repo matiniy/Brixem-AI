@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { getProject } from '../../actions';
 import PrimaryButton from '@/components/PrimaryButton';
 import KanbanBoard from '@/components/KanbanBoard';
+import FloatingChatOverlay from '@/components/FloatingChatOverlay';
 import { CHAT_FIRST } from '@/lib/flags';
 // import ChatFirstProjectPage from './chat-first-page'; // Removed unused import
 import FloatingChatProjectPage from './floating-chat-page';
@@ -64,12 +65,6 @@ interface ProjectPhase {
   icon: string;
 }
 
-interface ChatMessage {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  timestamp: string;
-}
 
 export default function ProjectDetailPage() {
   // Use floating chat layout by default
@@ -87,9 +82,11 @@ function LegacyProjectDetailPage() {
   
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'kanban' | 'chat' | 'documents'>('overview'); // Default to overview
+  const [activeTab, setActiveTab] = useState<'overview' | 'kanban' | 'documents'>('overview'); // Default to overview
   const [expandedPhase, setExpandedPhase] = useState<string | null>(null);
   const [expandedTask, setExpandedTask] = useState<string | null>(null);
+  const [isChatExpanded, setIsChatExpanded] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   // Comprehensive Project Phases with Tasks and Subtasks
   const [projectPhases] = useState<ProjectPhase[]>([
@@ -708,6 +705,15 @@ function LegacyProjectDetailPage() {
     }
   ]);
 
+  // Chat state
+  const [chatMessages, setChatMessages] = useState<Array<{ role: 'user' | 'ai'; text: string; type?: 'normal' | 'task-confirm' | 'system' }>>([
+    {
+      role: "ai",
+      text: "Welcome back! I'm here to help you manage your project. What would you like to work on today?",
+      type: "normal"
+    }
+  ]);
+
   const loadProject = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -722,7 +728,43 @@ function LegacyProjectDetailPage() {
     }
   }, [projectId, router]);
 
-  const [isGenerating, setIsGenerating] = useState(false);
+  // Chat handler
+  const handleSendMessage = async (message: string) => {
+    if (!message.trim()) return;
+
+    const userMessage = {
+      role: "user" as const,
+      text: message,
+      type: "normal" as const
+    };
+
+    setChatMessages(prev => [...prev, userMessage]);
+    setIsGenerating(true);
+
+    try {
+      // Simulate AI response
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const aiMessage = {
+        role: "ai" as const,
+        text: `I understand you're asking about "${message}". I'm here to help you with your ${project?.name || 'project'}. You can ask me about tasks, progress, documents, or any other project-related questions.`,
+        type: "normal" as const
+      };
+
+      setChatMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      const errorMessage = {
+        role: "ai" as const,
+        text: "I apologize, but I encountered an error. Please try again.",
+        type: "normal" as const
+      };
+      setChatMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const [generatedDocuments, setGeneratedDocuments] = useState<{
     sow?: string;
     estimate?: string;
@@ -814,101 +856,8 @@ function LegacyProjectDetailPage() {
   ];
 
   // Chat functionality
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    {
-      id: "1",
-      role: "assistant",
-      content: project ? `Hi! I'm here to help you with your ${project.name} project. I can answer questions about construction, help you plan your renovation, and connect you with local contractors. What would you like to know?` : "Hi! I'm here to help you with your project. I can answer questions about construction, help you plan your renovation, and connect you with local contractors. What would you like to know?",
-      timestamp: new Date().toLocaleTimeString()
-    }
-  ]);
-  const [chatInput, setChatInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
 
-  const handleSendMessage = async () => {
-    if (!chatInput.trim()) return;
 
-    const userMessage: ChatMessage = {
-      id: Date.now().toString(),
-      role: "user",
-      content: chatInput.trim(),
-      timestamp: new Date().toLocaleTimeString()
-    };
-
-    // Add user message
-    setChatMessages(prev => [...prev, userMessage]);
-    setChatInput("");
-    setIsTyping(true);
-
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponse = generateAIResponse(chatInput.trim());
-      setChatMessages(prev => [...prev, aiResponse]);
-      setIsTyping(false);
-    }, 1000);
-  };
-
-  const generateAIResponse = (userInput: string): ChatMessage => {
-    if (!project) return {
-      id: Date.now().toString(),
-      role: "assistant" as const,
-      content: "I'm sorry, but I can't access the project information right now. Please try refreshing the page.",
-      timestamp: new Date().toLocaleTimeString()
-    };
-
-    const input = userInput.toLowerCase();
-    
-    if (input.includes("project") || input.includes("status")) {
-      return {
-        id: Date.now().toString(),
-        role: "assistant" as const,
-        content: `Your project "${project.name}" is currently in ${project.status} status. Here's what I can tell you:\n\n• Location: ${project.location}\n${project.size_sqft ? `• Size: ${project.size_sqft} sq ft\n` : ''}${project.description ? `• Description: ${project.description}\n` : ''}\n\nI can help you with project planning, cost estimation, contractor recommendations, and more. What specific aspect would you like to explore?`,
-        timestamp: new Date().toLocaleTimeString()
-      };
-    }
-    
-    if (input.includes("cost") || input.includes("estimate") || input.includes("budget")) {
-      return {
-        id: Date.now().toString(),
-        role: "assistant" as const,
-        content: `I can help you with cost estimation for your ${project.name} project! Based on typical construction costs in your area, here's a rough estimate:\n\n• Materials: $${Math.round((project.size_sqft || 1000) * 60)}\n• Labor: $${Math.round((project.size_sqft || 1000) * 75)}\n• Overhead: $${Math.round((project.size_sqft || 1000) * 15)}\n\n**Total Estimated Cost: $${Math.round((project.size_sqft || 1000) * 150)}**\n\nWould you like me to generate a detailed cost breakdown document for you?`,
-        timestamp: new Date().toLocaleTimeString()
-      };
-    }
-    
-    if (input.includes("contractor") || input.includes("vendor") || input.includes("help")) {
-      return {
-        id: Date.now().toString(),
-        role: "assistant" as const,
-        content: `Great question! I can connect you with verified local contractors and vendors for your ${project.name} project. I have access to:\n\n• General contractors\n• Specialized trades (electrical, plumbing, HVAC)\n• Design professionals\n• Material suppliers\n\nWould you like me to show you some local contractor options, or do you have a specific trade in mind?`,
-        timestamp: new Date().toLocaleTimeString()
-      };
-    }
-    
-    if (input.includes("schedule") || input.includes("timeline") || input.includes("when")) {
-      return {
-        id: Date.now().toString(),
-        role: "assistant" as const,
-        content: `For your ${project.name} project, here's a typical timeline:\n\n**Phase 1: Planning & Permits (2-4 weeks)**\n• Design finalization\n• Permit applications\n• Contractor selection\n\n**Phase 2: Construction (8-12 weeks)**\n• Site preparation\n• Main construction work\n• Finishing touches\n\n**Phase 3: Completion (1-2 weeks)**\n• Final inspections\n• Punch list completion\n\nWould you like me to create a detailed project schedule document for you?`,
-        timestamp: new Date().toLocaleTimeString()
-      };
-    }
-    
-    // Default response
-    return {
-      id: Date.now().toString(),
-      role: "assistant" as const,
-      content: `I understand you're asking about "${userInput}". I'm here to help with all aspects of your ${project.name} project. I can assist with:\n\n• Project planning and documentation\n• Cost estimation and budgeting\n• Contractor recommendations\n• Timeline and scheduling\n• Building codes and permits\n\nWhat specific information would be most helpful for you right now?`,
-      timestamp: new Date().toLocaleTimeString()
-    };
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
 
   const generateMockSOW = (projectData: Project) => {
     const projectType = projectData.type || 'renovation';
@@ -1319,16 +1268,6 @@ Any modifications to this scope of work must be documented in writing and approv
               Kanban Board
             </button>
             <button
-              onClick={() => setActiveTab('chat')}
-              className={`py-3 sm:py-4 px-2 sm:px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                activeTab === 'chat'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Chat
-            </button>
-            <button
               onClick={() => setActiveTab('overview')}
               className={`py-3 sm:py-4 px-2 sm:px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                 activeTab === 'overview'
@@ -1367,63 +1306,6 @@ Any modifications to this scope of work must be documented in writing and approv
               onAddTask={handleAddTask}
               onDeleteTask={handleDeleteTask}
             />
-          </div>
-        </div>
-      ) : activeTab === 'chat' ? (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-          <div className="mb-4 sm:mb-6">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Project Chat</h2>
-            <p className="text-sm sm:text-base text-gray-600">Chat with AI about {project.name} - ask questions, get updates, and manage your project</p>
-          </div>
-          
-          {/* Chat Interface */}
-          <div className="bg-white rounded-lg border border-gray-200 h-[500px] sm:h-[600px] flex flex-col">
-            <div className="p-4 sm:p-6 border-b border-gray-200 flex-shrink-0">
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900">Brixem AI Assistant</h3>
-              <p className="text-xs sm:text-sm text-gray-600">How can I help you with {project.name} today?</p>
-            </div>
-            
-            {/* Chat Messages Area */}
-            <div className="flex-1 p-4 sm:p-6 bg-gray-50 overflow-y-auto min-h-0">
-              <div className="space-y-3 sm:space-y-4">
-                {chatMessages.map((message) => (
-                  <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`bg-white text-gray-900 px-3 sm:px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 max-w-[calc(100%-3rem)] sm:max-w-2xl ${message.role === 'user' ? 'ml-auto' : ''}`}>
-                      <p className="text-xs sm:text-sm leading-relaxed">{message.content}</p>
-                      <p className="text-xs mt-1 sm:mt-2 text-gray-400">{message.timestamp}</p>
-                    </div>
-                  </div>
-                ))}
-                {isTyping && (
-                  <div className="flex items-start gap-2 sm:gap-3 justify-end">
-                    <div className="bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white px-3 sm:px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl max-w-[calc(100%-3rem)] sm:max-w-2xl">
-                      <p className="text-xs sm:text-sm leading-relaxed">Typing...</p>
-                      <p className="text-xs mt-1 sm:mt-2 text-blue-100">Just now</p>
-                    </div>
-                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
-                      <span className="text-gray-600 font-medium text-xs">U</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            {/* Chat Input */}
-            <div className="p-4 sm:p-6 border-t border-gray-200 flex-shrink-0">
-              <div className="flex space-x-2 sm:space-x-3">
-                <input
-                  type="text"
-                  placeholder="Ask me about your project..."
-                  className="flex-1 border border-gray-300 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                />
-                <button className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-lg sm:rounded-xl text-sm font-medium hover:opacity-90 transition flex-shrink-0" onClick={handleSendMessage}>
-                  Send
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       ) : activeTab === 'documents' ? (
@@ -1995,6 +1877,15 @@ Any modifications to this scope of work must be documented in writing and approv
           </div>
         </div>
       )}
+
+      {/* Floating Chat Overlay */}
+      <FloatingChatOverlay
+        onSend={handleSendMessage}
+        messages={chatMessages}
+        placeholder="Ask about your project tasks..."
+        isExpanded={isChatExpanded}
+        onToggleExpanded={setIsChatExpanded}
+      />
     </div>
   );
 }
