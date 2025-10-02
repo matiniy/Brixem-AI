@@ -37,6 +37,31 @@ interface Task {
   likes: number;
   dueDate?: string;
   estimatedHours?: number;
+  subtasks?: Subtask[];
+}
+
+interface Subtask {
+  id: string;
+  title: string;
+  description?: string;
+  status: "todo" | "in-progress" | "completed";
+  priority: "high" | "medium" | "low";
+  progress: number;
+  assignedUsers: string[];
+  dueDate?: string;
+  estimatedHours?: number;
+}
+
+interface ProjectPhase {
+  id: string;
+  name: string;
+  description: string;
+  status: "upcoming" | "in-progress" | "completed";
+  progress: number;
+  duration: string;
+  tasks: Task[];
+  color: string;
+  icon: string;
 }
 
 interface ChatMessage {
@@ -62,7 +87,590 @@ function LegacyProjectDetailPage() {
   
   const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'kanban' | 'chat' | 'documents'>('kanban'); // Default to kanban
+  const [activeTab, setActiveTab] = useState<'overview' | 'kanban' | 'chat' | 'documents'>('overview'); // Default to overview
+  const [expandedPhase, setExpandedPhase] = useState<string | null>(null);
+  const [expandedTask, setExpandedTask] = useState<string | null>(null);
+
+  // Comprehensive Project Phases with Tasks and Subtasks
+  const [projectPhases] = useState<ProjectPhase[]>([
+    {
+      id: 'pre-plan',
+      name: 'Pre-Plan',
+      description: 'Initial planning, design, and preparation phase',
+      status: 'completed',
+      progress: 100,
+      duration: '2-4 weeks',
+      color: 'blue',
+      icon: '📋',
+      tasks: [
+        {
+          id: 'pre-plan-1',
+          title: 'Project Scope Definition',
+          description: 'Define project requirements, goals, and constraints',
+          status: 'completed',
+          priority: 'high',
+          progress: 100,
+          assignedUsers: ['Project Manager'],
+          comments: 3,
+          likes: 2,
+          dueDate: '2024-01-15',
+          estimatedHours: 16,
+          subtasks: [
+            {
+              id: 'pre-plan-1-1',
+              title: 'Initial client consultation',
+              description: 'Meet with client to understand requirements',
+              status: 'completed',
+              priority: 'high',
+              progress: 100,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-01-10',
+              estimatedHours: 4
+            },
+            {
+              id: 'pre-plan-1-2',
+              title: 'Site survey and measurements',
+              description: 'Conduct detailed site survey and take measurements',
+              status: 'completed',
+              priority: 'high',
+              progress: 100,
+              assignedUsers: ['Surveyor'],
+              dueDate: '2024-01-12',
+              estimatedHours: 6
+            },
+            {
+              id: 'pre-plan-1-3',
+              title: 'Requirements documentation',
+              description: 'Document all project requirements and specifications',
+              status: 'completed',
+              priority: 'medium',
+              progress: 100,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-01-15',
+              estimatedHours: 6
+            }
+          ]
+        },
+        {
+          id: 'pre-plan-2',
+          title: 'Design & Planning',
+          description: 'Create detailed designs and project plans',
+          status: 'completed',
+          priority: 'high',
+          progress: 100,
+          assignedUsers: ['Architect', 'Designer'],
+          comments: 5,
+          likes: 4,
+          dueDate: '2024-01-25',
+          estimatedHours: 32,
+          subtasks: [
+            {
+              id: 'pre-plan-2-1',
+              title: 'Conceptual design development',
+              description: 'Develop initial design concepts and layouts',
+              status: 'completed',
+              priority: 'high',
+              progress: 100,
+              assignedUsers: ['Architect'],
+              dueDate: '2024-01-18',
+              estimatedHours: 12
+            },
+            {
+              id: 'pre-plan-2-2',
+              title: '3D modeling and visualization',
+              description: 'Create 3D models and renderings for client approval',
+              status: 'completed',
+              priority: 'medium',
+              progress: 100,
+              assignedUsers: ['Designer'],
+              dueDate: '2024-01-22',
+              estimatedHours: 16
+            },
+            {
+              id: 'pre-plan-2-3',
+              title: 'Technical drawings and specifications',
+              description: 'Prepare detailed technical drawings and specifications',
+              status: 'completed',
+              priority: 'high',
+              progress: 100,
+              assignedUsers: ['Architect'],
+              dueDate: '2024-01-25',
+              estimatedHours: 4
+            }
+          ]
+        },
+        {
+          id: 'pre-plan-3',
+          title: 'Permits & Approvals',
+          description: 'Obtain necessary permits and regulatory approvals',
+          status: 'completed',
+          priority: 'high',
+          progress: 100,
+          assignedUsers: ['Project Manager'],
+          comments: 2,
+          likes: 1,
+          dueDate: '2024-02-05',
+          estimatedHours: 24,
+          subtasks: [
+            {
+              id: 'pre-plan-3-1',
+              title: 'Building permit application',
+              description: 'Submit building permit application to local authority',
+              status: 'completed',
+              priority: 'high',
+              progress: 100,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-01-28',
+              estimatedHours: 8
+            },
+            {
+              id: 'pre-plan-3-2',
+              title: 'Planning permission review',
+              description: 'Review and address any planning permission requirements',
+              status: 'completed',
+              priority: 'high',
+              progress: 100,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-02-02',
+              estimatedHours: 12
+            },
+            {
+              id: 'pre-plan-3-3',
+              title: 'Utility approvals',
+              description: 'Obtain approvals for utility connections and modifications',
+              status: 'completed',
+              priority: 'medium',
+              progress: 100,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-02-05',
+              estimatedHours: 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'pre-construction',
+      name: 'Pre-Construction',
+      description: 'Site preparation, contractor selection, and material procurement',
+      status: 'in-progress',
+      progress: 60,
+      duration: '2-3 weeks',
+      color: 'orange',
+      icon: '🚧',
+      tasks: [
+        {
+          id: 'pre-construction-1',
+          title: 'Contractor Selection',
+          description: 'Select and hire qualified contractors and subcontractors',
+          status: 'completed',
+          priority: 'high',
+          progress: 100,
+          assignedUsers: ['Project Manager'],
+          comments: 4,
+          likes: 3,
+          dueDate: '2024-02-10',
+          estimatedHours: 20,
+          subtasks: [
+            {
+              id: 'pre-construction-1-1',
+              title: 'Contractor bidding process',
+              description: 'Send out RFPs and collect contractor bids',
+              status: 'completed',
+              priority: 'high',
+              progress: 100,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-02-05',
+              estimatedHours: 8
+            },
+            {
+              id: 'pre-construction-1-2',
+              title: 'Contractor interviews and evaluations',
+              description: 'Interview shortlisted contractors and evaluate proposals',
+              status: 'completed',
+              priority: 'high',
+              progress: 100,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-02-08',
+              estimatedHours: 8
+            },
+            {
+              id: 'pre-construction-1-3',
+              title: 'Contract negotiation and signing',
+              description: 'Negotiate terms and sign contracts with selected contractors',
+              status: 'completed',
+              priority: 'high',
+              progress: 100,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-02-10',
+              estimatedHours: 4
+            }
+          ]
+        },
+        {
+          id: 'pre-construction-2',
+          title: 'Site Preparation',
+          description: 'Prepare the construction site for work to begin',
+          status: 'in-progress',
+          priority: 'high',
+          progress: 60,
+          assignedUsers: ['Site Supervisor'],
+          comments: 2,
+          likes: 1,
+          dueDate: '2024-02-15',
+          estimatedHours: 16,
+          subtasks: [
+            {
+              id: 'pre-construction-2-1',
+              title: 'Site clearing and demolition',
+              description: 'Clear site and remove existing structures as needed',
+              status: 'completed',
+              priority: 'high',
+              progress: 100,
+              assignedUsers: ['Demolition Team'],
+              dueDate: '2024-02-12',
+              estimatedHours: 8
+            },
+            {
+              id: 'pre-construction-2-2',
+              title: 'Utility disconnection and protection',
+              description: 'Disconnect and protect existing utilities',
+              status: 'in-progress',
+              priority: 'high',
+              progress: 50,
+              assignedUsers: ['Utility Specialist'],
+              dueDate: '2024-02-14',
+              estimatedHours: 4
+            },
+            {
+              id: 'pre-construction-2-3',
+              title: 'Site security and fencing',
+              description: 'Install security measures and site fencing',
+              status: 'todo',
+              priority: 'medium',
+              progress: 0,
+              assignedUsers: ['Site Supervisor'],
+              dueDate: '2024-02-15',
+              estimatedHours: 4
+            }
+          ]
+        },
+        {
+          id: 'pre-construction-3',
+          title: 'Material Procurement',
+          description: 'Order and schedule delivery of construction materials',
+          status: 'todo',
+          priority: 'medium',
+          progress: 0,
+          assignedUsers: ['Procurement Manager'],
+          comments: 0,
+          likes: 0,
+          dueDate: '2024-02-20',
+          estimatedHours: 12,
+          subtasks: [
+            {
+              id: 'pre-construction-3-1',
+              title: 'Material specifications and quantities',
+              description: 'Finalize material specifications and calculate quantities',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Procurement Manager'],
+              dueDate: '2024-02-18',
+              estimatedHours: 6
+            },
+            {
+              id: 'pre-construction-3-2',
+              title: 'Supplier selection and ordering',
+              description: 'Select suppliers and place material orders',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Procurement Manager'],
+              dueDate: '2024-02-19',
+              estimatedHours: 4
+            },
+            {
+              id: 'pre-construction-3-3',
+              title: 'Delivery scheduling',
+              description: 'Schedule material deliveries to align with construction timeline',
+              status: 'todo',
+              priority: 'medium',
+              progress: 0,
+              assignedUsers: ['Procurement Manager'],
+              dueDate: '2024-02-20',
+              estimatedHours: 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'build',
+      name: 'Build',
+      description: 'Main construction phase with all building work',
+      status: 'upcoming',
+      progress: 0,
+      duration: '8-12 weeks',
+      color: 'green',
+      icon: '🏗️',
+      tasks: [
+        {
+          id: 'build-1',
+          title: 'Foundation & Structure',
+          description: 'Build foundation and main structural elements',
+          status: 'todo',
+          priority: 'high',
+          progress: 0,
+          assignedUsers: ['Construction Team'],
+          comments: 0,
+          likes: 0,
+          dueDate: '2024-03-15',
+          estimatedHours: 80,
+          subtasks: [
+            {
+              id: 'build-1-1',
+              title: 'Foundation excavation and pouring',
+              description: 'Excavate foundation area and pour concrete',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Foundation Team'],
+              dueDate: '2024-03-05',
+              estimatedHours: 32
+            },
+            {
+              id: 'build-1-2',
+              title: 'Structural framing',
+              description: 'Install structural steel and timber framing',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Framing Team'],
+              dueDate: '2024-03-10',
+              estimatedHours: 32
+            },
+            {
+              id: 'build-1-3',
+              title: 'Roof structure installation',
+              description: 'Install roof trusses and structural elements',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Roofing Team'],
+              dueDate: '2024-03-15',
+              estimatedHours: 16
+            }
+          ]
+        },
+        {
+          id: 'build-2',
+          title: 'MEP Installation',
+          description: 'Install mechanical, electrical, and plumbing systems',
+          status: 'todo',
+          priority: 'high',
+          progress: 0,
+          assignedUsers: ['MEP Team'],
+          comments: 0,
+          likes: 0,
+          dueDate: '2024-04-15',
+          estimatedHours: 120,
+          subtasks: [
+            {
+              id: 'build-2-1',
+              title: 'Electrical rough-in',
+              description: 'Install electrical wiring and outlets',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Electrician'],
+              dueDate: '2024-04-05',
+              estimatedHours: 40
+            },
+            {
+              id: 'build-2-2',
+              title: 'Plumbing installation',
+              description: 'Install plumbing pipes and fixtures',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Plumber'],
+              dueDate: '2024-04-08',
+              estimatedHours: 40
+            },
+            {
+              id: 'build-2-3',
+              title: 'HVAC system installation',
+              description: 'Install heating, ventilation, and air conditioning',
+              status: 'todo',
+              priority: 'medium',
+              progress: 0,
+              assignedUsers: ['HVAC Technician'],
+              dueDate: '2024-04-12',
+              estimatedHours: 40
+            }
+          ]
+        },
+        {
+          id: 'build-3',
+          title: 'Interior Finishing',
+          description: 'Complete interior finishes and fixtures',
+          status: 'todo',
+          priority: 'medium',
+          progress: 0,
+          assignedUsers: ['Finishing Team'],
+          comments: 0,
+          likes: 0,
+          dueDate: '2024-05-15',
+          estimatedHours: 100,
+          subtasks: [
+            {
+              id: 'build-3-1',
+              title: 'Drywall installation and finishing',
+              description: 'Install and finish drywall throughout the space',
+              status: 'todo',
+              priority: 'medium',
+              progress: 0,
+              assignedUsers: ['Drywall Team'],
+              dueDate: '2024-05-05',
+              estimatedHours: 40
+            },
+            {
+              id: 'build-3-2',
+              title: 'Flooring installation',
+              description: 'Install flooring materials (tile, hardwood, carpet)',
+              status: 'todo',
+              priority: 'medium',
+              progress: 0,
+              assignedUsers: ['Flooring Team'],
+              dueDate: '2024-05-10',
+              estimatedHours: 40
+            },
+            {
+              id: 'build-3-3',
+              title: 'Painting and final touches',
+              description: 'Paint walls and complete final interior touches',
+              status: 'todo',
+              priority: 'low',
+              progress: 0,
+              assignedUsers: ['Painting Team'],
+              dueDate: '2024-05-15',
+              estimatedHours: 20
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'handover',
+      name: 'Handover',
+      description: 'Final inspections, testing, and project handover to client',
+      status: 'upcoming',
+      progress: 0,
+      duration: '1-2 weeks',
+      color: 'purple',
+      icon: '🎉',
+      tasks: [
+        {
+          id: 'handover-1',
+          title: 'Final Inspections',
+          description: 'Conduct final inspections and quality checks',
+          status: 'todo',
+          priority: 'high',
+          progress: 0,
+          assignedUsers: ['Quality Inspector'],
+          comments: 0,
+          likes: 0,
+          dueDate: '2024-05-25',
+          estimatedHours: 16,
+          subtasks: [
+            {
+              id: 'handover-1-1',
+              title: 'Building code compliance inspection',
+              description: 'Ensure all work meets building codes and regulations',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Building Inspector'],
+              dueDate: '2024-05-22',
+              estimatedHours: 8
+            },
+            {
+              id: 'handover-1-2',
+              title: 'Quality control walkthrough',
+              description: 'Conduct detailed quality control walkthrough',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Quality Inspector'],
+              dueDate: '2024-05-24',
+              estimatedHours: 4
+            },
+            {
+              id: 'handover-1-3',
+              title: 'Client walkthrough and approval',
+              description: 'Conduct final walkthrough with client for approval',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-05-25',
+              estimatedHours: 4
+            }
+          ]
+        },
+        {
+          id: 'handover-2',
+          title: 'Documentation & Handover',
+          description: 'Prepare final documentation and handover project to client',
+          status: 'todo',
+          priority: 'medium',
+          progress: 0,
+          assignedUsers: ['Project Manager'],
+          comments: 0,
+          likes: 0,
+          dueDate: '2024-05-30',
+          estimatedHours: 12,
+          subtasks: [
+            {
+              id: 'handover-2-1',
+              title: 'Warranty documentation',
+              description: 'Prepare warranty documentation for all work and materials',
+              status: 'todo',
+              priority: 'medium',
+              progress: 0,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-05-27',
+              estimatedHours: 4
+            },
+            {
+              id: 'handover-2-2',
+              title: 'Operation and maintenance manuals',
+              description: 'Prepare O&M manuals for all installed systems',
+              status: 'todo',
+              priority: 'medium',
+              progress: 0,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-05-28',
+              estimatedHours: 4
+            },
+            {
+              id: 'handover-2-3',
+              title: 'Final project handover meeting',
+              description: 'Conduct final handover meeting with client',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-05-30',
+              estimatedHours: 4
+            }
+          ]
+        }
+      ]
+    }
+  ]);
+
   const [tasks, setTasks] = useState<Task[]>([
     // Sample tasks for new projects
     {
@@ -823,8 +1431,8 @@ Any modifications to this scope of work must be documented in writing and approv
           <div className="mb-4 sm:mb-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Project Documents</h2>
-                <p className="text-sm sm:text-base text-gray-600">View and manage project documents for {project.name}</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Project Documents</h2>
+            <p className="text-sm sm:text-base text-gray-600">View and manage project documents for {project.name}</p>
               </div>
               <button
                 onClick={() => router.push(`/dashboard/documents?projectId=${project.id}`)}
@@ -1188,165 +1796,202 @@ Any modifications to this scope of work must be documented in writing and approv
         </div>
       ) : (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-            {/* Project Details */}
-            <div className="lg:col-span-2">
-              <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Project Overview</h2>
-                
-                <div className="space-y-4 sm:space-y-6">
+          {/* Project Header */}
+          <div className="mb-6 sm:mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">Basic Information</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                      <div>
-                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Project Name</label>
-                        <p className="text-sm sm:text-base text-gray-900">{project.name}</p>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{project.name}</h1>
+                <p className="text-sm sm:text-base text-gray-600">{project.location} • {project.size_sqft || '200'} sq ft</p>
                       </div>
-                      <div>
-                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Location</label>
-                        <p className="text-sm sm:text-base text-gray-900">{project.location}</p>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => router.push(`/dashboard/documents?projectId=${project.id}`)}
+                  className="px-4 py-2 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-lg hover:opacity-90 transition flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  View All Documents
+                </button>
                       </div>
-                      {project.size_sqft && (
-                        <div>
-                          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Size</label>
-                          <p className="text-sm sm:text-base text-gray-900">{project.size_sqft} sq ft</p>
+                    </div>
+                  </div>
+
+          {/* Project Phases */}
+          <div className="space-y-6">
+            {projectPhases.map((phase) => (
+              <div key={phase.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                {/* Phase Header */}
+                <div 
+                  className={`p-4 sm:p-6 cursor-pointer hover:bg-gray-50 transition ${
+                    expandedPhase === phase.id ? 'bg-gray-50' : ''
+                  }`}
+                  onClick={() => setExpandedPhase(expandedPhase === phase.id ? null : phase.id)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl ${
+                        phase.status === 'completed' ? 'bg-green-100 text-green-600' :
+                        phase.status === 'in-progress' ? 'bg-orange-100 text-orange-600' :
+                        'bg-gray-100 text-gray-600'
+                      }`}>
+                        {phase.status === 'completed' ? '✓' : phase.icon}
+                    </div>
+                  <div>
+                        <h3 className="text-lg sm:text-xl font-semibold text-gray-900">{phase.name}</h3>
+                        <p className="text-sm text-gray-600">{phase.description}</p>
+                        <div className="flex items-center gap-4 mt-2">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            phase.status === 'completed' ? 'bg-green-100 text-green-800' :
+                            phase.status === 'in-progress' ? 'bg-orange-100 text-orange-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {phase.status === 'completed' ? 'Completed' :
+                             phase.status === 'in-progress' ? 'In Progress' : 'Upcoming'}
+                          </span>
+                          <span className="text-xs text-gray-500">{phase.duration}</span>
+                          <span className="text-xs text-gray-500">{phase.progress}% Complete</span>
+                      </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-24 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className={`h-2 rounded-full transition-all duration-300 ${
+                            phase.status === 'completed' ? 'bg-green-500' :
+                            phase.status === 'in-progress' ? 'bg-orange-500' :
+                            'bg-gray-300'
+                          }`}
+                          style={{ width: `${phase.progress}%` }}
+                        />
+                  </div>
+                      <svg 
+                        className={`w-5 h-5 text-gray-400 transition-transform ${
+                          expandedPhase === phase.id ? 'rotate-180' : ''
+                        }`} 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                </div>
+              </div>
+            </div>
+
+                {/* Phase Tasks */}
+                {expandedPhase === phase.id && (
+                  <div className="border-t border-gray-200 p-4 sm:p-6 bg-gray-50">
+                    <div className="space-y-4">
+                      {phase.tasks.map((task, taskIndex) => (
+                        <div key={task.id} className="bg-white rounded-lg border border-gray-200 p-4">
+                          <div 
+                            className="flex items-center justify-between cursor-pointer"
+                            onClick={() => setExpandedTask(expandedTask === task.id ? null : task.id)}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
+                                task.status === 'completed' ? 'bg-green-100 text-green-600' :
+                                task.status === 'in-progress' ? 'bg-orange-100 text-orange-600' :
+                                'bg-gray-100 text-gray-600'
+                              }`}>
+                                {task.status === 'completed' ? '✓' : taskIndex + 1}
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-gray-900">{task.title}</h4>
+                                <p className="text-sm text-gray-600">{task.description}</p>
+                                <div className="flex items-center gap-4 mt-1">
+                                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    task.priority === 'high' ? 'bg-red-100 text-red-800' :
+                                    task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                                    'bg-green-100 text-green-800'
+                                  }`}>
+                                    {task.priority} priority
+                                  </span>
+                                  <span className="text-xs text-gray-500">{task.estimatedHours}h estimated</span>
+                                  {task.dueDate && (
+                                    <span className="text-xs text-gray-500">Due: {new Date(task.dueDate).toLocaleDateString()}</span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="w-16 bg-gray-200 rounded-full h-2">
+                                <div 
+                                  className={`h-2 rounded-full transition-all duration-300 ${
+                                    task.status === 'completed' ? 'bg-green-500' :
+                                    task.status === 'in-progress' ? 'bg-orange-500' :
+                                    'bg-gray-300'
+                                  }`}
+                                  style={{ width: `${task.progress}%` }}
+                                />
+                              </div>
+                              <svg 
+                                className={`w-4 h-4 text-gray-400 transition-transform ${
+                                  expandedTask === task.id ? 'rotate-180' : ''
+                                }`} 
+                                fill="none" 
+                                stroke="currentColor" 
+                                viewBox="0 0 24 24"
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                            </div>
+                </div>
+
+                          {/* Task Subtasks */}
+                          {expandedTask === task.id && task.subtasks && (
+                            <div className="mt-4 pl-11 space-y-3">
+                              {task.subtasks.map((subtask, subtaskIndex) => (
+                                <div key={subtask.id} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                                  <div className="flex items-center gap-3">
+                                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
+                                      subtask.status === 'completed' ? 'bg-green-100 text-green-600' :
+                                      subtask.status === 'in-progress' ? 'bg-orange-100 text-orange-600' :
+                                      'bg-gray-100 text-gray-600'
+                                    }`}>
+                                      {subtask.status === 'completed' ? '✓' : subtaskIndex + 1}
+                </div>
+                                    <div className="flex-1">
+                                      <h5 className="font-medium text-gray-900 text-sm">{subtask.title}</h5>
+                                      <p className="text-xs text-gray-600">{subtask.description}</p>
+                                      <div className="flex items-center gap-3 mt-1">
+                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                          subtask.priority === 'high' ? 'bg-red-100 text-red-800' :
+                                          subtask.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                                          'bg-green-100 text-green-800'
+                                        }`}>
+                                          {subtask.priority}
+                                        </span>
+                                        <span className="text-xs text-gray-500">{subtask.estimatedHours}h</span>
+                                        {subtask.dueDate && (
+                                          <span className="text-xs text-gray-500">{new Date(subtask.dueDate).toLocaleDateString()}</span>
+                                        )}
+                                        <span className="text-xs text-gray-500">{subtask.assignedUsers.join(', ')}</span>
+              </div>
+              </div>
+                                    <div className="w-12 bg-gray-200 rounded-full h-1.5">
+                                      <div 
+                                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                                          subtask.status === 'completed' ? 'bg-green-500' :
+                                          subtask.status === 'in-progress' ? 'bg-orange-500' :
+                                          'bg-gray-300'
+                                        }`}
+                                        style={{ width: `${subtask.progress}%` }}
+                                      />
+            </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      )}
-                      <div>
-                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Status</label>
-                        <p className="text-sm sm:text-base text-gray-900 capitalize">{project.status}</p>
-                      </div>
+                      ))}
                     </div>
                   </div>
-
-                  {project.description && (
-                    <div>
-                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">Description</h3>
-                      <p className="text-sm sm:text-base text-gray-700">{project.description}</p>
-                    </div>
-                  )}
-
-                  <div>
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">Timeline</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                      <div>
-                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Created</label>
-                        <p className="text-sm sm:text-base text-gray-900">{new Date(project.created_at).toLocaleDateString()}</p>
-                      </div>
-                      <div>
-                        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Last Updated</label>
-                        <p className="text-sm sm:text-base text-gray-900">{new Date(project.updated_at).toLocaleDateString()}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
-            </div>
-
-            {/* Actions Sidebar */}
-            <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Quick Actions</h3>
-                
-                <div className="space-y-3 sm:space-y-4">
-                  <PrimaryButton
-                    onClick={handleGenerateDocuments}
-                    disabled={isGenerating}
-                    className="w-full"
-                  >
-                    {isGenerating ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                        Generating...
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <span className="text-sm sm:text-base">Generate Scope & Estimate</span>
-                      </>
-                    )}
-                  </PrimaryButton>
-
-                  <button
-                    onClick={() => setActiveTab('kanban')}
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2 justify-center"
-                  >
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2 2" />
-                    </svg>
-                    <span className="text-sm sm:text-base">View Kanban Board</span>
-                  </button>
-
-                  <button
-                    onClick={() => setActiveTab('chat')}
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2 justify-center"
-                  >
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
-                    <span className="text-sm sm:text-base">View Chat</span>
-                  </button>
-
-                  <button
-                    onClick={() => setActiveTab('documents')}
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition flex items-center gap-2 justify-center"
-                  >
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span className="text-sm sm:text-base">View Documents</span>
-                  </button>
-
-                  <button
-                    onClick={() => router.push('/dashboard/homeowner')}
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition flex items-center gap-2 justify-center"
-                  >
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span className="text-sm sm:text-base">Edit Project</span>
-                  </button>
-
-                  <button
-                    onClick={() => router.push('/dashboard/homeowner')}
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition flex items-center gap-2 justify-center"
-                  >
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <span className="text-sm sm:text-base">View Timeline</span>
-                  </button>
-                </div>
-
-                {/* Workspace Info */}
-                <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-gray-200">
-                  <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-2">Workspace</h4>
-                  <p className="text-xs sm:text-sm text-gray-900">{project.workspaces[0]?.name || 'Unknown'}</p>
-                </div>
-              </div>
-
-              {/* Next Steps */}
-              <div className="mt-4 sm:mt-6 bg-blue-50 rounded-lg border border-blue-200 p-4 sm:p-6">
-                <h3 className="text-base sm:text-lg font-semibold text-blue-900 mb-2 sm:mb-3">Next Steps</h3>
-                <ol className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-blue-800">
-                  <li className="flex items-start gap-2">
-                    <span className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-medium mt-0.5 flex-shrink-0">1</span>
-                    <span>Generate your Scope of Work and Estimate</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-medium mt-0.5 flex-shrink-0">2</span>
-                    <span>Review and customize the generated documents</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-medium mt-0.5 flex-shrink-0">3</span>
-                    <span>Download PDFs and share with contractors</span>
-                  </li>
-                </ol>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       )}
