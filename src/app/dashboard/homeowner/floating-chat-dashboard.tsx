@@ -422,56 +422,7 @@ export default function FloatingChatDashboard() {
     }
 
     try {
-      // Check if this is a project creation request
-      const projectName = extractProjectName(message);
-      
-      if (projectName) {
-        // Create new project
-        try {
-          const newProject = await createProject({
-            name: projectName,
-            type: 'renovation', // Default type
-            location: 'TBD', // Will be updated by user
-            description: `Project created via chat: ${message}`,
-            size_sqft: 0 // Will be updated by user
-          });
-          
-          // Add to local state
-          setProjects(prev => [...prev, newProject]);
-          setActiveProject(newProject.id);
-          
-          // Send real-time project update
-          if (isConnected) {
-            realtimeUpdates.sendProjectUpdate(newProject.id, {
-              action: 'created',
-              project: newProject,
-              userId: userId
-            });
-          }
-
-          // Track project creation
-          trackAction(BUSINESS_EVENTS.PROJECT_CREATED, 'business', 'chat');
-          
-          const successMessage: ChatMessage = {
-            role: "ai",
-            text: `Great! I've created your project "${projectName}". You can now start adding tasks, milestones, and managing your construction project. What would you like to do next?`,
-            type: "normal"
-          };
-          setMessages(prev => [...prev, successMessage]);
-          return;
-        } catch (error) {
-          console.error('Error creating project:', error);
-          const errorMessage: ChatMessage = {
-            role: "ai",
-            text: "I apologize, but I couldn't create the project. Please try again or contact support if the issue persists.",
-            type: "normal"
-          };
-          setMessages(prev => [...prev, errorMessage]);
-          return;
-        }
-      }
-
-      // Regular AI chat
+      // Regular AI chat - send to API first
       const projectContext = activeProject ? 
         `Current Project: ${projects.find(p => p.id === activeProject)?.name || 'Unknown'}
         Project Status: ${projects.find(p => p.id === activeProject)?.status || 'Unknown'}
@@ -748,13 +699,19 @@ export default function FloatingChatDashboard() {
                 <div className="flex items-end space-x-3">
                   <div className="flex-1 relative">
                     <textarea
-                      value={messages.find(m => m.role === 'user')?.text || ''}
-                    onChange={() => {
-                      // Handle input change
-                    }}
                       placeholder="Ask me anything..."
                       className="w-full px-4 py-3 pr-12 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 resize-none"
                       rows={1}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          const input = e.target as HTMLTextAreaElement;
+                          if (input.value.trim()) {
+                            handleSendMessage(input.value);
+                            input.value = '';
+                          }
+                        }
+                      }}
                     />
                     <button className="absolute right-3 bottom-3 p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
                       <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -763,9 +720,9 @@ export default function FloatingChatDashboard() {
                     </button>
                   </div>
                   <button
-                    onClick={() => {
-                      const input = document.querySelector('textarea') as HTMLTextAreaElement;
-                      if (input?.value) {
+                    onClick={(e) => {
+                      const input = e.currentTarget.parentElement?.querySelector('textarea') as HTMLTextAreaElement;
+                      if (input?.value.trim()) {
                         handleSendMessage(input.value);
                         input.value = '';
                       }
@@ -1052,13 +1009,19 @@ export default function FloatingChatDashboard() {
               <div className="flex items-end space-x-3">
                 <div className="flex-1 relative">
                   <textarea
-                    value={messages.find(m => m.role === 'user')?.text || ''}
-                    onChange={() => {
-                      // Handle input change
-                    }}
                     placeholder="Ask me anything..."
                     className="w-full px-4 py-3 pr-12 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 resize-none"
                     rows={1}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        const input = e.target as HTMLTextAreaElement;
+                        if (input.value.trim()) {
+                          handleSendMessage(input.value);
+                          input.value = '';
+                        }
+                      }
+                    }}
                   />
                   <button className="absolute right-3 bottom-3 p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
                     <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1067,9 +1030,9 @@ export default function FloatingChatDashboard() {
                   </button>
                 </div>
                 <button
-                  onClick={() => {
-                    const input = document.querySelector('textarea') as HTMLTextAreaElement;
-                    if (input?.value) {
+                  onClick={(e) => {
+                    const input = e.currentTarget.parentElement?.querySelector('textarea') as HTMLTextAreaElement;
+                    if (input?.value.trim()) {
                       handleSendMessage(input.value);
                       input.value = '';
                     }
