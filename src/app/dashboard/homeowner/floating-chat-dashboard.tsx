@@ -1,13 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Sidebar from '@/components/Sidebar';
 // import FloatingChatOverlay from '@/components/FloatingChatOverlay'; // Replaced with modern chat interface
 import LinearTaskFlow from '@/components/LinearTaskFlow';
-import { createProject, getProjects } from '../actions';
-import { sendChatMessage } from '@/lib/ai';
-import { useWebSocket, realtimeUpdates, setupRealtimeListeners } from '@/lib/websocket';
-import { trackAction, BUSINESS_EVENTS } from '@/lib/analytics';
+import { getProjects } from '../actions';
+// Removed unused imports - no floating chat
 // import { useProjectStore } from '@/store/projectStore'; // Not needed for this component
 
 interface Project {
@@ -46,12 +44,7 @@ interface Project {
 
 // Task interface removed as it's not used in this component
 
-interface ChatMessage {
-  role: "user" | "ai";
-  text: string;
-  type?: "normal" | "task-confirm" | "system";
-  taskText?: string;
-}
+// Removed ChatMessage interface - no floating chat
 
 interface SubTask {
   id: string;
@@ -98,21 +91,12 @@ export default function FloatingChatDashboard() {
   const [activeProject, setActiveProject] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: "ai",
-      text: "Welcome to Brixem! 🎉 I'm your AI construction assistant. I'll guide you through creating a comprehensive project plan with detailed scope, timeline, and cost estimates.\n\n**Ready to start your project?**\n\nI'll walk you through:\n• Initial project assessment\n• Scope of Works generation\n• Work Breakdown Structure\n• Project Schedule with Gantt charts\n• Detailed Cost Estimation\n\nLet's begin! Please tell me about your construction project - what are you planning to build or renovate?",
-      type: "normal"
-    }
-  ]);
-  const [isChatExpanded, setIsChatExpanded] = useState(false);
+  // Removed chat-related state - no floating chat
   const [isEditingProjectName, setIsEditingProjectName] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [editingProjectName, setEditingProjectName] = useState('');
-  const [userId, setUserId] = useState<string | null>(null);
 
-  // WebSocket connection
-  const { isConnected, subscribe } = useWebSocket(userId);
+  // Removed WebSocket - no floating chat
+  // const { isConnected, subscribe } = useWebSocket(userId);
 
   // Load projects function - moved before useEffect to avoid hoisting issues
   const loadProjects = useCallback(async () => {
@@ -126,7 +110,93 @@ export default function FloatingChatDashboard() {
         progress: project.progress || Math.floor(Math.random() * 100) // Use existing progress or calculate
       }));
       
-      // Set projects from database (no mock data)
+      // Add template project if no projects exist
+      if (projectsWithProgress.length === 0) {
+        const templateProject = {
+          id: 'template-project',
+          name: 'Kitchen Renovation Template',
+          type: 'kitchen-renovation',
+          location: 'Template Location',
+          description: 'A comprehensive kitchen renovation project template showing all phases, tasks, and cost estimates.',
+          size_sqft: 200,
+          status: 'planning',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          progress: 15,
+          ai_data: {
+            area: '200 sq ft',
+            finishLevel: 'Mid-range',
+            phases: [
+              {
+                id: 'phase-1',
+                name: 'Planning & Design',
+                status: 'completed',
+                tasks: [
+                  {
+                    id: 'task-1',
+                    name: 'Initial Consultation',
+                    status: 'completed',
+                    assignee: 'AI Assistant',
+                    subtasks: [
+                      { id: 'sub-1', name: 'Measure space', status: 'completed' },
+                      { id: 'sub-2', name: 'Assess existing layout', status: 'completed' }
+                    ]
+                  },
+                  {
+                    id: 'task-2',
+                    name: 'Design Planning',
+                    status: 'completed',
+                    assignee: 'Designer',
+                    subtasks: [
+                      { id: 'sub-3', name: 'Create 3D mockups', status: 'completed' },
+                      { id: 'sub-4', name: 'Select materials', status: 'completed' }
+                    ]
+                  }
+                ]
+              },
+              {
+                id: 'phase-2',
+                name: 'Demolition & Prep',
+                status: 'in-progress',
+                tasks: [
+                  {
+                    id: 'task-3',
+                    name: 'Remove old fixtures',
+                    status: 'in-progress',
+                    assignee: 'Contractor',
+                    subtasks: [
+                      { id: 'sub-5', name: 'Remove cabinets', status: 'completed' },
+                      { id: 'sub-6', name: 'Remove countertops', status: 'in-progress' }
+                    ]
+                  }
+                ]
+              },
+              {
+                id: 'phase-3',
+                name: 'Installation',
+                status: 'pending',
+                tasks: [
+                  {
+                    id: 'task-4',
+                    name: 'Install new cabinets',
+                    status: 'pending',
+                    assignee: 'Carpenter',
+                    subtasks: [
+                      { id: 'sub-7', name: 'Install base cabinets', status: 'pending' },
+                      { id: 'sub-8', name: 'Install wall cabinets', status: 'pending' }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          ai_generated: true
+        };
+        
+        projectsWithProgress.push(templateProject);
+      }
+      
+      // Set projects from database (with template if needed)
       setProjects(projectsWithProgress);
       
         // Set the first project as active if there are projects and no active project is set
@@ -135,61 +205,53 @@ export default function FloatingChatDashboard() {
       }
     } catch (error) {
       console.error('Error loading projects:', error);
-      // If API fails, show empty state (no mock data)
-      setProjects([]);
-      setActiveProject('');
+      // If API fails, show template project
+      const templateProject = {
+        id: 'template-project',
+        name: 'Kitchen Renovation Template',
+        type: 'kitchen-renovation',
+        location: 'Template Location',
+        description: 'A comprehensive kitchen renovation project template showing all phases, tasks, and cost estimates.',
+        size_sqft: 200,
+        status: 'planning',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        progress: 15,
+        ai_data: {
+          area: '200 sq ft',
+          finishLevel: 'Mid-range',
+          phases: [
+            {
+              id: 'phase-1',
+              name: 'Planning & Design',
+              status: 'completed',
+              tasks: [
+                {
+                  id: 'task-1',
+                  name: 'Initial Consultation',
+                  status: 'completed',
+                  assignee: 'AI Assistant',
+                  subtasks: [
+                    { id: 'sub-1', name: 'Measure space', status: 'completed' },
+                    { id: 'sub-2', name: 'Assess existing layout', status: 'completed' }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        ai_generated: true
+      };
+      setProjects([templateProject]);
+      setActiveProject('template-project');
     } finally {
       setIsLoading(false);
     }
   }, [activeProject]);
 
-  // Auto-scroll to bottom when new messages are added
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  // Removed auto-scroll - no floating chat
 
-  // Initialize WebSocket and real-time listeners
-  useEffect(() => {
-    // Get user ID from localStorage or auth
-    const storedUserId = localStorage.getItem('brixem_user_id');
-    if (storedUserId) {
-      setUserId(storedUserId);
-    }
-
-    // Setup real-time event listeners
-    setupRealtimeListeners();
-
-    // Subscribe to real-time updates
-    const unsubscribeProject = subscribe('project_update', (data) => {
-      console.log('Real-time project update:', data);
-      // Refresh projects when updated
-      loadProjects();
-    });
-
-    const unsubscribeTask = subscribe('task_update', (data) => {
-      console.log('Real-time task update:', data);
-      // Refresh projects when tasks are updated
-      loadProjects();
-    });
-
-    const unsubscribeChat = subscribe('chat_message', (data) => {
-      console.log('Real-time chat message:', data);
-      // Add new chat message to UI
-      if (data.role === 'ai' && data.text) {
-        setMessages(prev => [...prev, {
-          role: 'ai',
-          text: String(data.text),
-          type: 'normal'
-        }]);
-      }
-    });
-
-    return () => {
-      unsubscribeProject();
-      unsubscribeTask();
-      unsubscribeChat();
-    };
-  }, [subscribe, loadProjects]);
+  // Removed WebSocket initialization - no floating chat
 
   // Project store not needed for this component
   // const { tasks, addTask, setAll } = useProjectStore();
@@ -400,144 +462,9 @@ export default function FloatingChatDashboard() {
     }
   }, [activeProject, projects]);
 
-  const handleSendMessage = async (message: string) => {
-    if (!message.trim()) return;
+  // Removed handleSendMessage - no floating chat needed
 
-    const userMessage: ChatMessage = {
-      role: "user",
-      text: message,
-      type: "normal"
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-
-    // Send real-time chat message
-    if (isConnected) {
-      realtimeUpdates.sendChatMessage({
-        role: 'user',
-        text: message,
-        timestamp: new Date().toISOString(),
-        userId: userId
-      });
-    }
-
-    try {
-      // Regular AI chat - send to API first
-      const projectContext = activeProject ? 
-        `Current Project: ${projects.find(p => p.id === activeProject)?.name || 'Unknown'}
-        Project Status: ${projects.find(p => p.id === activeProject)?.status || 'Unknown'}
-        Project Progress: ${projects.find(p => p.id === activeProject)?.progress || 0}%
-
-        Total Tasks: ${taskCounts.totalTasks}
-        Completed Tasks: ${taskCounts.completedTasks}
-        To Do Tasks: ${taskCounts.toDoTasks}
-
-        When user asks about tasks, current stage, or what needs to be done, provide specific actionable items based on the current project state.` : 
-        'No active project selected';
-
-      const response = await sendChatMessage([userMessage], projectContext);
-      
-      if (response.message) {
-        const aiResponse: ChatMessage = {
-          role: "ai",
-          text: response.message,
-          type: "normal"
-        };
-        setMessages(prev => [...prev, aiResponse]);
-
-        // Check if AI is suggesting project creation and user responds positively
-        if (isProjectCreationSuggestion(aiResponse.text) && isPositiveResponse(message)) {
-          // Extract project details from conversation
-          const projectData = extractProjectDataFromConversation();
-          if (projectData) {
-            try {
-              const newProject = await createProject(projectData);
-              
-              // Add to local state
-              setProjects(prev => [...prev, newProject]);
-              setActiveProject(newProject.id);
-              
-              // Send real-time project update
-              if (isConnected) {
-                realtimeUpdates.sendProjectUpdate(newProject.id, {
-                  action: 'created',
-                  project: newProject,
-                  userId: userId
-                });
-              }
-
-              // Track project creation
-              trackAction(BUSINESS_EVENTS.PROJECT_CREATED, 'business', 'chat');
-              
-              const successMessage: ChatMessage = {
-                role: "ai",
-                text: `Perfect! I've created your project "${projectData.name}" in your dashboard. You can now start managing tasks, tracking progress, and collaborating with contractors. Let me know what you'd like to work on first!`,
-                type: "normal"
-              };
-              setMessages(prev => [...prev, successMessage]);
-            } catch (error) {
-              console.error('Error creating project:', error);
-              const errorMessage: ChatMessage = {
-                role: "ai",
-                text: "I encountered an error creating your project. Please try again or contact support if the issue persists.",
-                type: "normal"
-              };
-              setMessages(prev => [...prev, errorMessage]);
-            }
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error sending message:', error);
-      
-      // Provide more specific error messages
-      let errorText = "I apologize, but I encountered an error. Please try again.";
-      
-      if (error instanceof Error) {
-        if (error.message.includes('API key not configured')) {
-          errorText = "AI service is temporarily unavailable. Please try again later.";
-        } else if (error.message.includes('rate limit')) {
-          errorText = "I'm receiving too many requests. Please wait a moment and try again.";
-        } else if (error.message.includes('network')) {
-          errorText = "Network error. Please check your connection and try again.";
-        } else {
-          errorText = `Error: ${error.message}`;
-        }
-      }
-      
-      const errorMessage: ChatMessage = {
-        role: "ai",
-        text: errorText,
-        type: "normal"
-      };
-      setMessages(prev => [...prev, errorMessage]);
-    }
-  };
-
-  const extractProjectName = (message: string): string | null => {
-    const patterns = [
-      /create project (.+)/i,
-      /new project (.+)/i,
-      /project called (.+)/i,
-      /project named (.+)/i,
-      /create task (.+)/i,
-      /add task (.+)/i
-    ];
-    
-    for (const pattern of patterns) {
-      const match = message.match(pattern);
-      if (match && match[1]) {
-        return match[1].trim();
-      }
-    }
-    
-    // Special handling for building permits
-    if (message.toLowerCase().includes('building permits')) {
-      return 'Get Building Permits';
-    }
-    
-    return null;
-  };
+  // Removed extractProjectName - no floating chat needed
 
   const handleProjectSelect = (projectId: string) => {
     setActiveProject(projectId);
@@ -555,7 +482,7 @@ export default function FloatingChatDashboard() {
     );
   }
 
-  // Show empty state for new users (no projects)
+  // Show empty state for new users (no projects) - this should not happen now with template
   if (projects.length === 0) {
     return (
       <div className="flex h-screen overflow-hidden">
@@ -628,115 +555,7 @@ export default function FloatingChatDashboard() {
             </div>
           </main>
 
-          {/* Modern AI Assistant Chat */}
-          <div className="fixed bottom-6 right-6 z-50">
-            <div className="bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden w-96 max-h-[600px] flex flex-col">
-              {/* Chat Header */}
-              <div className="border-b border-gray-100 px-6 py-4 bg-gray-50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900">AI Assistant</h3>
-                      <p className="text-xs text-gray-500">Ask anything about your project</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => setIsChatExpanded(!isChatExpanded)}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                  >
-                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-
-              {/* Chat Messages */}
-              <div className="flex-1 overflow-y-auto px-6 py-6 max-h-[400px]">
-                <div className="space-y-6">
-                  {messages.map((msg, idx) => (
-                    <div key={idx}>
-                      {msg.role === 'ai' && (
-                        <div className="flex items-start space-x-3">
-                          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                            </svg>
-                          </div>
-                          <div className="flex-1">
-                            <div className="bg-gray-50 rounded-2xl rounded-tl-md px-4 py-3">
-                              <p className="text-sm text-gray-900 leading-relaxed whitespace-pre-line">{msg.text}</p>
-                            </div>
-                            <span className="text-xs text-gray-400 mt-2 ml-1 block">Just now</span>
-                          </div>
-                        </div>
-                      )}
-                      {msg.role === 'user' && (
-                        <div className="flex items-start space-x-3 justify-end">
-                          <div className="flex-1 flex flex-col items-end">
-                            <div className="bg-blue-600 text-white rounded-2xl rounded-tr-md px-4 py-3 max-w-lg">
-                              <p className="text-sm leading-relaxed">{msg.text}</p>
-                            </div>
-                            <span className="text-xs text-gray-400 mt-2 mr-1 block">Just now</span>
-                          </div>
-                          <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                            <span className="text-gray-700 font-medium text-xs">AT</span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Chat Input */}
-              <div className="border-t border-gray-100 px-6 py-4 bg-gray-50">
-                <div className="flex items-end space-x-3">
-                  <div className="flex-1 relative">
-                    <textarea
-                      placeholder="Ask me anything..."
-                      className="w-full px-4 py-3 pr-12 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 resize-none"
-                      rows={1}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          const input = e.target as HTMLTextAreaElement;
-                          if (input.value.trim()) {
-                            handleSendMessage(input.value);
-                            input.value = '';
-                          }
-                        }
-                      }}
-                    />
-                    <button className="absolute right-3 bottom-3 p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                      </svg>
-                    </button>
-                  </div>
-                  <button
-                    onClick={(e) => {
-                      const input = e.currentTarget.parentElement?.querySelector('textarea') as HTMLTextAreaElement;
-                      if (input?.value.trim()) {
-                        handleSendMessage(input.value);
-                        input.value = '';
-                      }
-                    }}
-                    className="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* Chat removed - users can access chat through the main dashboard */}
         </div>
       </div>
     );
@@ -938,168 +757,11 @@ export default function FloatingChatDashboard() {
           </div>
         </main>
 
-        {/* Modern AI Assistant Chat */}
-        <div className="fixed bottom-6 right-6 z-50">
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden w-96 max-h-[600px] flex flex-col">
-            {/* Chat Header */}
-            <div className="border-b border-gray-100 px-6 py-4 bg-gray-50">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">AI Assistant</h3>
-                    <p className="text-xs text-gray-500">Ask anything about your project</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setIsChatExpanded(!isChatExpanded)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            {/* Chat Messages */}
-            <div className="flex-1 overflow-y-auto px-6 py-6 max-h-[400px]">
-              <div className="space-y-6">
-                {messages.map((msg, idx) => (
-                  <div key={idx}>
-                    {msg.role === 'ai' && (
-                      <div className="flex items-start space-x-3">
-                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                          </svg>
-                        </div>
-                        <div className="flex-1">
-                          <div className="bg-gray-50 rounded-2xl rounded-tl-md px-4 py-3">
-                            <p className="text-sm text-gray-900 leading-relaxed whitespace-pre-line">{msg.text}</p>
-                          </div>
-                          <span className="text-xs text-gray-400 mt-2 ml-1 block">Just now</span>
-                        </div>
-                      </div>
-                    )}
-                    {msg.role === 'user' && (
-                      <div className="flex items-start space-x-3 justify-end">
-                        <div className="flex-1 flex flex-col items-end">
-                          <div className="bg-blue-600 text-white rounded-2xl rounded-tr-md px-4 py-3 max-w-lg">
-                            <p className="text-sm leading-relaxed">{msg.text}</p>
-                          </div>
-                          <span className="text-xs text-gray-400 mt-2 mr-1 block">Just now</span>
-                        </div>
-                        <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                          <span className="text-gray-700 font-medium text-xs">AT</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Chat Input */}
-            <div className="border-t border-gray-100 px-6 py-4 bg-gray-50">
-              <div className="flex items-end space-x-3">
-                <div className="flex-1 relative">
-                  <textarea
-                    placeholder="Ask me anything..."
-                    className="w-full px-4 py-3 pr-12 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 resize-none"
-                    rows={1}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        const input = e.target as HTMLTextAreaElement;
-                        if (input.value.trim()) {
-                          handleSendMessage(input.value);
-                          input.value = '';
-                        }
-                      }
-                    }}
-                  />
-                  <button className="absolute right-3 bottom-3 p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
-                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                    </svg>
-                  </button>
-                </div>
-                <button
-                  onClick={(e) => {
-                    const input = e.currentTarget.parentElement?.querySelector('textarea') as HTMLTextAreaElement;
-                    if (input?.value.trim()) {
-                      handleSendMessage(input.value);
-                      input.value = '';
-                    }
-                  }}
-                  className="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Chat removed - users can access chat through the main dashboard */}
       </div>
     </div>
   );
 }
 
 
-// Helper function to detect if AI is suggesting project creation
-function isProjectCreationSuggestion(aiText: string): boolean {
-  const lowerText = aiText.toLowerCase();
-  return lowerText.includes('create a project') ||
-         lowerText.includes('create project') ||
-         lowerText.includes('set up a project') ||
-         lowerText.includes('start a project') ||
-         lowerText.includes('project in your dashboard') ||
-         lowerText.includes('create this project') ||
-         lowerText.includes('would you like me to create') ||
-         lowerText.includes('shall i create') ||
-         lowerText.includes('let me create');
-}
-
-// Helper function to detect positive responses
-function isPositiveResponse(message: string): boolean {
-  const lowerMessage = message.toLowerCase().trim();
-  return lowerMessage === 'yes' || 
-         lowerMessage === 'y' || 
-         lowerMessage === 'yeah' || 
-         lowerMessage === 'yep' || 
-         lowerMessage === 'sure' || 
-         lowerMessage === 'ok' || 
-         lowerMessage === 'okay' ||
-         lowerMessage === 'create project' ||
-         lowerMessage === 'create' ||
-         lowerMessage === 'go ahead' ||
-         lowerMessage === 'please' ||
-         lowerMessage.includes('yes') ||
-         lowerMessage.includes('create project');
-}
-
-// Helper function to extract project data from conversation
-function extractProjectDataFromConversation(): {
-  name: string;
-  type: string;
-  location: string;
-  description: string;
-  size_sqft: number;
-} {
-  // This would extract project details from the conversation history
-  // For now, return a default project structure
-  return {
-    name: 'My Construction Project',
-    type: 'renovation',
-    location: 'To be specified',
-    description: 'Project created via AI chat conversation',
-    size_sqft: 0
-  };
-}
+// Removed helper functions - no floating chat needed
