@@ -447,7 +447,7 @@ export default function GuidedProjectEnhanced() {
                       setInputText(suggestion);
                       handleSend();
                     }}
-                    className="px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all text-left"
+                    className="px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all text-left text-gray-900 hover:text-gray-900"
                   >
                     {suggestion}
                   </button>
