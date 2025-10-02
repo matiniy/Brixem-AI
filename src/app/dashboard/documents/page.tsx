@@ -199,6 +199,11 @@ function DocumentsPageContent() {
                 <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
                   {currentProject ? `${currentProject.name} - Documents` : 'Documents'}
                 </h1>
+                {currentProject && (
+                  <div className="text-sm text-gray-500">
+                    Project ID: {currentProject.id} | URL: {window.location.href}
+                  </div>
+                )}
               </div>
 
               {/* Header Actions */}
