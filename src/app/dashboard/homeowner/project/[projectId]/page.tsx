@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import LinearTaskFlow from '@/components/LinearTaskFlow';
+import FloatingChatOverlay from '@/components/FloatingChatOverlay';
 import { getProjects } from '../../../actions';
 
 interface Project {
@@ -61,6 +62,45 @@ interface SubTask {
   }>;
 }
 
+interface Task {
+  id: string;
+  title: string;
+  description?: string;
+  status: "todo" | "in-progress" | "completed";
+  priority: "high" | "medium" | "low";
+  progress: number;
+  assignedUsers: string[];
+  comments: number;
+  likes: number;
+  dueDate?: string;
+  estimatedHours?: number;
+  subtasks?: Subtask[];
+}
+
+interface Subtask {
+  id: string;
+  title: string;
+  description?: string;
+  status: "todo" | "in-progress" | "completed";
+  priority: "high" | "medium" | "low";
+  progress: number;
+  assignedUsers: string[];
+  dueDate?: string;
+  estimatedHours?: number;
+}
+
+interface ProjectPhase {
+  id: string;
+  name: string;
+  description: string;
+  status: "upcoming" | "in-progress" | "completed";
+  progress: number;
+  duration: string;
+  tasks: Task[];
+  color: string;
+  icon: string;
+}
+
 interface TaskStep {
   id: string;
   title: string;
@@ -87,6 +127,605 @@ export default function ProjectDetailPage() {
   const [projectSteps, setProjectSteps] = useState<TaskStep[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  // Multi-level project structure state
+  const [expandedPhase, setExpandedPhase] = useState<string | null>(null);
+  const [expandedTask, setExpandedTask] = useState<string | null>(null);
+  
+  // Floating chat state
+  const [isChatExpanded, setIsChatExpanded] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [chatMessages, setChatMessages] = useState<Array<{ role: 'user' | 'ai'; text: string; type?: 'normal' | 'task-confirm' | 'system' }>>([
+    {
+      role: "ai",
+      text: "Welcome back! I'm here to help you manage your project. What would you like to work on today?",
+      type: "normal"
+    }
+  ]);
+
+  // Comprehensive Project Phases with Tasks and Subtasks
+  const [projectPhases] = useState<ProjectPhase[]>([
+    {
+      id: 'pre-plan',
+      name: 'Pre-Plan',
+      description: 'Initial planning, design, and preparation phase',
+      status: 'completed',
+      progress: 100,
+      duration: '2-4 weeks',
+      color: 'green',
+      icon: '📋',
+      tasks: [
+        {
+          id: 'pre-plan-1',
+          title: 'Project Planning & Design',
+          description: 'Finalize project scope and design requirements',
+          status: 'completed',
+          priority: 'high',
+          progress: 100,
+          assignedUsers: ['Project Manager', 'Designer'],
+          comments: 3,
+          likes: 5,
+          dueDate: '2024-01-15',
+          estimatedHours: 40,
+          subtasks: [
+            {
+              id: 'pre-plan-1-1',
+              title: 'Initial consultation and site survey',
+              description: 'Meet with client and assess current space',
+              status: 'completed',
+              priority: 'high',
+              progress: 100,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-01-10',
+              estimatedHours: 8
+            },
+            {
+              id: 'pre-plan-1-2',
+              title: 'Design concept development',
+              description: 'Create initial design concepts and layouts',
+              status: 'completed',
+              priority: 'high',
+              progress: 100,
+              assignedUsers: ['Designer'],
+              dueDate: '2024-01-12',
+              estimatedHours: 16
+            },
+            {
+              id: 'pre-plan-1-3',
+              title: 'Client approval and revisions',
+              description: 'Present designs and incorporate feedback',
+              status: 'completed',
+              priority: 'medium',
+              progress: 100,
+              assignedUsers: ['Designer', 'Project Manager'],
+              dueDate: '2024-01-15',
+              estimatedHours: 16
+            }
+          ]
+        },
+        {
+          id: 'pre-plan-2',
+          title: 'Permit Applications',
+          description: 'Submit necessary permits and approvals',
+          status: 'completed',
+          priority: 'high',
+          progress: 100,
+          assignedUsers: ['Project Manager'],
+          comments: 1,
+          likes: 2,
+          dueDate: '2024-01-20',
+          estimatedHours: 12,
+          subtasks: [
+            {
+              id: 'pre-plan-2-1',
+              title: 'Building permit application',
+              description: 'Submit building permit to local authority',
+              status: 'completed',
+              priority: 'high',
+              progress: 100,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-01-18',
+              estimatedHours: 4
+            },
+            {
+              id: 'pre-plan-2-2',
+              title: 'Electrical permit application',
+              description: 'Submit electrical work permit',
+              status: 'completed',
+              priority: 'high',
+              progress: 100,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-01-19',
+              estimatedHours: 4
+            },
+            {
+              id: 'pre-plan-2-3',
+              title: 'Plumbing permit application',
+              description: 'Submit plumbing work permit',
+              status: 'completed',
+              priority: 'high',
+              progress: 100,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-01-20',
+              estimatedHours: 4
+            }
+          ]
+        },
+        {
+          id: 'pre-plan-3',
+          title: 'Contractor Selection',
+          description: 'Interview and select contractors',
+          status: 'completed',
+          priority: 'medium',
+          progress: 100,
+          assignedUsers: ['Project Manager'],
+          comments: 0,
+          likes: 1,
+          dueDate: '2024-01-25',
+          estimatedHours: 16,
+          subtasks: [
+            {
+              id: 'pre-plan-3-1',
+              title: 'Contractor research and vetting',
+              description: 'Research and shortlist potential contractors',
+              status: 'completed',
+              priority: 'medium',
+              progress: 100,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-01-22',
+              estimatedHours: 8
+            },
+            {
+              id: 'pre-plan-3-2',
+              title: 'Contractor interviews and quotes',
+              description: 'Interview contractors and collect quotes',
+              status: 'completed',
+              priority: 'medium',
+              progress: 100,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-01-24',
+              estimatedHours: 6
+            },
+            {
+              id: 'pre-plan-3-3',
+              title: 'Contractor selection and contracts',
+              description: 'Select final contractors and sign contracts',
+              status: 'completed',
+              priority: 'high',
+              progress: 100,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-01-25',
+              estimatedHours: 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'pre-construction',
+      name: 'Pre-Construction',
+      description: 'Site preparation, permits, and material procurement',
+      status: 'in-progress',
+      progress: 30,
+      duration: '1-2 weeks',
+      color: 'blue',
+      icon: '🚧',
+      tasks: [
+        {
+          id: 'pre-construction-1',
+          title: 'Site Preparation',
+          description: 'Prepare the construction site for work',
+          status: 'in-progress',
+          priority: 'high',
+          progress: 50,
+          assignedUsers: ['Site Supervisor'],
+          comments: 2,
+          likes: 3,
+          dueDate: '2024-02-05',
+          estimatedHours: 24,
+          subtasks: [
+            {
+              id: 'pre-construction-1-1',
+              title: 'Site survey and measurements',
+              description: 'Final site measurements and marking',
+              status: 'completed',
+              priority: 'high',
+              progress: 100,
+              assignedUsers: ['Site Supervisor'],
+              dueDate: '2024-01-30',
+              estimatedHours: 4
+            },
+            {
+              id: 'pre-construction-1-2',
+              title: 'Utility location and marking',
+              description: 'Locate and mark all utilities',
+              status: 'in-progress',
+              priority: 'high',
+              progress: 50,
+              assignedUsers: ['Utility Specialist'],
+              dueDate: '2024-02-05',
+              estimatedHours: 4
+            },
+            {
+              id: 'pre-construction-1-3',
+              title: 'Site security and fencing',
+              description: 'Install security measures and site fencing',
+              status: 'todo',
+              priority: 'medium',
+              progress: 0,
+              assignedUsers: ['Site Supervisor'],
+              dueDate: '2024-02-05',
+              estimatedHours: 4
+            }
+          ]
+        },
+        {
+          id: 'pre-construction-2',
+          title: 'Demolition & Prep',
+          description: 'Remove existing structures and prepare for construction',
+          status: 'todo',
+          priority: 'high',
+          progress: 0,
+          assignedUsers: ['Demolition Team'],
+          comments: 0,
+          likes: 0,
+          dueDate: '2024-02-10',
+          estimatedHours: 32,
+          subtasks: [
+            {
+              id: 'pre-construction-2-1',
+              title: 'Remove existing fixtures',
+              description: 'Remove old cabinets, appliances, and fixtures',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Demolition Team'],
+              dueDate: '2024-02-08',
+              estimatedHours: 16
+            },
+            {
+              id: 'pre-construction-2-2',
+              title: 'Wall and floor preparation',
+              description: 'Prepare walls and floors for new construction',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Demolition Team'],
+              dueDate: '2024-02-10',
+              estimatedHours: 16
+            }
+          ]
+        },
+        {
+          id: 'pre-construction-3',
+          title: 'Material Procurement',
+          description: 'Order and schedule delivery of construction materials',
+          status: 'todo',
+          priority: 'medium',
+          progress: 0,
+          assignedUsers: ['Procurement Manager'],
+          comments: 0,
+          likes: 0,
+          dueDate: '2024-02-15',
+          estimatedHours: 12,
+          subtasks: [
+            {
+              id: 'pre-construction-3-1',
+              title: 'Material specifications and quantities',
+              description: 'Finalize material specifications and calculate quantities',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Procurement Manager'],
+              dueDate: '2024-02-12',
+              estimatedHours: 6
+            },
+            {
+              id: 'pre-construction-3-2',
+              title: 'Supplier selection and ordering',
+              description: 'Select suppliers and place material orders',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Procurement Manager'],
+              dueDate: '2024-02-15',
+              estimatedHours: 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'build',
+      name: 'Build',
+      description: 'Main construction work and installation',
+      status: 'upcoming',
+      progress: 0,
+      duration: '6-8 weeks',
+      color: 'orange',
+      icon: '🔨',
+      tasks: [
+        {
+          id: 'build-1',
+          title: 'Structural Work',
+          description: 'Foundation, framing, and structural modifications',
+          status: 'todo',
+          priority: 'high',
+          progress: 0,
+          assignedUsers: ['General Contractor'],
+          comments: 0,
+          likes: 0,
+          dueDate: '2024-03-15',
+          estimatedHours: 80,
+          subtasks: [
+            {
+              id: 'build-1-1',
+              title: 'Foundation work',
+              description: 'Any necessary foundation modifications',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Foundation Specialist'],
+              dueDate: '2024-02-20',
+              estimatedHours: 24
+            },
+            {
+              id: 'build-1-2',
+              title: 'Framing and structural modifications',
+              description: 'Install new framing and structural elements',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Carpenter'],
+              dueDate: '2024-03-01',
+              estimatedHours: 40
+            },
+            {
+              id: 'build-1-3',
+              title: 'Structural inspection',
+              description: 'Inspect structural work and obtain approvals',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Inspector'],
+              dueDate: '2024-03-05',
+              estimatedHours: 4
+            }
+          ]
+        },
+        {
+          id: 'build-2',
+          title: 'Rough-in Work',
+          description: 'Electrical, plumbing, and HVAC rough-in',
+          status: 'todo',
+          priority: 'high',
+          progress: 0,
+          assignedUsers: ['Electrician', 'Plumber', 'HVAC Tech'],
+          comments: 0,
+          likes: 0,
+          dueDate: '2024-03-20',
+          estimatedHours: 60,
+          subtasks: [
+            {
+              id: 'build-2-1',
+              title: 'Electrical rough-in',
+              description: 'Install electrical wiring and outlets',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Electrician'],
+              dueDate: '2024-03-10',
+              estimatedHours: 20
+            },
+            {
+              id: 'build-2-2',
+              title: 'Plumbing rough-in',
+              description: 'Install plumbing lines and fixtures',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Plumber'],
+              dueDate: '2024-03-15',
+              estimatedHours: 20
+            },
+            {
+              id: 'build-2-3',
+              title: 'HVAC rough-in',
+              description: 'Install HVAC ductwork and equipment',
+              status: 'todo',
+              priority: 'medium',
+              progress: 0,
+              assignedUsers: ['HVAC Tech'],
+              dueDate: '2024-03-20',
+              estimatedHours: 20
+            }
+          ]
+        },
+        {
+          id: 'build-3',
+          title: 'Finishing Work',
+          description: 'Drywall, flooring, painting, and final installations',
+          status: 'todo',
+          priority: 'medium',
+          progress: 0,
+          assignedUsers: ['Drywaller', 'Painter', 'Flooring Installer'],
+          comments: 0,
+          likes: 0,
+          dueDate: '2024-04-10',
+          estimatedHours: 100,
+          subtasks: [
+            {
+              id: 'build-3-1',
+              title: 'Drywall installation and finishing',
+              description: 'Install and finish drywall',
+              status: 'todo',
+              priority: 'medium',
+              progress: 0,
+              assignedUsers: ['Drywaller'],
+              dueDate: '2024-03-25',
+              estimatedHours: 32
+            },
+            {
+              id: 'build-3-2',
+              title: 'Flooring installation',
+              description: 'Install new flooring materials',
+              status: 'todo',
+              priority: 'medium',
+              progress: 0,
+              assignedUsers: ['Flooring Installer'],
+              dueDate: '2024-04-01',
+              estimatedHours: 40
+            },
+            {
+              id: 'build-3-3',
+              title: 'Painting and touch-ups',
+              description: 'Paint walls and perform final touch-ups',
+              status: 'todo',
+              priority: 'low',
+              progress: 0,
+              assignedUsers: ['Painter'],
+              dueDate: '2024-04-10',
+              estimatedHours: 28
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'handover',
+      name: 'Handover',
+      description: 'Final inspections, cleanup, and project delivery',
+      status: 'upcoming',
+      progress: 0,
+      duration: '1 week',
+      color: 'purple',
+      icon: '🎉',
+      tasks: [
+        {
+          id: 'handover-1',
+          title: 'Final Inspections',
+          description: 'Complete all required inspections and approvals',
+          status: 'todo',
+          priority: 'high',
+          progress: 0,
+          assignedUsers: ['Inspector', 'Project Manager'],
+          comments: 0,
+          likes: 0,
+          dueDate: '2024-04-15',
+          estimatedHours: 16,
+          subtasks: [
+            {
+              id: 'handover-1-1',
+              title: 'Building inspection',
+              description: 'Final building code inspection',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Building Inspector'],
+              dueDate: '2024-04-12',
+              estimatedHours: 4
+            },
+            {
+              id: 'handover-1-2',
+              title: 'Electrical inspection',
+              description: 'Final electrical work inspection',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Electrical Inspector'],
+              dueDate: '2024-04-13',
+              estimatedHours: 4
+            },
+            {
+              id: 'handover-1-3',
+              title: 'Plumbing inspection',
+              description: 'Final plumbing work inspection',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Plumbing Inspector'],
+              dueDate: '2024-04-14',
+              estimatedHours: 4
+            }
+          ]
+        },
+        {
+          id: 'handover-2',
+          title: 'Punch List & Cleanup',
+          description: 'Address any remaining issues and clean up site',
+          status: 'todo',
+          priority: 'medium',
+          progress: 0,
+          assignedUsers: ['Cleanup Crew'],
+          comments: 0,
+          likes: 0,
+          dueDate: '2024-04-18',
+          estimatedHours: 24,
+          subtasks: [
+            {
+              id: 'handover-2-1',
+              title: 'Punch list completion',
+              description: 'Complete any remaining minor tasks',
+              status: 'todo',
+              priority: 'medium',
+              progress: 0,
+              assignedUsers: ['General Contractor'],
+              dueDate: '2024-04-16',
+              estimatedHours: 16
+            },
+            {
+              id: 'handover-2-2',
+              title: 'Site cleanup and debris removal',
+              description: 'Clean up construction site and remove debris',
+              status: 'todo',
+              priority: 'low',
+              progress: 0,
+              assignedUsers: ['Cleanup Crew'],
+              dueDate: '2024-04-18',
+              estimatedHours: 8
+            }
+          ]
+        },
+        {
+          id: 'handover-3',
+          title: 'Project Delivery',
+          description: 'Final walkthrough and project handover to client',
+          status: 'todo',
+          priority: 'high',
+          progress: 0,
+          assignedUsers: ['Project Manager', 'Client'],
+          comments: 0,
+          likes: 0,
+          dueDate: '2024-04-20',
+          estimatedHours: 8,
+          subtasks: [
+            {
+              id: 'handover-3-1',
+              title: 'Final walkthrough with client',
+              description: 'Conduct final walkthrough with client',
+              status: 'todo',
+              priority: 'high',
+              progress: 0,
+              assignedUsers: ['Project Manager', 'Client'],
+              dueDate: '2024-04-19',
+              estimatedHours: 4
+            },
+            {
+              id: 'handover-3-2',
+              title: 'Documentation and warranties',
+              description: 'Provide final documentation and warranties',
+              status: 'todo',
+              priority: 'medium',
+              progress: 0,
+              assignedUsers: ['Project Manager'],
+              dueDate: '2024-04-20',
+              estimatedHours: 4
+            }
+          ]
+        }
+      ]
+    }
+  ]);
 
   // Load projects and find the current one
   useEffect(() => {
@@ -211,6 +850,42 @@ export default function ProjectDetailPage() {
 
   const handleDeliverableUpdate = (stepId: string, subTaskId: string, deliverableId: string, status: 'completed' | 'pending') => {
     console.log('Deliverable updated:', stepId, subTaskId, deliverableId, status);
+  };
+
+  const handleSendMessage = async (message: string) => {
+    if (!message.trim()) return;
+
+    const userMessage = {
+      role: "user" as const,
+      text: message,
+      type: "normal" as const
+    };
+
+    setChatMessages(prev => [...prev, userMessage]);
+    setIsGenerating(true);
+
+    try {
+      // Simulate AI response
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const aiMessage = {
+        role: "ai" as const,
+        text: `I understand you're asking about "${message}". I'm here to help you with your ${project?.name || 'project'}. You can ask me about tasks, progress, documents, or any other project-related questions.`,
+        type: "normal" as const
+      };
+
+      setChatMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      const errorMessage = {
+        role: "ai" as const,
+        text: "I apologize, but I encountered an error. Please try again.",
+        type: "normal" as const
+      };
+      setChatMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   if (isLoading) {
@@ -396,8 +1071,8 @@ export default function ProjectDetailPage() {
               onDeliverableUpdate={handleDeliverableUpdate}
               onStepComplete={handleStepComplete}
             />
-          </div>
-
+                        </div>
+                        
           {/* Project Description */}
           {project.description && (
             <div className="mb-6 sm:mb-8">
@@ -420,8 +1095,8 @@ export default function ProjectDetailPage() {
                 </div>
                 <p className="text-blue-700 text-sm mt-1">This is a template project showing how to structure and manage construction projects.</p>
               </div>
-            </div>
-          )}
+                          </div>
+                        )}
 
           {/* Suggested Contractors Section */}
           <div className="mb-6 sm:mb-8">
