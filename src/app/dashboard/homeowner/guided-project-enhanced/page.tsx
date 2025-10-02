@@ -414,11 +414,26 @@ export default function GuidedProjectEnhanced() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
             {/* Contractor Card 1 */}
             <div className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-lg transition-all duration-200">
-              <div className="relative h-24 rounded-lg overflow-hidden mb-3">
+              <div className="relative h-24 rounded-lg overflow-hidden mb-3 bg-gradient-to-br from-blue-100 to-blue-200">
                 <img 
-                  src="https://images.unsplash.com/photo-1581578731548-c6a0c3f2f4c4?w=300&h=150&fit=crop&crop=center"
+                  src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=200&fit=crop&crop=center&auto=format&q=80"
                   alt="Premier Construction"
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const parent = target.parentElement;
+                    if (parent) {
+                      parent.innerHTML = `
+                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600">
+                          <div class="text-white text-center">
+                            <div class="text-2xl mb-1">🏗️</div>
+                            <div class="text-xs font-semibold">Premier Construction</div>
+                          </div>
+                        </div>
+                      `;
+                    }
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                 <div className="absolute top-2 right-2">
@@ -443,11 +458,26 @@ export default function GuidedProjectEnhanced() {
 
             {/* Contractor Card 2 */}
             <div className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-lg transition-all duration-200">
-              <div className="relative h-24 rounded-lg overflow-hidden mb-3">
+              <div className="relative h-24 rounded-lg overflow-hidden mb-3 bg-gradient-to-br from-green-100 to-green-200">
                 <img 
-                  src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=300&h=150&fit=crop&crop=center"
+                  src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=400&h=200&fit=crop&crop=center&auto=format&q=80"
                   alt="Elite Home Improvements"
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const parent = target.parentElement;
+                    if (parent) {
+                      parent.innerHTML = `
+                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-500 to-green-600">
+                          <div class="text-white text-center">
+                            <div class="text-2xl mb-1">🏠</div>
+                            <div class="text-xs font-semibold">Elite Home</div>
+                          </div>
+                        </div>
+                      `;
+                    }
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                 <div className="absolute top-2 right-2">
@@ -472,11 +502,26 @@ export default function GuidedProjectEnhanced() {
 
             {/* Contractor Card 3 */}
             <div className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-lg transition-all duration-200">
-              <div className="relative h-24 rounded-lg overflow-hidden mb-3">
+              <div className="relative h-24 rounded-lg overflow-hidden mb-3 bg-gradient-to-br from-orange-100 to-orange-200">
                 <img 
-                  src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=300&h=150&fit=crop&crop=center"
+                  src="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=200&fit=crop&crop=center&auto=format&q=80"
                   alt="Swift Build Solutions"
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const parent = target.parentElement;
+                    if (parent) {
+                      parent.innerHTML = `
+                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-500 to-orange-600">
+                          <div class="text-white text-center">
+                            <div class="text-2xl mb-1">⚡</div>
+                            <div class="text-xs font-semibold">Swift Build</div>
+                          </div>
+                        </div>
+                      `;
+                    }
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                 <div className="absolute top-2 right-2">
