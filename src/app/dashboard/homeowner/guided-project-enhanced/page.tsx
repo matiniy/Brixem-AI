@@ -119,6 +119,7 @@ export default function GuidedProjectEnhanced() {
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [, setCompletedSteps] = useState<number[]>([]);
+  const [projectCreationError, setProjectCreationError] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Initialize with welcome message and first step
@@ -171,15 +172,17 @@ export default function GuidedProjectEnhanced() {
           type: 'question'
         };
         setMessages(prev => [...prev, nextStepMessage]);
-              } else {
-                // All steps completed, create project
-                console.log('All steps completed, creating project...', { currentStep, projectData });
-                setCompletedSteps(prev => [...prev, currentStep]);
-                // Add a small delay to show the completion message
-                setTimeout(() => {
-                  createProjectFromSteps();
-                }, 500);
-              }
+      } else {
+        // All steps completed, create project
+        console.log('All steps completed, creating project...', { currentStep, projectData });
+        setCompletedSteps(prev => [...prev, currentStep]);
+        // Prevent further input while creating project
+        setIsCreatingProject(true);
+        // Add a small delay to show the completion message
+        setTimeout(() => {
+          createProjectFromSteps();
+        }, 500);
+      }
 
     } catch (error) {
       console.error('Error processing step:', error);
@@ -190,7 +193,10 @@ export default function GuidedProjectEnhanced() {
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
-      setIsLoading(false);
+      // Only set loading to false if we're not creating a project
+      if (!isCreatingProject) {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -244,7 +250,6 @@ export default function GuidedProjectEnhanced() {
           const createProjectFromSteps = async () => {
             try {
               console.log('createProjectFromSteps called with projectData:', projectData);
-              setIsCreatingProject(true);
               
               // Add completion message
               const completionMessage: Message = {
@@ -262,14 +267,21 @@ export default function GuidedProjectEnhanced() {
               console.error('Error creating project:', error);
               const errorMessage: Message = {
                 role: 'ai',
-                text: "I&apos;m sorry, there was an error creating your project. Please try again.",
+                text: "I&apos;m sorry, there was an error creating your project. Please try again or contact support.",
                 type: 'response'
               };
               setMessages(prev => [...prev, errorMessage]);
-              setIsCreatingProject(false);
+              setProjectCreationError(true);
+              // Don't reset isCreatingProject to false - keep the form disabled
+              // This prevents the user from continuing to input and causing loops
             }
           };
 
+  const retryProjectCreation = async () => {
+    setProjectCreationError(false);
+    setIsCreatingProject(true);
+    await createProjectFromSteps();
+  };
 
   const createProjectInDashboard = async (data: Partial<ProjectData>) => {
     try {
@@ -445,54 +457,85 @@ export default function GuidedProjectEnhanced() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Current Step Question & Suggestions */}
-          {currentStepData && !isCreatingProject && (
-            <div className="border-t border-gray-200 p-4 sm:p-6 bg-blue-50 flex-shrink-0">
-              <div className="mb-3 sm:mb-4">
-                <h3 className="text-sm sm:text-base font-medium text-gray-900 mb-1">{currentStepData.question}</h3>
-                <p className="text-xs text-gray-600">You can choose from the suggestions below or type your own answer.</p>
-              </div>
-              
-              {/* Suggestion Boxes */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mb-3 sm:mb-4">
-                {currentStepData.suggestions.map((suggestion, index) => (
-                  <button
-                    key={index}
-                    onClick={() => {
-                      setInputText(suggestion);
-                      handleSend();
-                    }}
-                    className="px-3 py-2 text-xs sm:text-sm bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all text-left text-gray-900 hover:text-gray-900"
-                  >
-                    {suggestion}
-                  </button>
-                ))}
+                  {/* Current Step Question & Suggestions */}
+                  {currentStepData && !isCreatingProject && !projectCreationError && (
+                    <div className="border-t border-gray-200 p-4 sm:p-6 bg-blue-50 flex-shrink-0">
+                      <div className="mb-3 sm:mb-4">
+                        <h3 className="text-sm sm:text-base font-medium text-gray-900 mb-1">{currentStepData.question}</h3>
+                        <p className="text-xs text-gray-600">You can choose from the suggestions below or type your own answer.</p>
+                      </div>
+                      
+                      {/* Suggestion Boxes */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mb-3 sm:mb-4">
+                        {currentStepData.suggestions.map((suggestion, index) => (
+                          <button
+                            key={index}
+                            onClick={() => {
+                              setInputText(suggestion);
+                              handleSend();
+                            }}
+                            className="px-3 py-2 text-xs sm:text-sm bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all text-left text-gray-900 hover:text-gray-900"
+                          >
+                            {suggestion}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Project Creation Error Retry */}
+                  {projectCreationError && (
+                    <div className="border-t border-gray-200 p-4 sm:p-6 bg-red-50 flex-shrink-0">
+                      <div className="text-center">
+                        <div className="w-12 h-12 aspect-square bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                          </svg>
+                        </div>
+                        <h3 className="text-sm sm:text-base font-medium text-gray-900 mb-2">Project Creation Failed</h3>
+                        <p className="text-xs text-gray-600 mb-4">There was an error creating your project. You can try again or contact support for assistance.</p>
+                        <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                          <button
+                            onClick={retryProjectCreation}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+                          >
+                            Try Again
+                          </button>
+                          <button
+                            onClick={() => window.location.href = '/dashboard/homeowner'}
+                            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium text-sm"
+                          >
+                            Back to Dashboard
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+          {/* Input */}
+          {!projectCreationError && (
+            <div className="border-t border-gray-200 p-4 sm:p-6 flex-shrink-0">
+              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+                <input
+                  type="text"
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder={currentStepData?.placeholder || "Type your response here..."}
+                  className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white text-sm sm:text-base"
+                  disabled={isLoading || isCreatingProject}
+                  style={{ color: '#111827' }}
+                />
+                <button
+                  onClick={handleSend}
+                  disabled={!inputText.trim() || isLoading || isCreatingProject}
+                  className="px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium text-sm sm:text-base"
+                >
+                  {currentStep < CHAT_STEPS.length - 1 ? 'Next' : 'Finish'}
+                </button>
               </div>
             </div>
           )}
-
-          {/* Input */}
-          <div className="border-t border-gray-200 p-4 sm:p-6 flex-shrink-0">
-            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-              <input
-                type="text"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder={currentStepData?.placeholder || "Type your response here..."}
-                className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white text-sm sm:text-base"
-                disabled={isLoading || isCreatingProject}
-                style={{ color: '#111827' }}
-              />
-              <button
-                onClick={handleSend}
-                disabled={!inputText.trim() || isLoading || isCreatingProject}
-                className="px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium text-sm sm:text-base"
-              >
-                {currentStep < CHAT_STEPS.length - 1 ? 'Next' : 'Finish'}
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>
