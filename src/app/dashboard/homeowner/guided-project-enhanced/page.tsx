@@ -102,15 +102,32 @@ export default function GuidedProjectEnhanced() {
 
       setMessages(prev => [...prev, aiMessage]);
 
-      // Check if AI suggests creating a project
-      if (data.response.toLowerCase().includes('create project') || 
-          data.response.toLowerCase().includes('ready to create') ||
-          data.response.toLowerCase().includes('let\'s create your project')) {
+      // Check if AI suggests creating a project or if user confirms
+      const responseText = data.response.toLowerCase();
+      const userText = inputText.toLowerCase();
+      
+      if (responseText.includes('create project') || 
+          responseText.includes('ready to create') ||
+          responseText.includes('let\'s create your project') ||
+          responseText.includes('i\'ll create your project') ||
+          userText.includes('yes') ||
+          userText.includes('create project') ||
+          userText.includes('let\'s do it') ||
+          userText.includes('go ahead')) {
+        
         // Extract project data from conversation
         const extractedData = extractProjectDataFromConversation([...messages, userMessage, aiMessage]);
         if (extractedData) {
           setProjectData(extractedData);
           await createProjectInDashboard(extractedData);
+        } else {
+          // If we can't extract data, ask for more information
+          const clarificationMessage: Message = {
+            role: 'ai',
+            text: "I'd love to create your project! Could you tell me a bit more about what you're planning to build or renovate? For example, is it a kitchen renovation, bathroom update, extension, or something else?",
+            type: 'question'
+          };
+          setMessages(prev => [...prev, clarificationMessage]);
         }
       }
 
@@ -136,23 +153,25 @@ export default function GuidedProjectEnhanced() {
     const location = extractLocation(fullText);
     const budget = extractBudget(fullText);
     
-    if (!projectType || !description) {
+    // If we don't have enough info, try to create a basic project
+    if (!projectType && !description) {
       return null;
     }
 
-    return {
-      projectType,
-      description,
-      location: location || { city: 'Unknown', country: 'Unknown' },
+    // Create a more robust project data object
+    const projectData: Partial<ProjectData> = {
+      projectType: projectType || 'Renovation',
+      description: description || 'Construction project',
+      location: location || { city: 'Unknown', country: 'UK' },
       budgetRange: budget?.range || 'Not specified',
       budgetMin: budget?.min || 0,
       budgetMax: budget?.max || 0,
-      intendedUse: 'Residential', // Default
-      size: 0, // Will be estimated
-      goals: [],
-      knownIssues: [],
-      preferredStartDate: '',
-      preferredCompletionDate: '',
+      intendedUse: 'Residential',
+      size: extractSize(fullText) || 0,
+      goals: extractGoals(fullText),
+      knownIssues: extractKnownIssues(fullText),
+      preferredStartDate: extractStartDate(fullText) || '',
+      preferredCompletionDate: extractCompletionDate(fullText) || '',
       conservationArea: false,
       greenBelt: false,
       listedBuilding: false,
@@ -161,6 +180,8 @@ export default function GuidedProjectEnhanced() {
       planningChallenges: false,
       additionalChallenges: []
     };
+
+    return projectData;
   };
 
   const extractProjectType = (text: string): string => {
@@ -199,13 +220,54 @@ export default function GuidedProjectEnhanced() {
     return null;
   };
 
+  const extractSize = (text: string): number => {
+    const sizeMatch = text.match(/(\d+)\s*(?:sqm|m²|square\s*meters?|sq\s*ft|sqft)/i);
+    if (sizeMatch) {
+      return parseInt(sizeMatch[1]);
+    }
+    return 0;
+  };
+
+  const extractGoals = (text: string): string[] => {
+    const goals: string[] = [];
+    if (text.toLowerCase().includes('modern')) goals.push('Modern design');
+    if (text.toLowerCase().includes('energy')) goals.push('Energy efficiency');
+    if (text.toLowerCase().includes('storage')) goals.push('More storage');
+    if (text.toLowerCase().includes('space')) goals.push('More space');
+    return goals;
+  };
+
+  const extractKnownIssues = (text: string): string[] => {
+    const issues: string[] = [];
+    if (text.toLowerCase().includes('damp')) issues.push('Damp issues');
+    if (text.toLowerCase().includes('structural')) issues.push('Structural concerns');
+    if (text.toLowerCase().includes('plumbing')) issues.push('Plumbing issues');
+    if (text.toLowerCase().includes('electrical')) issues.push('Electrical issues');
+    return issues;
+  };
+
+  const extractStartDate = (text: string): string => {
+    const dateMatch = text.match(/(?:start|begin|commence).*?(\d{1,2}\/\d{1,2}\/\d{4}|\d{4}-\d{2}-\d{2})/i);
+    return dateMatch ? dateMatch[1] : '';
+  };
+
+  const extractCompletionDate = (text: string): string => {
+    const dateMatch = text.match(/(?:finish|complete|end).*?(\d{1,2}\/\d{1,2}\/\d{4}|\d{4}-\d{2}-\d{2})/i);
+    return dateMatch ? dateMatch[1] : '';
+  };
+
   const createProjectInDashboard = async (data: Partial<ProjectData>) => {
     try {
       setIsCreatingProject(true);
       
+      // Create a more robust project name
+      const projectName = data.projectType && data.description 
+        ? `${data.projectType} - ${data.description}`.substring(0, 100)
+        : data.projectType || data.description || 'New Construction Project';
+      
       const projectPayload = {
-        name: `${data.projectType} - ${data.description}`.substring(0, 100),
-        type: data.projectType?.toLowerCase().replace(' ', '-') || 'renovation',
+        name: projectName,
+        type: data.projectType?.toLowerCase().replace(/\s+/g, '-') || 'renovation',
         location: `${data.location?.city || 'Unknown'}, ${data.location?.country || 'UK'}`,
         description: data.description || 'Construction project',
         size_sqft: data.size || 0,
@@ -357,6 +419,34 @@ export default function GuidedProjectEnhanced() {
                 Send
               </button>
             </div>
+            
+            {/* Manual Create Project Button */}
+            {messages.length > 2 && !isCreatingProject && (
+              <div className="mt-3 pt-3 border-t border-gray-100">
+                <button
+                  onClick={async () => {
+                    const extractedData = extractProjectDataFromConversation(messages);
+                    if (extractedData) {
+                      setProjectData(extractedData);
+                      await createProjectInDashboard(extractedData);
+                    } else {
+                      const clarificationMessage: Message = {
+                        role: 'ai',
+                        text: "I'd love to create your project! Could you tell me a bit more about what you're planning to build or renovate? For example, is it a kitchen renovation, bathroom update, extension, or something else?",
+                        type: 'question'
+                      };
+                      setMessages(prev => [...prev, clarificationMessage]);
+                    }
+                  }}
+                  className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center justify-center space-x-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span>Create Project Now</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
