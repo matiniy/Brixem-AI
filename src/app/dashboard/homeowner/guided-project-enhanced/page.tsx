@@ -120,6 +120,7 @@ export default function GuidedProjectEnhanced() {
   const [currentStep, setCurrentStep] = useState(0);
   const [, setCompletedSteps] = useState<number[]>([]);
   const [projectCreationError, setProjectCreationError] = useState(false);
+  const [showLoadingPage, setShowLoadingPage] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Initialize with welcome message and first step
@@ -173,15 +174,24 @@ export default function GuidedProjectEnhanced() {
         };
         setMessages(prev => [...prev, nextStepMessage]);
       } else {
-        // All steps completed, create project
-        console.log('All steps completed, creating project...', { currentStep, projectData });
+        // All steps completed, show loading page with contractor cards
+        console.log('All steps completed, showing loading page...', { currentStep, projectData });
         setCompletedSteps(prev => [...prev, currentStep]);
-        // Prevent further input while creating project
         setIsCreatingProject(true);
-        // Add a small delay to show the completion message
+        setShowLoadingPage(true);
+        
+        // Add completion message
+        const completionMessage: Message = {
+          role: 'ai',
+          text: "Perfect! I have all the information I need. Let me create your project and find the best contractors for you...",
+          type: 'response'
+        };
+        setMessages(prev => [...prev, completionMessage]);
+        
+        // Start project creation after showing loading page
         setTimeout(() => {
           createProjectFromSteps();
-        }, 500);
+        }, 1000);
       }
 
     } catch (error) {
@@ -251,29 +261,16 @@ export default function GuidedProjectEnhanced() {
             try {
               console.log('createProjectFromSteps called with projectData:', projectData);
               
-              // Add completion message
-              const completionMessage: Message = {
-                role: 'ai',
-                text: "Perfect! I have all the information I need. Let me create your project and find the best contractors for you...",
-                type: 'response'
-              };
-              setMessages(prev => [...prev, completionMessage]);
-              
               // Create project with collected data
               console.log('Calling createProjectInDashboard...');
               await createProjectInDashboard(projectData);
               
             } catch (error) {
               console.error('Error creating project:', error);
-              const errorMessage: Message = {
-                role: 'ai',
-                text: "I&apos;m sorry, there was an error creating your project. Please try again or contact support.",
-                type: 'response'
-              };
-              setMessages(prev => [...prev, errorMessage]);
+              // Hide loading page and show error
+              setShowLoadingPage(false);
               setProjectCreationError(true);
-              // Don't reset isCreatingProject to false - keep the form disabled
-              // This prevents the user from continuing to input and causing loops
+              setIsCreatingProject(false);
             }
           };
 
@@ -333,33 +330,26 @@ export default function GuidedProjectEnhanced() {
         throw new Error(`Failed to create project: ${response.status} ${errorText}`);
       }
 
-      const newProject = await response.json();
-      console.log('Project created successfully:', newProject);
-      
-              // Add success message
-              const successMessage: Message = {
-                role: 'ai',
-                text: `🎉 Great! I've created your project "${newProject.name}". Now let me find the best contractors for your project...`,
-                type: 'response'
-              };
+              const newProject = await response.json();
+              console.log('Project created successfully:', newProject);
               
-              setMessages(prev => [...prev, successMessage]);
-
+              // Hide loading page and redirect to contractor selection
+              setShowLoadingPage(false);
+              setIsCreatingProject(false);
+              
               // Redirect to contractor selection page with project data
-              setTimeout(() => {
-                const params = new URLSearchParams({
-                  type: data.projectType || 'Renovation',
-                  location: data.location?.city || 'London',
-                  budget: data.budgetRange || '£25k - £75k',
-                  size: data.size?.toString() || 'Medium',
-                  timeline: data.preferredStartDate || 'Next 3 months',
-                  goals: (data.goals || []).join(','),
-                  challenges: (data.knownIssues || []).join(','),
-                  details: (data.additionalChallenges || []).join(',')
-                });
-                
-                window.location.href = `/dashboard/homeowner/contractor-selection?${params.toString()}`;
-              }, 2000);
+              const params = new URLSearchParams({
+                type: data.projectType || 'Renovation',
+                location: data.location?.city || 'London',
+                budget: data.budgetRange || '£25k - £75k',
+                size: data.size?.toString() || 'Medium',
+                timeline: data.preferredStartDate || 'Next 3 months',
+                goals: (data.goals || []).join(','),
+                challenges: (data.knownIssues || []).join(','),
+                details: (data.additionalChallenges || []).join(',')
+              });
+              
+              window.location.href = `/dashboard/homeowner/contractor-selection?${params.toString()}`;
 
     } catch (error) {
       console.error('Error creating project:', error);
@@ -383,6 +373,144 @@ export default function GuidedProjectEnhanced() {
 
   const currentStepData = CHAT_STEPS[currentStep];
   const progress = ((currentStep + 1) / CHAT_STEPS.length) * 100;
+
+  // Loading page with contractor cards
+  if (showLoadingPage) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+          <div className="max-w-4xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <button
+                onClick={() => window.location.href = '/dashboard/homeowner'}
+                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition flex-shrink-0"
+              >
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">Creating Your Project</h1>
+                <p className="text-xs sm:text-sm text-gray-500 truncate">Finding the best contractors for your project...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Loading Content */}
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Creating Your Project</h2>
+            <p className="text-gray-600 mb-6">We&apos;re analyzing your requirements and finding the best contractors for your project...</p>
+          </div>
+
+          {/* Contractor Cards Preview */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
+            {/* Contractor Card 1 */}
+            <div className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-lg transition-all duration-200">
+              <div className="relative h-24 rounded-lg overflow-hidden mb-3">
+                <img 
+                  src="https://images.unsplash.com/photo-1581578731548-c6a0c3f2f4c4?w=300&h=150&fit=crop&crop=center"
+                  alt="Premier Construction"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                <div className="absolute top-2 right-2">
+                  <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
+                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    Verified
+                  </div>
+                </div>
+              </div>
+              <h3 className="font-bold text-gray-900 text-sm mb-1">Premier Construction Ltd</h3>
+              <div className="flex items-center mb-2">
+                <svg className="w-3 h-3 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <span className="font-semibold text-gray-900 text-sm">4.8</span>
+                <span className="text-gray-500 text-xs ml-1">(127 reviews)</span>
+              </div>
+              <p className="text-green-600 font-semibold text-sm">£25k - £75k</p>
+            </div>
+
+            {/* Contractor Card 2 */}
+            <div className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-lg transition-all duration-200">
+              <div className="relative h-24 rounded-lg overflow-hidden mb-3">
+                <img 
+                  src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=300&h=150&fit=crop&crop=center"
+                  alt="Elite Home Improvements"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                <div className="absolute top-2 right-2">
+                  <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
+                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    Verified
+                  </div>
+                </div>
+              </div>
+              <h3 className="font-bold text-gray-900 text-sm mb-1">Elite Home Improvements</h3>
+              <div className="flex items-center mb-2">
+                <svg className="w-3 h-3 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <span className="font-semibold text-gray-900 text-sm">4.9</span>
+                <span className="text-gray-500 text-xs ml-1">(89 reviews)</span>
+              </div>
+              <p className="text-green-600 font-semibold text-sm">£40k - £120k</p>
+            </div>
+
+            {/* Contractor Card 3 */}
+            <div className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-lg transition-all duration-200">
+              <div className="relative h-24 rounded-lg overflow-hidden mb-3">
+                <img 
+                  src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=300&h=150&fit=crop&crop=center"
+                  alt="Swift Build Solutions"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                <div className="absolute top-2 right-2">
+                  <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
+                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    Verified
+                  </div>
+                </div>
+              </div>
+              <h3 className="font-bold text-gray-900 text-sm mb-1">Swift Build Solutions</h3>
+              <div className="flex items-center mb-2">
+                <svg className="w-3 h-3 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <span className="font-semibold text-gray-900 text-sm">4.7</span>
+                <span className="text-gray-500 text-xs ml-1">(203 reviews)</span>
+              </div>
+              <p className="text-green-600 font-semibold text-sm">£20k - £60k</p>
+            </div>
+          </div>
+
+          {/* Loading Animation */}
+          <div className="text-center">
+            <div className="inline-flex items-center space-x-2">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+              <span className="text-gray-600 font-medium">Creating your project and finding contractors...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
