@@ -121,7 +121,35 @@ export async function getProject(projectId: string) {
   try {
     console.log('getProject: Using mock data for now (API not ready)');
     
-    // Return mock project data instead of database connection
+    // Return specific template project for template-project ID
+    if (projectId === 'template-project') {
+      const templateProject = {
+        id: 'template-project',
+        name: 'Kitchen Renovation Template',
+        location: 'Template Location',
+        description: 'A comprehensive kitchen renovation project template with detailed phases, tasks, and subtasks to guide you through the entire process.',
+        size_sqft: 200,
+        type: 'kitchen',
+        status: 'planning',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        workspaces: [
+          {
+            id: 'template-workspace-123',
+            name: 'Template Workspace'
+          }
+        ]
+      };
+      
+      console.log('getProject: Template project returned:', templateProject);
+      
+      // Simulate a small delay to mimic real API call
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      return templateProject;
+    }
+    
+    // Return mock project data for other IDs
     const mockProject = {
       id: projectId,
       name: 'Mock Project',
