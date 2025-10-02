@@ -1,10 +1,10 @@
 "use client";
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Plus, Upload, MessageSquare, Download, Users, Calendar, DollarSign, FileText, ChevronRight, X, Menu, Send, Paperclip, Mic, TrendingUp, Clock, CheckCircle, ArrowUp, Home, FolderOpen, CreditCard, Settings, Bell, Search, LayoutDashboard, LogOut, Check, Star, Award, Zap, Shield } from 'lucide-react';
+import React, { useState } from "react";
+import { Plus, MessageSquare, Users, Calendar, DollarSign, FileText, Menu, Paperclip, TrendingUp, CheckCircle, ArrowUp, Home, FolderOpen, CreditCard, Settings, Bell, Check, Award } from 'lucide-react';
 
 export default function HomeownerDashboard() {
   const [currentPage, setCurrentPage] = useState('dashboard');
-  const [userRole, setUserRole] = useState('homeowner');
+  const [userRole] = useState('homeowner');
   const [selectedProject, setSelectedProject] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [chatInput, setChatInput] = useState('');

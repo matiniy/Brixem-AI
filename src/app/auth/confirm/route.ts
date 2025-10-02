@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createUserClient } from '@/lib/supabase-server';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -19,7 +19,8 @@ export async function GET(request: NextRequest) {
     try {
       console.log('Attempting to verify OTP with token_hash:', token_hash);
       
-      // Confirm the email
+      // Create server client and confirm the email
+      const supabase = await createUserClient();
       const { data, error } = await supabase.auth.verifyOtp({
         token_hash,
         type: 'signup'

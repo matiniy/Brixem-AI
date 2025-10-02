@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createUserClient } from '@/lib/supabase-server';
 
 export async function GET() {
   try {
     // Test the connection by checking if we can query the database
+    const supabase = await createUserClient();
     const { error } = await supabase
       .from('profiles')
       .select('count')
