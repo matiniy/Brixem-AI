@@ -776,7 +776,7 @@ export default function ProjectDetailPage() {
     setChatMessages(prev => [...prev, userMessage]);
 
     try {
-      // Simulate AI response
+    // Simulate AI response
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       const aiMessage = {
@@ -858,29 +858,29 @@ export default function ProjectDetailPage() {
       />
       
       <main className="flex-1 overflow-hidden bg-gray-50">
-        <div className="h-full p-4 sm:p-6 overflow-y-auto">
+        <div className="h-full p-3 sm:p-4 lg:p-6 overflow-y-auto">
             {/* Header */}
-          <div className="mb-6 sm:mb-8">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 space-y-3 sm:space-y-0">
-              <div className="flex items-center space-x-3">
+          <div className="mb-4 sm:mb-6 lg:mb-8">
+            <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center justify-between">
+              <div className="flex items-center space-x-2 sm:space-x-3">
                   <button
                   onClick={handleBackToProjects}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition"
+                  className="p-2 hover:bg-gray-100 rounded-lg transition touch-manipulation"
                   >
                   <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                   </button>
-                  <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{project.name}</h1>
-                  <p className="text-gray-500">{project.location} • {project.size_sqft || 0} sq ft</p>
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 truncate">{project.name}</h1>
+                  <p className="text-sm sm:text-base text-gray-500 truncate">{project.location} • {project.size_sqft || 0} sq ft</p>
                     </div>
                   </div>
                     <button
                 onClick={() => window.location.href = '/dashboard/documents?projectId=' + projectId}
-                className="px-3 sm:px-4 py-2 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-lg hover:opacity-90 transition flex items-center gap-2 text-sm sm:text-base"
+                className="px-3 py-2 sm:px-4 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-lg hover:opacity-90 transition flex items-center justify-center gap-2 text-sm font-medium touch-manipulation min-h-[44px]"
               >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                 <span className="hidden sm:inline">View All Documents</span>
@@ -890,75 +890,77 @@ export default function ProjectDetailPage() {
             </div>
             
           {/* Project Summary Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
               <div className="flex items-center">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="p-1.5 sm:p-2 bg-blue-100 rounded-lg flex-shrink-0">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
+                </div>
+                <div className="ml-2 sm:ml-3 min-w-0">
+                  <p className="text-xs sm:text-sm font-medium text-gray-500 truncate">Total Tasks</p>
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900">{projectPhases.reduce((total, phase) => total + phase.tasks.length, 0)}</p>
+                </div>
+              </div>
             </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-500">Total Tasks</p>
-                  <p className="text-2xl font-bold text-gray-900">{projectPhases.reduce((total, phase) => total + phase.tasks.length, 0)}</p>
-          </div>
-              </div>
-      </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
               <div className="flex items-center">
-                <div className="p-2 bg-yellow-100 rounded-lg">
-                  <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="p-1.5 sm:p-2 bg-yellow-100 rounded-lg flex-shrink-0">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                  </svg>
                 </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-500">To Do</p>
-                  <p className="text-2xl font-bold text-gray-900">{projectPhases.reduce((total, phase) => total + phase.tasks.filter(task => task.status === 'todo').length, 0)}</p>
-                </div>
+                <div className="ml-2 sm:ml-3 min-w-0">
+                  <p className="text-xs sm:text-sm font-medium text-gray-500 truncate">To Do</p>
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900">{projectPhases.reduce((total, phase) => total + phase.tasks.filter(task => task.status === 'todo').length, 0)}</p>
                 </div>
               </div>
-              
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            </div>
+
+            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
               <div className="flex items-center">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="p-1.5 sm:p-2 bg-green-100 rounded-lg flex-shrink-0">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-500">Completed</p>
-                  <p className="text-2xl font-bold text-gray-900">{projectPhases.reduce((total, phase) => total + phase.tasks.filter(task => task.status === 'completed').length, 0)}</p>
-                              </div>
-                          </div>
-                        </div>
-                        
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
-              <div className="flex items-center">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                          </svg>
+                  </svg>
                 </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-500">Documents</p>
-                  <p className="text-2xl font-bold text-gray-900">0</p>
+                <div className="ml-2 sm:ml-3 min-w-0">
+                  <p className="text-xs sm:text-sm font-medium text-gray-500 truncate">Completed</p>
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900">{projectPhases.reduce((total, phase) => total + phase.tasks.filter(task => task.status === 'completed').length, 0)}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+              <div className="flex items-center">
+                <div className="p-1.5 sm:p-2 bg-purple-100 rounded-lg flex-shrink-0">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div className="ml-2 sm:ml-3 min-w-0">
+                  <p className="text-xs sm:text-sm font-medium text-gray-500 truncate">Documents</p>
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900">0</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Project Progress Overview */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Project Progress</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">
-                  • {projectPhases.filter(phase => phase.status === 'completed').length} phases done • {projectPhases.filter(phase => phase.status === 'in-progress').length} in progress • {projectPhases.filter(phase => phase.status === 'upcoming').length} upcoming
-                </span>
+          <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Project Progress</h3>
+            <div className="space-y-3 sm:space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
+                <div className="text-xs sm:text-sm text-gray-600">
+                  <span className="block sm:inline">• {projectPhases.filter(phase => phase.status === 'completed').length} phases done</span>
+                  <span className="block sm:inline sm:ml-2">• {projectPhases.filter(phase => phase.status === 'in-progress').length} in progress</span>
+                  <span className="block sm:inline sm:ml-2">• {projectPhases.filter(phase => phase.status === 'upcoming').length} upcoming</span>
+                </div>
                 <span className="text-sm font-medium text-gray-900">
                   {Math.round(projectPhases.reduce((total, phase) => total + phase.progress, 0) / projectPhases.length)}% Complete
-                          </span>
+                </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
@@ -967,36 +969,36 @@ export default function ProjectDetailPage() {
                 ></div>
               </div>
             </div>
-                        </div>
+          </div>
                         
           {/* Phase Details */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Phase Details</h3>
-            <p className="text-sm text-gray-600 mb-6">Click on any phase card below to expand and view detailed tasks</p>
+          <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Phase Details</h3>
+            <p className="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6">Tap any phase card below to expand and view detailed tasks</p>
             
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {projectPhases.map((phase) => (
                 <div key={phase.id} className="border border-gray-200 rounded-lg overflow-hidden">
                   <div 
-                    className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                    className="p-3 sm:p-4 cursor-pointer hover:bg-gray-50 transition-colors touch-manipulation"
                     onClick={() => setExpandedPhase(expandedPhase === phase.id ? null : phase.id)}
                   >
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${
+                      <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+                        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm sm:text-lg flex-shrink-0 ${
                           phase.status === 'completed' ? 'bg-green-100 text-green-600' :
                           phase.status === 'in-progress' ? 'bg-blue-100 text-blue-600' :
                           'bg-gray-100 text-gray-600'
                         }`}>
                           {phase.status === 'completed' ? '✓' : phase.icon}
                         </div>
-                        <div>
-                          <h4 className="text-lg font-medium text-gray-900">{phase.name}</h4>
-                          <p className="text-sm text-gray-600">{phase.description}</p>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="text-sm sm:text-lg font-medium text-gray-900 truncate">{phase.name}</h4>
+                          <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">{phase.description}</p>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-4">
-                        <div className="text-right">
+                      <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
+                        <div className="text-right hidden sm:block">
                           <p className="text-sm font-medium text-gray-900">{phase.duration}</p>
                           <p className="text-xs text-gray-500">{phase.progress}% complete</p>
                         </div>
@@ -1011,37 +1013,42 @@ export default function ProjectDetailPage() {
                           >
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                           </svg>
-                          </div>
+                        </div>
                       </div>
+                    </div>
+                    {/* Mobile-only duration and progress */}
+                    <div className="sm:hidden mt-2 flex justify-between items-center text-xs text-gray-500">
+                      <span>{phase.duration}</span>
+                      <span>{phase.progress}% complete</span>
                     </div>
                   </div>
                   
                   {expandedPhase === phase.id && (
-                    <div className="border-t border-gray-200 p-4 bg-gray-50">
-                      <div className="space-y-3">
+                    <div className="border-t border-gray-200 p-3 sm:p-4 bg-gray-50">
+                      <div className="space-y-2 sm:space-y-3">
                         {phase.tasks.map((task) => (
-                          <div key={task.id} className="bg-white rounded-lg border border-gray-200 p-4">
+                          <div key={task.id} className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
                             <div 
-                              className="cursor-pointer"
+                              className="cursor-pointer touch-manipulation"
                               onClick={() => setExpandedTask(expandedTask === task.id ? null : task.id)}
                             >
                               <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-3">
-                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
+                                <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+                                  <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm flex-shrink-0 ${
                                     task.status === 'completed' ? 'bg-green-100 text-green-600' :
                                     task.status === 'in-progress' ? 'bg-orange-100 text-orange-600' :
                                     'bg-gray-100 text-gray-600'
                                   }`}>
                                     {task.status === 'completed' ? '✓' : '○'}
                                   </div>
-                                  <div>
-                                    <h5 className="font-medium text-gray-900">{task.title}</h5>
-                                    <p className="text-sm text-gray-600">{task.description}</p>
+                                  <div className="min-w-0 flex-1">
+                                    <h5 className="text-sm sm:text-base font-medium text-gray-900 truncate">{task.title}</h5>
+                                    <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">{task.description}</p>
                                   </div>
                                 </div>
-                                <div className="flex items-center space-x-4">
-                                  <div className="text-right">
-                                    <p className="text-sm text-gray-900">{task.assignedUsers.join(', ')}</p>
+                                <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
+                                  <div className="text-right hidden sm:block">
+                                    <p className="text-sm text-gray-900 truncate">{task.assignedUsers.join(', ')}</p>
                                     <p className="text-xs text-gray-500">{task.estimatedHours}h • {task.dueDate}</p>
                                   </div>
                                   <div className="w-4 h-4 flex items-center justify-center">
@@ -1058,41 +1065,46 @@ export default function ProjectDetailPage() {
                                   </div>
                                 </div>
                               </div>
+                              {/* Mobile-only task details */}
+                              <div className="sm:hidden mt-2 flex justify-between items-center text-xs text-gray-500">
+                                <span className="truncate">{task.assignedUsers.join(', ')}</span>
+                                <span>{task.estimatedHours}h • {task.dueDate}</span>
+                              </div>
                             </div>
                             
                             {expandedTask === task.id && task.subtasks && (
-                              <div className="mt-4 pl-11 space-y-3">
+                              <div className="mt-3 sm:mt-4 pl-8 sm:pl-11 space-y-2 sm:space-y-3">
                                 {task.subtasks.map((subtask) => (
-                                  <div key={subtask.id} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                                    <div className="flex items-center gap-3">
-                                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
+                                  <div key={subtask.id} className="bg-gray-50 rounded-lg p-2 sm:p-3 border border-gray-200">
+                                    <div className="flex items-start gap-2 sm:gap-3">
+                                      <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5 ${
                                         subtask.status === 'completed' ? 'bg-green-100 text-green-600' :
                                         subtask.status === 'in-progress' ? 'bg-orange-100 text-orange-600' :
                                         'bg-gray-100 text-gray-600'
                                       }`}>
                                         {subtask.status === 'completed' ? '✓' : '○'}
                                       </div>
-                                      <div className="flex-1">
-                                        <h6 className="font-medium text-gray-900 text-sm">{subtask.title}</h6>
-                                        <p className="text-xs text-gray-600">{subtask.description}</p>
-                                        <div className="flex items-center gap-3 mt-1">
-                                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                      <div className="flex-1 min-w-0">
+                                        <h6 className="font-medium text-gray-900 text-xs sm:text-sm truncate">{subtask.title}</h6>
+                                        <p className="text-xs text-gray-600 line-clamp-2 mt-1">{subtask.description}</p>
+                                        <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-2">
+                                          <span className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-xs font-medium ${
                                             subtask.priority === 'high' ? 'bg-red-100 text-red-800' :
                                             subtask.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
                                             'bg-green-100 text-green-800'
                                           }`}>
                                             {subtask.priority}
                                           </span>
-                                          <span className="text-xs text-gray-500">{subtask.assignedUsers.join(', ')}</span>
+                                          <span className="text-xs text-gray-500 truncate">{subtask.assignedUsers.join(', ')}</span>
                                           <span className="text-xs text-gray-500">{subtask.estimatedHours}h</span>
                                           <span className="text-xs text-gray-500">{subtask.dueDate}</span>
                                         </div>
                                       </div>
                                     </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
               </div>
                         ))}
             </div>
