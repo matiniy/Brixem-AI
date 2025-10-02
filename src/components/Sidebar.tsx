@@ -152,7 +152,7 @@ export default function Sidebar({
               <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Projects</h2>
               <button
                 onClick={() => window.location.href = '/dashboard/homeowner/guided-project-enhanced'}
-                className="w-8 h-8 rounded-full bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center text-white hover:opacity-80 transition-all duration-200 shadow-lg hover:shadow-xl touch-manipulation"
+                className="w-8 h-8 aspect-square rounded-full bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] flex items-center justify-center text-white hover:opacity-80 transition-all duration-200 shadow-lg hover:shadow-xl touch-manipulation"
                 title="Add New Project"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
