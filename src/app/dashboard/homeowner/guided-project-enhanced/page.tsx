@@ -199,18 +199,8 @@ export default function GuidedProjectEnhanced() {
             console.error('Project creation timeout - redirecting anyway');
             setShowLoadingPage(false);
             setIsCreatingProject(false);
-            // Redirect to contractor selection even if project creation fails
-            const params = new URLSearchParams({
-              type: projectData.projectType || 'Renovation',
-              location: projectData.location?.city || 'London',
-              budget: projectData.budgetRange || '£25k - £75k',
-              size: projectData.size?.toString() || 'Medium',
-              timeline: projectData.preferredStartDate || 'Next 3 months',
-              goals: (projectData.goals || []).join(','),
-              challenges: (projectData.knownIssues || []).join(','),
-              details: (projectData.additionalChallenges || []).join(',')
-            });
-            window.location.href = `/dashboard/homeowner/contractor-selection?${params.toString()}`;
+            // Redirect to dashboard even if project creation fails
+            window.location.href = '/dashboard/homeowner';
           }
         }, 5000); // 5 second timeout
       }
@@ -285,28 +275,17 @@ export default function GuidedProjectEnhanced() {
               // Simulate project creation delay
               await new Promise(resolve => setTimeout(resolve, 2000));
               
-              // For now, skip API call and go directly to contractor selection
+              // For now, skip API call and go directly to dashboard
               // This ensures the flow works regardless of API issues
-              console.log('Skipping API call, going directly to contractor selection');
+              console.log('Skipping API call, going directly to dashboard');
               
               // Hide loading page
               setShowLoadingPage(false);
               setIsCreatingProject(false);
               
-              // Redirect to contractor selection with project data
-              const params = new URLSearchParams({
-                type: projectData.projectType || 'Renovation',
-                location: projectData.location?.city || 'London',
-                budget: projectData.budgetRange || '£25k - £75k',
-                size: projectData.size?.toString() || 'Medium',
-                timeline: projectData.preferredStartDate || 'Next 3 months',
-                goals: (projectData.goals || []).join(','),
-                challenges: (projectData.knownIssues || []).join(','),
-                details: (projectData.additionalChallenges || []).join(',')
-              });
-              
-              console.log('Redirecting to contractor selection');
-              window.location.href = `/dashboard/homeowner/contractor-selection?${params.toString()}`;
+              // Redirect to dashboard
+              console.log('Redirecting to dashboard');
+              window.location.href = '/dashboard/homeowner';
               
             } catch (error) {
               console.error('Error in createProjectFromSteps:', error);
@@ -314,20 +293,9 @@ export default function GuidedProjectEnhanced() {
               setShowLoadingPage(false);
               setIsCreatingProject(false);
               
-              // Redirect to contractor selection even if project creation fails
-              const params = new URLSearchParams({
-                type: projectData.projectType || 'Renovation',
-                location: projectData.location?.city || 'London',
-                budget: projectData.budgetRange || '£25k - £75k',
-                size: projectData.size?.toString() || 'Medium',
-                timeline: projectData.preferredStartDate || 'Next 3 months',
-                goals: (projectData.goals || []).join(','),
-                challenges: (projectData.knownIssues || []).join(','),
-                details: (projectData.additionalChallenges || []).join(',')
-              });
-              
-              console.log('Redirecting to contractor selection despite error');
-              window.location.href = `/dashboard/homeowner/contractor-selection?${params.toString()}`;
+              // Redirect to dashboard even if project creation fails
+              console.log('Redirecting to dashboard despite error');
+              window.location.href = '/dashboard/homeowner';
             }
           };
 
