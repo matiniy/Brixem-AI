@@ -192,6 +192,27 @@ export default function GuidedProjectEnhanced() {
         setTimeout(() => {
           createProjectFromSteps();
         }, 1000);
+        
+        // Add timeout to prevent infinite spinning
+        setTimeout(() => {
+          if (showLoadingPage) {
+            console.error('Project creation timeout - redirecting anyway');
+            setShowLoadingPage(false);
+            setIsCreatingProject(false);
+            // Redirect to contractor selection even if project creation fails
+            const params = new URLSearchParams({
+              type: projectData.projectType || 'Renovation',
+              location: projectData.location?.city || 'London',
+              budget: projectData.budgetRange || '£25k - £75k',
+              size: projectData.size?.toString() || 'Medium',
+              timeline: projectData.preferredStartDate || 'Next 3 months',
+              goals: (projectData.goals || []).join(','),
+              challenges: (projectData.knownIssues || []).join(','),
+              details: (projectData.additionalChallenges || []).join(',')
+            });
+            window.location.href = `/dashboard/homeowner/contractor-selection?${params.toString()}`;
+          }
+        }, 10000); // 10 second timeout
       }
 
     } catch (error) {
@@ -267,10 +288,24 @@ export default function GuidedProjectEnhanced() {
               
             } catch (error) {
               console.error('Error creating project:', error);
-              // Hide loading page and show error
+              // Hide loading page and redirect anyway
               setShowLoadingPage(false);
-              setProjectCreationError(true);
               setIsCreatingProject(false);
+              
+              // Redirect to contractor selection even if project creation fails
+              const params = new URLSearchParams({
+                type: projectData.projectType || 'Renovation',
+                location: projectData.location?.city || 'London',
+                budget: projectData.budgetRange || '£25k - £75k',
+                size: projectData.size?.toString() || 'Medium',
+                timeline: projectData.preferredStartDate || 'Next 3 months',
+                goals: (projectData.goals || []).join(','),
+                challenges: (projectData.knownIssues || []).join(','),
+                details: (projectData.additionalChallenges || []).join(',')
+              });
+              
+              console.log('Redirecting to contractor selection despite error');
+              window.location.href = `/dashboard/homeowner/contractor-selection?${params.toString()}`;
             }
           };
 
@@ -297,19 +332,23 @@ export default function GuidedProjectEnhanced() {
         location: `${data.location?.city || 'Unknown'}, ${data.location?.country || 'UK'}`,
         description: data.description || 'Construction project',
         size_sqft: data.size || 0,
-        budget_min: data.budgetMin || 0,
-        budget_max: data.budgetMax || 0,
-        goals: data.goals || [],
-        known_issues: data.knownIssues || [],
-        preferred_start_date: data.preferredStartDate || '',
-        preferred_completion_date: data.preferredCompletionDate || '',
-        conservation_area: data.conservationArea || false,
-        green_belt: data.greenBelt || false,
-        listed_building: data.listedBuilding || false,
-        party_wall_issues: data.partyWallIssues || false,
-        access_challenges: data.accessChallenges || false,
-        planning_challenges: data.planningChallenges || false,
-        additional_challenges: data.additionalChallenges || []
+        budget: data.budgetMax || data.budgetMin || 0, // Use max budget or min as fallback
+        start_date: data.preferredStartDate || new Date().toISOString(),
+        end_date: data.preferredCompletionDate || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 days from now
+        // Store additional data in a custom field or as metadata
+        metadata: {
+          budget_min: data.budgetMin || 0,
+          budget_max: data.budgetMax || 0,
+          goals: data.goals || [],
+          known_issues: data.knownIssues || [],
+          conservation_area: data.conservationArea || false,
+          green_belt: data.greenBelt || false,
+          listed_building: data.listedBuilding || false,
+          party_wall_issues: data.partyWallIssues || false,
+          access_challenges: data.accessChallenges || false,
+          planning_challenges: data.planningChallenges || false,
+          additional_challenges: data.additionalChallenges || []
+        }
       };
 
       console.log('Sending project payload:', projectPayload);
