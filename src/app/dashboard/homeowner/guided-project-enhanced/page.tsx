@@ -382,16 +382,16 @@ export default function GuidedProjectEnhanced() {
               </svg>
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Creating Your Project</h2>
-            <p className="text-gray-600 mb-6">We&apos;re analyzing your requirements and finding the best contractors for your project...</p>
+            <p className="text-gray-600 mb-6">We&apos;re creating your project based on your chat input and finding the best contractors...</p>
           </div>
 
-          {/* Contractor Cards Preview */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
-            {/* Contractor Card 1 */}
-            <div className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-lg transition-all duration-200">
-              <div className="relative h-24 rounded-lg overflow-hidden mb-3 bg-gradient-to-br from-blue-100 to-blue-200">
+          {/* Contractor Cards Preview - 3 Small Cards */}
+          <div className="flex justify-center gap-4 mb-8">
+            {/* Contractor Card 1 - Small */}
+            <div className="bg-white rounded-lg border border-gray-200 p-3 w-48 hover:shadow-md transition-all duration-200">
+              <div className="relative h-16 rounded-md overflow-hidden mb-2 bg-gradient-to-br from-blue-100 to-blue-200">
                 <img 
-                  src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=200&fit=crop&crop=center&auto=format&q=80"
+                  src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=200&h=100&fit=crop&crop=center&auto=format&q=80"
                   alt="Premier Construction"
                   className="w-full h-full object-cover"
                   onError={(e) => {
@@ -402,8 +402,8 @@ export default function GuidedProjectEnhanced() {
                       parent.innerHTML = `
                         <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600">
                           <div class="text-white text-center">
-                            <div class="text-2xl mb-1">🏗️</div>
-                            <div class="text-xs font-semibold">Premier Construction</div>
+                            <div class="text-lg mb-1">🏗️</div>
+                            <div class="text-xs font-semibold">Premier</div>
                           </div>
                         </div>
                       `;
@@ -411,31 +411,31 @@ export default function GuidedProjectEnhanced() {
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                <div className="absolute top-2 right-2">
-                  <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
-                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <div className="absolute top-1 right-1">
+                  <div className="bg-green-500 text-white px-1.5 py-0.5 rounded-full text-xs font-medium flex items-center">
+                    <svg className="w-2 h-2 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    Verified
+                    ✓
                   </div>
                 </div>
               </div>
-              <h3 className="font-bold text-gray-900 text-sm mb-1">Premier Construction Ltd</h3>
-              <div className="flex items-center mb-2">
-                <svg className="w-3 h-3 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <h3 className="font-bold text-gray-900 text-xs mb-1 truncate">Premier Construction</h3>
+              <div className="flex items-center mb-1">
+                <svg className="w-2.5 h-2.5 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
-                <span className="font-semibold text-gray-900 text-sm">4.8</span>
-                <span className="text-gray-500 text-xs ml-1">(127 reviews)</span>
+                <span className="font-semibold text-gray-900 text-xs">4.8</span>
+                <span className="text-gray-500 text-xs ml-1">(127)</span>
               </div>
-              <p className="text-green-600 font-semibold text-sm">£25k - £75k</p>
+              <p className="text-green-600 font-semibold text-xs">£25k - £75k</p>
             </div>
 
-            {/* Contractor Card 2 */}
-            <div className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-lg transition-all duration-200">
-              <div className="relative h-24 rounded-lg overflow-hidden mb-3 bg-gradient-to-br from-green-100 to-green-200">
+            {/* Contractor Card 2 - Small */}
+            <div className="bg-white rounded-lg border border-gray-200 p-3 w-48 hover:shadow-md transition-all duration-200">
+              <div className="relative h-16 rounded-md overflow-hidden mb-2 bg-gradient-to-br from-green-100 to-green-200">
                 <img 
-                  src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=400&h=200&fit=crop&crop=center&auto=format&q=80"
+                  src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=200&h=100&fit=crop&crop=center&auto=format&q=80"
                   alt="Elite Home Improvements"
                   className="w-full h-full object-cover"
                   onError={(e) => {
@@ -446,7 +446,7 @@ export default function GuidedProjectEnhanced() {
                       parent.innerHTML = `
                         <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-500 to-green-600">
                           <div class="text-white text-center">
-                            <div class="text-2xl mb-1">🏠</div>
+                            <div class="text-lg mb-1">🏠</div>
                             <div class="text-xs font-semibold">Elite Home</div>
                           </div>
                         </div>
@@ -455,31 +455,31 @@ export default function GuidedProjectEnhanced() {
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                <div className="absolute top-2 right-2">
-                  <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
-                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <div className="absolute top-1 right-1">
+                  <div className="bg-green-500 text-white px-1.5 py-0.5 rounded-full text-xs font-medium flex items-center">
+                    <svg className="w-2 h-2 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    Verified
+                    ✓
                   </div>
                 </div>
               </div>
-              <h3 className="font-bold text-gray-900 text-sm mb-1">Elite Home Improvements</h3>
-              <div className="flex items-center mb-2">
-                <svg className="w-3 h-3 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <h3 className="font-bold text-gray-900 text-xs mb-1 truncate">Elite Home Improvements</h3>
+              <div className="flex items-center mb-1">
+                <svg className="w-2.5 h-2.5 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
-                <span className="font-semibold text-gray-900 text-sm">4.9</span>
-                <span className="text-gray-500 text-xs ml-1">(89 reviews)</span>
+                <span className="font-semibold text-gray-900 text-xs">4.9</span>
+                <span className="text-gray-500 text-xs ml-1">(89)</span>
               </div>
-              <p className="text-green-600 font-semibold text-sm">£40k - £120k</p>
+              <p className="text-green-600 font-semibold text-xs">£40k - £120k</p>
             </div>
 
-            {/* Contractor Card 3 */}
-            <div className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-lg transition-all duration-200">
-              <div className="relative h-24 rounded-lg overflow-hidden mb-3 bg-gradient-to-br from-orange-100 to-orange-200">
+            {/* Contractor Card 3 - Small */}
+            <div className="bg-white rounded-lg border border-gray-200 p-3 w-48 hover:shadow-md transition-all duration-200">
+              <div className="relative h-16 rounded-md overflow-hidden mb-2 bg-gradient-to-br from-orange-100 to-orange-200">
                 <img 
-                  src="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=200&fit=crop&crop=center&auto=format&q=80"
+                  src="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=200&h=100&fit=crop&crop=center&auto=format&q=80"
                   alt="Swift Build Solutions"
                   className="w-full h-full object-cover"
                   onError={(e) => {
@@ -490,7 +490,7 @@ export default function GuidedProjectEnhanced() {
                       parent.innerHTML = `
                         <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-500 to-orange-600">
                           <div class="text-white text-center">
-                            <div class="text-2xl mb-1">⚡</div>
+                            <div class="text-lg mb-1">⚡</div>
                             <div class="text-xs font-semibold">Swift Build</div>
                           </div>
                         </div>
@@ -499,24 +499,24 @@ export default function GuidedProjectEnhanced() {
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                <div className="absolute top-2 right-2">
-                  <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
-                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <div className="absolute top-1 right-1">
+                  <div className="bg-green-500 text-white px-1.5 py-0.5 rounded-full text-xs font-medium flex items-center">
+                    <svg className="w-2 h-2 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    Verified
+                    ✓
                   </div>
                 </div>
               </div>
-              <h3 className="font-bold text-gray-900 text-sm mb-1">Swift Build Solutions</h3>
-              <div className="flex items-center mb-2">
-                <svg className="w-3 h-3 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <h3 className="font-bold text-gray-900 text-xs mb-1 truncate">Swift Build Solutions</h3>
+              <div className="flex items-center mb-1">
+                <svg className="w-2.5 h-2.5 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
-                <span className="font-semibold text-gray-900 text-sm">4.7</span>
-                <span className="text-gray-500 text-xs ml-1">(203 reviews)</span>
+                <span className="font-semibold text-gray-900 text-xs">4.7</span>
+                <span className="text-gray-500 text-xs ml-1">(203)</span>
               </div>
-              <p className="text-green-600 font-semibold text-sm">£20k - £60k</p>
+              <p className="text-green-600 font-semibold text-xs">£20k - £60k</p>
             </div>
           </div>
 
@@ -524,7 +524,7 @@ export default function GuidedProjectEnhanced() {
           <div className="text-center">
             <div className="inline-flex items-center space-x-2">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-              <span className="text-gray-600 font-medium">Creating your project and finding contractors...</span>
+              <span className="text-gray-600 font-medium">Creating your project from chat input and finding contractors...</span>
             </div>
           </div>
         </div>
