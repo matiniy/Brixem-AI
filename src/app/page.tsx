@@ -8,6 +8,9 @@ import GradientText from "@/components/GradientText";
 import Orb from "@/components/Orb";
 import ChatPanel from "@/components/ChatPanel";
 import FeatureSection from "@/components/FeatureSection";
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
 import TestimonialsSection from "@/components/TestimonialsSection";
 import Footer from "@/components/Footer";
 import AnimatedStats from "@/components/AnimatedStats";

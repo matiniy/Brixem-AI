@@ -3,6 +3,9 @@
 import { useState } from 'react';
 import { signIn } from '@/lib/supabase';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export default function TestAuthPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

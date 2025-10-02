@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
 import Link from 'next/link';
 
 export default function TestAuthFlowPage() {
