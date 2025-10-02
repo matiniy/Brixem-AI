@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import { getProjects } from '../actions';
 
@@ -27,8 +28,11 @@ interface Document {
   projectId?: string;
 }
 
-export default function DocumentsPage() {
+function DocumentsPageContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [currentProject, setCurrentProject] = useState<Project | null>(null);
   const [documents, setDocuments] = useState<Document[]>([
     {
       id: '1',
@@ -76,6 +80,17 @@ export default function DocumentsPage() {
   useEffect(() => {
     loadProjects();
   }, []);
+
+  // Check for project ID in URL params
+  useEffect(() => {
+    const projectId = searchParams.get('projectId');
+    if (projectId && projects.length > 0) {
+      const project = projects.find(p => p.id === projectId);
+      if (project) {
+        setCurrentProject(project);
+      }
+    }
+  }, [searchParams, projects]);
 
   const loadProjects = async () => {
     try {
@@ -168,8 +183,21 @@ export default function DocumentsPage() {
                   </svg>
                 </button>
                 
+                {/* Back to Project Button */}
+                {currentProject && (
+                  <button
+                    onClick={() => router.push(`/dashboard/project/${currentProject.id}`)}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Back to {currentProject.name}
+                  </button>
+                )}
+                
                 <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
-                  Documents
+                  {currentProject ? `${currentProject.name} - Documents` : 'Documents'}
                 </h1>
               </div>
 
@@ -192,6 +220,30 @@ export default function DocumentsPage() {
         {/* Main Content */}
         <main className="flex-1 overflow-hidden bg-gray-50">
           <div className="h-full p-6 overflow-y-auto">
+            {/* Breadcrumb Navigation */}
+            {currentProject && (
+              <nav className="flex items-center space-x-2 text-sm text-gray-500 mb-6">
+                <button
+                  onClick={() => router.push('/dashboard/homeowner')}
+                  className="hover:text-gray-700 transition"
+                >
+                  Dashboard
+                </button>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+                <button
+                  onClick={() => router.push(`/dashboard/project/${currentProject.id}`)}
+                  className="hover:text-gray-700 transition"
+                >
+                  {currentProject.name}
+                </button>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+                <span className="text-gray-900 font-medium">Documents</span>
+              </nav>
+            )}
             {/* Documents Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {documents.map((document) => (
@@ -267,5 +319,20 @@ export default function DocumentsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function DocumentsPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading documents...</p>
+        </div>
+      </div>
+    }>
+      <DocumentsPageContent />
+    </Suspense>
   );
 }

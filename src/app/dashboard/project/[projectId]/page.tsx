@@ -821,8 +821,21 @@ Any modifications to this scope of work must be documented in writing and approv
       ) : activeTab === 'documents' ? (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
           <div className="mb-4 sm:mb-6">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Project Documents</h2>
-            <p className="text-sm sm:text-base text-gray-600">View and manage project documents for {project.name}</p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Project Documents</h2>
+                <p className="text-sm sm:text-base text-gray-600">View and manage project documents for {project.name}</p>
+              </div>
+              <button
+                onClick={() => router.push(`/dashboard/documents?projectId=${project.id}`)}
+                className="px-4 py-2 bg-gradient-to-r from-[#23c6e6] to-[#4b1fa7] text-white rounded-lg hover:opacity-90 transition flex items-center gap-2 justify-center"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                View All Documents
+              </button>
+            </div>
           </div>
 
           <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
