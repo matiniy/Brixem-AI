@@ -4,6 +4,9 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { signUp } from "@/lib/supabase";
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export default function HomeownerOnboarding() {
   const router = useRouter();
   const [step, setStep] = useState(0);

@@ -3,6 +3,9 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export default function Pricing() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("homeowner");

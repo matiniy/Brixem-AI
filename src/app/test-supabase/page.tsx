@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export default function TestSupabasePage() {
   const [status, setStatus] = useState('Testing...');
   const [details, setDetails] = useState<Record<string, unknown> | null>(null);

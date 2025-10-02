@@ -1,11 +1,25 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Environment variables
+  env: {
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key',
+    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-service-key',
+    GROQ_API_KEY: process.env.GROQ_API_KEY || 'placeholder-groq-key',
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+  },
   // Performance optimizations
   experimental: {
     optimizeCss: true,
     optimizePackageImports: ['@supabase/supabase-js', 'lucide-react'],
   },
+
+  // Disable static generation for pages that use Supabase
+  output: 'standalone',
+  
+  // Force all pages to be dynamic
+  trailingSlash: false,
   
   // Bundle analyzer (enable with ANALYZE=true npm run build)
   ...(process.env.ANALYZE === 'true' && {

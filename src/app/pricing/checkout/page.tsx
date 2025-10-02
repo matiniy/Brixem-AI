@@ -4,6 +4,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { Suspense } from "react";
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 function CheckoutPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
